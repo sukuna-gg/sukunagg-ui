@@ -310,11 +310,11 @@ in Storybook, still pending for every row.
 
 | Item | Replaces in sukuna-gg-web | Doc | Code |
 |---|---|---|---|
-| Package scaffold (workspace, tsup, size-limit, docs:build, peer `@sukunagg/ui` theme) | — | [~] `charts-and-stats.md` §5, owner review | [ ] |
-| Shared parts: axis, grid, legend, table view, `ChartTooltip` client island, plot-area EmptyState | — | [~] `charts-and-stats.md` §5.2–5.6, owner review | [ ] |
-| BarChart (grouped/stacked/horizontal, per-bar `color`, value labels) | `PlacementHistogram` | [~] written, owner review | [ ] |
-| LineChart / AreaChart (`baseline` + above/below fill, `reverse`, `band`, `null` gaps, `minPoints`) | `GoldGraph`, TODO "Placement over time" | [~] written, owner review | [ ] |
-| DataBar (bar in a table cell) | Scoreboard damage bar | [~] written, owner review | [ ] |
+| Package scaffold (workspace, tsup, size-limit, docs:build, peer `@sukunagg/ui` theme) | — | [x] `charts-and-stats.md` §5 | [x] `packages/charts`, publint + attw green, `styles.css` fallback, generator + showcase know it |
+| Shared parts: axis, grid, legend, table view, `ChartTooltip` client island, plot-area EmptyState | — | [x] §5.2–5.6 | [x] frame + island 100% cov; island 1.18 kB |
+| BarChart (grouped/stacked/horizontal, per-bar `color`, value labels) | `PlacementHistogram` | [x] | [x] 19 tests + 2 browser, 100% cov, 4.6 kB |
+| LineChart / AreaChart (`baseline` + above/below fill, `reverse`, `band`, `null` gaps, `minPoints`) | `GoldGraph`, TODO "Placement over time" | [x] (+ `yTickValues`, D37) | [x] 13 tests + 1 browser, 100% lines, 5.7 kB |
+| DataBar (bar in a table cell) | Scoreboard damage bar | [x] | [x] 8 tests, 100% cov, 0.78 kB |
 
 ### Wave 3 — `@sukunagg/ui`
 
@@ -416,3 +416,4 @@ Agents append one line per meaningful status change: `YYYY-MM-DD · <what flippe
 - 2026-10-05 · Q32 — charts & stats wave 1 built: chart/heat/danger tokens (+ contrast gate), StatTile, Sparkline, EmptyState (new, exported, stories), Input `reveal` (client file `input.reveal.tsx`) and Badge `pulse` (specs merged into their component docs). 456 ui + 104 video unit tests, React 18 green, every new file 100% cov, size budgets added. Owner visual review pending · (feat/charts-wave1-specs)
 - 2026-10-05 · Owner request — Storybook + showcase split into sections: Components (46), Charts (StatTile, Sparkline), Video (VideoPlayer). Story titles carry the section (`Charts/…`, `Video/…`), `storySort` pins Design → Components → Charts → Video, showcase sidebar/mobile picker/overview group by it; video browser-test ids → `video-videoplayer--*` (all 40 test ids resolve) · (feat/charts-wave1-specs)
 - 2026-10-05 · Q33 — wave 2 specs written: `charts-and-stats.md` §5 (package, server-rendered CSS-sized model, shared props/states, client island, d3 bundling + d3-scale size gate), `component-bar-chart.md`, `component-line-chart.md` (Line + Area), `component-data-bar.md`; roadmap header corrected (0.10.0 is published, Q29) · (feat/charts-wave2-specs)
+- 2026-10-05 · Q33 "build the rest non-stop" — wave 2 built: new `@sukunagg/charts` package (BarChart, LineChart, AreaChart, DataBar; server-rendered, CSS-sized; ~1.2 kB client island), no runtime deps (in-house d3-equivalent math, D37); 65 unit tests (~100% cov), 4 Playwright tests; docs generator, README, showcase snippets and Storybook/showcase aliases updated (old `@sukuna-ui/video` alias fixed); changeset → `@sukunagg/charts` 0.1.0 · (feat/charts-wave2-specs)

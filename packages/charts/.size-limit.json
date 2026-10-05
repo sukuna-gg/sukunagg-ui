@@ -1,0 +1,53 @@
+[
+  {
+    "name": "BarChart (our code + island; react, @sukunagg/ui excluded)",
+    "path": "dist/index.js",
+    "import": "{ BarChart }",
+    "limit": "6 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@sukunagg/ui",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "LineChart + AreaChart (our code + island; react, @sukunagg/ui excluded)",
+    "path": "dist/index.js",
+    "import": "{ LineChart, AreaChart }",
+    "limit": "7 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@sukunagg/ui",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "DataBar (static, no island)",
+    "path": "dist/index.js",
+    "import": "{ DataBar }",
+    "limit": "1.5 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@sukunagg/ui",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "Interaction island (the only chart client JS)",
+    "path": "dist/internal/interaction.js",
+    "limit": "2.5 kB",
+    "ignore": ["react", "react-dom", "react/jsx-runtime"]
+  }
+]

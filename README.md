@@ -15,7 +15,7 @@
 
 **SSR-safe, accessible React components for dark-first products — and for the AI agents that build them.**
 
-<!-- count -->49<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
+<!-- count -->52<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
 contrast in both themes, `prefers-reduced-motion` honored, zero runtime styling, React Server
 Components-ready, React 18 and 19. Dark is the identity; light is a mode.
 
@@ -97,6 +97,22 @@ It keeps the Sukuna look by default and re-themes through `--vp-*` CSS variables
 sukuna-ui app you don't need it separately: `@sukunagg/ui` re-exports it and its CSS already includes
 the player's.
 
+### Charts
+
+`BarChart`, `LineChart`, `AreaChart` and `DataBar` live in
+[`@sukunagg/charts`](packages/charts#readme), next to the library (it peers on `@sukunagg/ui` for
+the tokens and `EmptyState`). They render on the server and size themselves with CSS — no client
+measuring, no layout shift; hover and arrow-key tooltips come from a ~1 kB client island.
+
+```bash
+bun add @sukunagg/charts
+```
+
+```css
+@source "../node_modules/@sukunagg/charts/dist"; /* Tailwind: next to the @sukunagg/ui lines */
+/* No Tailwind: import "@sukunagg/charts/styles.css" after "@sukunagg/ui/styles.css" */
+```
+
 ## Components
 
 Every row links to that component's generated Markdown page (full API, variants, states, accessibility).
@@ -109,6 +125,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `AlertDialog` | Ask the user to confirm something that is hard to undo ("Delete project?", "Discard changes?"). | [docs/llms/alert-dialog.md](docs/llms/alert-dialog.md) |
 | `Avatar` | A user/entity image with a graceful fallback (initials or icon) while loading or on error. | [docs/llms/avatar.md](docs/llms/avatar.md) |
 | `Badge` | A small, pill-shaped label for status and metadata — "LIVE", counts, tags. | [docs/llms/badge.md](docs/llms/badge.md) |
+| `BarChart` · @sukunagg/charts | Compares amounts across categories: games per placement, kills per weapon by season, revenue per plan per month, pick rate per agent. | [docs/llms/bar-chart.md](docs/llms/bar-chart.md) |
 | `Breadcrumbs` | Show the path to the current page and let users jump back up it. | [docs/llms/breadcrumbs.md](docs/llms/breadcrumbs.md) |
 | `Button` | Triggers an action. | [docs/llms/button.md](docs/llms/button.md) |
 | `Card` | A surface container that groups related content on an elevation. | [docs/llms/card.md](docs/llms/card.md) |
@@ -119,6 +136,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `Combobox` | A text input with a filtered list of suggestions (free-text autocomplete). | [docs/llms/combobox.md](docs/llms/combobox.md) |
 | `ContextMenu` | Offer contextual actions where the pointer is — right-click on desktop, long-press on touch. | [docs/llms/context-menu.md](docs/llms/context-menu.md) |
 | `Counter` | Animates a number from a start to a target value — for stat tiles, KPIs, pricing, and dashboards. | [docs/llms/counter.md](docs/llms/counter.md) |
+| `DataBar` · @sukunagg/charts | A number with a small bar under it, for comparing rows of a table at a glance: damage to champions in a scoreboard, pick rate in a meta table. | [docs/llms/data-bar.md](docs/llms/data-bar.md) |
 | `Dialog` | A modal dialog. | [docs/llms/dialog.md](docs/llms/dialog.md) |
 | `Divider` | A thin rule that separates content, horizontally or vertically. | [docs/llms/divider.md](docs/llms/divider.md) |
 | `Drawer` | A panel that slides in from an edge (nav, filters, details). | [docs/llms/drawer.md](docs/llms/drawer.md) |
@@ -127,6 +145,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `GradientText` | Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases. | [docs/llms/gradient-text.md](docs/llms/gradient-text.md) |
 | `HoverCard` | Preview richer context for a link without a click — a user card, a repo summary, a footnote. | [docs/llms/hover-card.md](docs/llms/hover-card.md) |
 | `Input` | A single-line text input. | [docs/llms/input.md](docs/llms/input.md) |
+| `AreaChart`, `LineChart` · @sukunagg/charts | Shows change across an ordered axis: rating over the last 30 matches, damage per round by role per week, placement per game, gold difference per minute. | [docs/llms/line-chart.md](docs/llms/line-chart.md) |
 | `Menu` | A dropdown menu of actions triggered by a button. | [docs/llms/menu.md](docs/llms/menu.md) |
 | `Meter` | Show a scalar measurement within a known range: storage used, quota, password strength, a score. | [docs/llms/meter.md](docs/llms/meter.md) |
 | `NumberField` | Enter a number precisely. | [docs/llms/number-field.md](docs/llms/number-field.md) |

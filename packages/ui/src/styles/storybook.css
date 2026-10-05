@@ -6,3 +6,5 @@
 @import "tailwindcss";
 @import "./theme.css";
 @source "../components";
+/* @sukunagg/charts components and stories (Charts/* in the sidebar). */
+@source "../../../charts/src";

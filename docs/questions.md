@@ -569,6 +569,11 @@ specs written (`charts-and-stats.md` §5, `component-bar-chart.md`, `component-l
 header fixed; lockfile fixed on its own branch. **Not done:** pushing — CLAUDE.md requires the
 owner's literal "push"; the visual review is the owner's.
 
+**Then** "Build the rest of the components non-stop" (2026-10-05) → treated as approval of the wave 2
+specs and of building waves 2, 3 and the later trio without stopping. The scale-math gate (Q33b)
+became an agent decision: in-house math instead of d3 (D37), because the per-file build can't
+bundle ESM-only d3 for Node 18 CommonJS consumers.
+
 ---
 
 ## Decisions recorded so far
@@ -609,5 +614,4 @@ owner's literal "push"; the visual review is the owner's.
 | Q25 | `sk-ticker` keyframe + `animate-ticker` utility for the VideoPlayer news-ticker overlay? | Proposed; blocks only the ticker variant. |
 | Q26 | Next VideoPlayer SDK adapter (dash.js, IMA/VAST ads, Cast, three.js VR) — each a separate optional peer? | Waiting; hls.js shipped. |
 | Q28 | Approve the `--vp-*` variable set (names + Sukuna-dark defaults) for `@sukuna-ui/video`? | Shipped as built with the first `@sukunagg/video` publish (Q29); renaming now = breaking release. |
-| Q33 | Review the wave 2 specs (`charts-and-stats.md` §5, BarChart, LineChart/AreaChart, DataBar), and say "push" for the wave 1 branch? | Specs written 2026-10-05; blocks wave 2 code and the wave 1 PR. |
-| Q33b | If tree-shaken `d3-scale` adds > 4 kB brotli to BarChart, swap it for ~60 lines of in-house linear/band/nice-tick helpers? | Asked at scaffold time (wave spec §5.1). |
+| Q33 | Say "push" for the charts branches (wave 1 → wave 2 → wave 3/later), and give the new components a visual review in Storybook. Also: d3 was replaced by in-house math (D37) — OK? | Built 2026-10-05 ("build the rest non-stop"); nothing pushed. |

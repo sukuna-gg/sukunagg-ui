@@ -75,13 +75,11 @@ packages/charts/                 # @sukunagg/charts, starts at 0.1.0
 - **Peer on `@sukunagg/ui`**, not standalone like the video player: charts read the `--sk-*` tokens
   from `@sukunagg/ui/theme.css` and reuse `EmptyState` and `Skeleton`. An app using charts
   already uses the library.
-- **Math:** `d3-shape` for line/area paths (`.defined()` gives null gaps; `curveMonotoneX`) and
-  `d3-scale` for `scaleLinear` / `scaleBand` + nice ticks, as approved in Q31. Both are ESM-only
-  and the packages support Node ≥ 18, which can't `require()` ESM, so the build **bundles** them
-  (`noExternal: [/^d3-/]`) and the CJS output works. **Gate at scaffold time:** if tree-shaken
-  `d3-scale` adds more than 4 kB brotli to BarChart (it imports d3-interpolate/format/time for
-  features we don't use), stop and ask the owner before swapping it for in-house linear/band/
-  nice-tick helpers (~60 lines, same algorithm).
+- **Math (as built, D37):** no runtime dependencies. `src/internal/scale.ts` (d3's `tickStep` /
+  `nice` / ticks algorithm, linear and band positions) and `src/internal/path.ts` (line/area paths
+  with null gaps, d3's `curveMonotoneX` tangents) replace `d3-scale` + `d3-shape`. The per-file
+  build (`bundle: false`, which keeps `'use client'` on its own file) can't inline dependencies,
+  and d3 is ESM-only, so the CommonJS output would `require()` an ES module — which Node 18 can't.
 - **CSS:** consumers add `@source "../node_modules/@sukunagg/charts/dist"` next to the ui one;
   `@sukunagg/charts/styles.css` is the precompiled fallback, as in ui.
 
@@ -117,6 +115,7 @@ interface ChartBaseProps<Row> {
   height?: number                       // plot height, px. Default 220
   valueFormat?: Intl.NumberFormatOptions | ((v: number) => string)
   xFormat?: (x: Row[keyof Row], index: number) => string
+  xLabel?: string                       // table header for the x column; default: the key, capitalised
   locale?: string                       // default 'en-US' — same output on server and browser
   yTicks?: number                       // default 4
   legend?: 'auto' | false | readonly { label: string; color: string }[]  // auto = shown for ≥ 2 series
@@ -125,6 +124,7 @@ interface ChartBaseProps<Row> {
   interactive?: boolean                 // default true: hover/keyboard tooltip island
   table?: 'sr-only' | 'details' | 'none'  // default 'sr-only'; 'details' = native "Show as a table"
   summary?: string                      // replaces the generated screen-reader summary
+  id?: string                           // figure id (also seeds internal ids); default: hash of the data
   className?: string
 }
 // Plus exactly one of `aria-label` / `aria-labelledby` (enforced by the type).
@@ -171,8 +171,8 @@ series; text never wears a series color. Marks ≥ 3:1 with the default tokens.
 - **Tests:** unit (server render, scales and ticks, gaps, every state, color props, summaries,
   axe both themes, ≥ 90% per component) + **Playwright browser tests** for the island (hover shows
   the tooltip, arrow keys, Escape, focus ring).
-- **Size budgets (brotli, react + ui excluded):** BarChart ≤ 6 kB, LineChart/AreaChart ≤ 7 kB
-  (with d3-shape), DataBar ≤ 1.5 kB, the island ≤ 2.5 kB.
+- **Size budgets (brotli, react + ui excluded):** BarChart ≤ 6 kB, LineChart/AreaChart ≤ 7 kB,
+  DataBar ≤ 1.5 kB, the island ≤ 2.5 kB. Built: 4.6 / 5.7 / 0.78 / 1.18 kB.
 - **Release:** a changeset for `@sukunagg/charts` (new package → 0.1.0); the owner publishes.
 
 ### 5.8 What it replaces in sukuna-gg-web (Q32 review)

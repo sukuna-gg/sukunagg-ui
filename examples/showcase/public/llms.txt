@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt).
 
-@sukunagg/ui is a React 18/19 component library: 49 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 52 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -67,6 +67,14 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - [ToggleGroup](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/toggle-group.md): Pick one option from a small, mutually-exclusive set (segmented control), or toggle several independent options (a formatting toolbar).
 - [Tooltip](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/tooltip.md): A hover/focus tooltip for supplementary text.
 - [VideoPlayer](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/video-player.md): Plays a single video with Sukuna-branded controls instead of each browser's native chrome, so video looks the same in Chrome, Safari and Firefox and matches the rest of the library.
+
+## @sukunagg/charts
+
+Install `bun add @sukunagg/charts` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton). Tailwind apps add `@source "../node_modules/@sukunagg/charts/dist"`; others `import "@sukunagg/charts/styles.css"`.
+
+- [BarChart](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/bar-chart.md): Compares amounts across categories: games per placement, kills per weapon by season, revenue per plan per month, pick rate per agent.
+- [DataBar](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/data-bar.md): A number with a small bar under it, for comparing rows of a table at a glance: damage to champions in a scoreboard, pick rate in a meta table.
+- [LineChart](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/line-chart.md): Shows change across an ordered axis: rating over the last 30 matches, damage per round by role per week, placement per game, gold difference per minute.
 
 ## Theming
 

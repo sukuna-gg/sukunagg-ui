@@ -6,7 +6,8 @@
  *
  * Inputs (source of truth):
  *  - `docs/component-<name>.md`  the per-component spec every component must have (docs-first rule)
- *  - `src/index.ts`              the public export names per component directory
+ *  - `src/index.ts`              the public export names per component directory (ui, plus the
+ *                                add-on packages in `ADDON_PACKAGES`, e.g. `@sukunagg/charts`)
  *  - `package.json`              name / version / description
  *
  * Outputs:
@@ -64,10 +65,37 @@ const PACKAGE_COMPONENTS: Record<
   },
 }
 
+/**
+ * Packages that ship their own components next to `@sukunagg/ui` (not re-exported by it), read
+ * from their own `src/index.ts`. Their pages get that package's install/import/CSS lines.
+ */
+const ADDON_PACKAGES: Record<
+  string,
+  { dir: string; tailwind: string; plain: string; note: string }
+> = {
+  '@sukunagg/charts': {
+    dir: 'packages/charts',
+    tailwind: '@source "../node_modules/@sukunagg/charts/dist"',
+    plain: 'import "@sukunagg/charts/styles.css"',
+    note: 'peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton',
+  },
+}
+
+/** Which add-on package a component directory belongs to, if any. */
+const addonOf = (name: string): string | undefined =>
+  Object.entries(ADDON_PACKAGES).find(([, a]) =>
+    existsSync(join(ROOT, a.dir, 'src/components', name)),
+  )?.[0]
+
 /** Where a component's source lives in the repo (for the generated Source link). */
-const sourcePath = (name: string): string =>
-  Object.values(PACKAGE_COMPONENTS).find((p) => p.name === name)?.source ??
-  `packages/ui/src/components/${name}`
+const sourcePath = (name: string): string => {
+  const addon = addonOf(name)
+  if (addon) return `${ADDON_PACKAGES[addon]?.dir}/src/components/${name}`
+  return (
+    Object.values(PACKAGE_COMPONENTS).find((p) => p.name === name)?.source ??
+    `packages/ui/src/components/${name}`
+  )
+}
 
 /**
  * `export { A, B } from './components/<dir>'` lines in src/index.ts (or from a re-exported
@@ -84,6 +112,19 @@ function readExportNames(): Map<string, string[]> {
       .filter(Boolean)
     const dir = m[2] ?? PACKAGE_COMPONENTS[m[3] ?? '']?.name
     if (dir) map.set(dir, names)
+  }
+  for (const a of Object.values(ADDON_PACKAGES)) {
+    const index = join(ROOT, a.dir, 'src/index.ts')
+    if (!existsSync(index)) continue
+    for (const m of readFileSync(index, 'utf8').matchAll(
+      /^export \{([^}]+)\} from '\.\/components\/([a-z0-9-]+)'/gm,
+    )) {
+      const names = (m[1] ?? '')
+        .split(',')
+        .map((x) => x.trim())
+        .filter(Boolean)
+      if (m[2]) map.set(m[2], names)
+    }
   }
   // A re-exported package component that isn't found would silently drop out of every generated
   // doc (it happened once, after a package rename) — fail loudly instead.
@@ -106,6 +147,8 @@ interface ComponentDoc {
   display: string
   /** public export names, e.g. `['ToastProvider', 'useToast']` */
   exports: string[]
+  /** npm package that exports it: `@sukunagg/ui` or an add-on such as `@sukunagg/charts` */
+  pkgName: string
   /** first sentence of the Purpose section */
   summary: string
   sections: Section[]
@@ -169,6 +212,7 @@ function readComponentDocs(): ComponentDoc[] {
       name,
       display,
       exports,
+      pkgName: addonOf(name) ?? pkg.name,
       summary: purpose ? firstSentence(purpose.body) : '',
       sections,
     })
@@ -201,16 +245,21 @@ function standaloneLines(doc: ComponentDoc): string[] {
 }
 
 function renderComponentPage(doc: ComponentDoc): string {
-  const importLine = `import { ${doc.exports.join(', ')} } from '${pkg.name}'`
+  const importLine = `import { ${doc.exports.join(', ')} } from '${doc.pkgName}'`
+  const addon = ADDON_PACKAGES[doc.pkgName]
   const out: string[] = [
     GENERATED(`docs/component-${doc.name}.md`),
-    `# ${doc.display} — ${pkg.name}`,
+    `# ${doc.display} — ${doc.pkgName}`,
     '',
     `> ${doc.summary}`,
     '',
-    `- **Package:** \`${pkg.name}\` — \`bun add ${pkg.name}\` (or \`npm i ${pkg.name}\`)`,
+    addon
+      ? `- **Package:** \`${doc.pkgName}\` — \`bun add ${doc.pkgName} ${pkg.name}\` (${addon.note})`
+      : `- **Package:** \`${pkg.name}\` — \`bun add ${pkg.name}\` (or \`npm i ${pkg.name}\`)`,
     `- **Import:** \`${importLine}\``,
-    `- **Styles:** \`@import "${pkg.name}/theme.css"\` (Tailwind v4) or \`import "${pkg.name}/styles.css"\` (no Tailwind) — see [Getting started](${RAW_URL}/llms.txt)`,
+    addon
+      ? `- **Styles:** with Tailwind v4 add \`${addon.tailwind}\` next to the ${pkg.name} setup; without Tailwind \`${addon.plain}\` after \`${pkg.name}/styles.css\` — see [Getting started](${RAW_URL}/llms.txt)`
+      : `- **Styles:** \`@import "${pkg.name}/theme.css"\` (Tailwind v4) or \`import "${pkg.name}/styles.css"\` (no Tailwind) — see [Getting started](${RAW_URL}/llms.txt)`,
     ...standaloneLines(doc),
     `- **Source:** ${REPO_URL}/tree/main/${sourcePath(doc.name)} · **Spec:** ${REPO_URL}/blob/main/docs/component-${doc.name}.md`,
     '',
@@ -254,8 +303,23 @@ function renderLlmsTxt(docs: ComponentDoc[]): string {
     '',
     '## Components',
     '',
-    ...docs.map((d) => `- [${d.display}](${RAW_URL}/docs/llms/${d.name}.md): ${d.summary}`),
+    ...docs
+      .filter((d) => d.pkgName === pkg.name)
+      .map((d) => `- [${d.display}](${RAW_URL}/docs/llms/${d.name}.md): ${d.summary}`),
     '',
+    ...Object.entries(ADDON_PACKAGES).flatMap(([name, a]) => {
+      const own = docs.filter((d) => d.pkgName === name)
+      return own.length
+        ? [
+            `## ${name}`,
+            '',
+            `Install \`bun add ${name}\` (${a.note}). Tailwind apps add \`${a.tailwind}\`; others \`${a.plain}\`.`,
+            '',
+            ...own.map((d) => `- [${d.display}](${RAW_URL}/docs/llms/${d.name}.md): ${d.summary}`),
+            '',
+          ]
+        : []
+    }),
     '## Theming',
     '',
     `- [Design tokens](${REPO_URL}/blob/main/docs/tokens.md): every \`--sk-*\` token with dark and light values and the AA contrast floor`,
@@ -282,7 +346,9 @@ function renderLlmsFull(docs: ComponentDoc[], pages: Map<string, string>): strin
     '',
     '## Components',
     '',
-    ...docs.map((d) => `- ${d.display}: ${d.summary}`),
+    ...docs.map(
+      (d) => `- ${d.display}${d.pkgName === pkg.name ? '' : ` (${d.pkgName})`}: ${d.summary}`,
+    ),
     '',
   ]
   for (const doc of docs) {
@@ -302,7 +368,7 @@ function updateReadme(docs: ComponentDoc[]): void {
     '|---|---|---|',
     ...docs.map(
       (d) =>
-        `| \`${d.exports.join('`, `')}\` | ${d.summary} | [docs/llms/${d.name}.md](docs/llms/${d.name}.md) |`,
+        `| \`${d.exports.join('`, `')}\`${d.pkgName === pkg.name ? '' : ` · ${d.pkgName}`} | ${d.summary} | [docs/llms/${d.name}.md](docs/llms/${d.name}.md) |`,
     ),
   ].join('\n')
 

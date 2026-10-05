@@ -9,6 +9,24 @@ agent's own calls. Newest first.
 
 ---
 
+## D37 — @sukunagg/charts: in-house scale and path math instead of d3
+
+- **Decision:** Build the charts with no runtime dependencies: `src/internal/scale.ts` (d3's
+  `tickStep`, `nice` and tick algorithm; linear, band and point positions, rounded to 3 decimals)
+  and `src/internal/path.ts` (line/area paths split at `null`, d3's `curveMonotoneX` tangents),
+  instead of `d3-scale` + `d3-shape` as approved in Q31. Also while building: charts take
+  `xLabel` and `id`, LineChart takes `yTickValues` / `yTickFormat`, and the Storybook/showcase
+  aliases now resolve `@sukunagg/ui` (and the renamed `@sukunagg/video`, whose old `@sukuna-ui/video`
+  alias had silently stopped matching) to source.
+- **Why:** the build is per-file (`bundle: false`) so `'use client'` stays on the island's own file
+  (RSC rule), which means dependencies can't be inlined — and d3 ships ESM only, so the CommonJS
+  output would `require()` an ES module, which Node 18 (still in `engines`) can't do. The wave spec
+  planned to bundle d3 (`noExternal`), which doesn't work with `bundle: false`. The math is ~150
+  lines, follows d3's algorithms (same ticks), and is 100% covered. The owner's "build the rest
+  non-stop" (Q33) made this an agent call instead of a stop-and-ask (Q33b).
+- **Reverse:** add `d3-scale`/`d3-shape` as dependencies and raise `engines.node` to ≥ 20.19 (where
+  `require(esm)` works), or ship the charts package ESM-only.
+
 ## D36 — Charts & stats wave 1: how the specs meet the SSR rules
 
 - **Decision:** (1) **Sparkline** stays a server component and sizes itself with CSS: SVG

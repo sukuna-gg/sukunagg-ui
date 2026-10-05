@@ -17,6 +17,7 @@
       "!packages/ui/src/styles/fallback.css",
       "!packages/ui/src/styles/storybook.css",
       "!packages/video/src/styles/video.css",
+      "!packages/charts/src/styles/fallback.css",
       "!examples/showcase/src/styles.css",
       "!brand",
       "!examples/showcase/public"

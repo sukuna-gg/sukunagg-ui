@@ -52,13 +52,15 @@ export default defineConfig({
     // source too, so the player's own stories and the library share one copy (one context).
     alias: [
       {
-        find: /^@sukuna-ui\/video\/hls$/,
+        find: /^@sukunagg\/video\/hls$/,
         replacement: resolve(repoRoot, 'packages/video/src/hls.ts'),
       },
       {
-        find: /^@sukuna-ui\/video$/,
+        find: /^@sukunagg\/video$/,
         replacement: resolve(repoRoot, 'packages/video/src/index.ts'),
       },
+      // Chart stories import `@sukunagg/ui` through `@sukunagg/charts`: same source, one copy.
+      { find: /^@sukunagg\/ui$/, replacement: resolve(repoRoot, 'packages/ui/src/index.ts') },
     ],
   },
   server: {

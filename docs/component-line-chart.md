@@ -32,6 +32,10 @@ export interface LineChartProps<Row> extends ChartBaseProps<Row> {
   curve?: 'linear' | 'monotone'
   /** Value axis. Default: nice(min, max) of the data — a line need not start at 0. */
   yDomain?: readonly [number, number]
+  /** Exact ticks instead of round ones, e.g. [1, 4, 8] for placements. */
+  yTickValues?: readonly number[]
+  /** Tick label, e.g. v => ordinal(v). Default: valueFormat. */
+  yTickFormat?: (v: number) => string
   /** Smaller values at the top (placements: 1st on top). Default false. */
   reverse?: boolean
   /** A shaded value range, e.g. { from: 1, to: 4, label: 'Top 4' }. */
@@ -136,3 +140,8 @@ legend + end labels), `PlacementOverTime` (`reverse`, `yDomain={[1, 8]}`, `point
 - Ordinal x only in v1 — every first-consumer chart is per match / per minute / per week (Q32).
 - `reverse`, `band`, `pointColor` and diverging `above`/`below` exist because sukuna-gg-web needs
   them for "Placement over time" and the gold graph (Q32 review).
+- `yTickValues` / `yTickFormat` added while building: round ticks over 1–8 come out as 2/4/6/8, but
+  placements read as 1st/4th/8th. The baseline (axis bottom, or `baseline`) always gets its line,
+  even when it isn't a tick.
+- A diverging fill's line, dots and tooltip swatches stay neutral (`--sk-text-dim`) unless the
+  series sets a color — the fill carries the meaning.
