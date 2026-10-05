@@ -1,5 +1,5 @@
 import { type ComponentPropsWithoutRef, forwardRef } from 'react'
-import { type BadgeStyleProps, badgeDot, badgeStyles } from './badge.styles'
+import { type BadgeStyleProps, badgeDot, badgeDotPulse, badgeStyles } from './badge.styles'
 
 export interface BadgeProps
   extends ComponentPropsWithoutRef<'span'>,
@@ -16,6 +16,13 @@ export interface BadgeProps
    * @default false
    */
   dot?: boolean
+  /**
+   * Animate the dot for a live state ("In game"): it blinks and a ring ripples out of it. Needs
+   * `dot`; on its own it does nothing. Still under `prefers-reduced-motion`. The text must still
+   * say the state.
+   * @default false
+   */
+  pulse?: boolean
 }
 
 /**
@@ -33,6 +40,8 @@ export interface BadgeProps
  *     'outline' force a treatment; solid fills use the page-background token for the label so
  *     they stay legible in both themes.
  *   - `size`: 'sm' | 'md' (default) — 20px / 24px tall.
+ *   - `pulse`: animates the `dot` for live states (Tailwind's built-in `animate-pulse` /
+ *     `animate-ping`), still under reduced motion.
  * - The pill radius is fixed; `className` merges last and wins over a conflicting utility.
  * - Theming: colors come from `--sk-*` tokens and flip with `data-theme`.
  *
@@ -40,7 +49,7 @@ export interface BadgeProps
  * ```tsx
  * import { Badge } from '@sukunagg/ui'
  *
- * <Badge tone="accent" dot>
+ * <Badge tone="accent" dot pulse>
  *   Live
  * </Badge>
  * <Badge tone="success" size="sm">
@@ -49,12 +58,14 @@ export interface BadgeProps
  * ```
  */
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
-  { tone, variant, size, dot, className, children, ...rest },
+  { tone, variant, size, dot, pulse, className, children, ...rest },
   ref,
 ) {
   return (
     <span ref={ref} className={badgeStyles({ tone, variant, size, className })} {...rest}>
-      {dot ? <span aria-hidden="true" className={badgeDot} /> : null}
+      {dot ? (
+        <span aria-hidden="true" className={pulse ? `${badgeDot} ${badgeDotPulse}` : badgeDot} />
+      ) : null}
       {children}
     </span>
   )

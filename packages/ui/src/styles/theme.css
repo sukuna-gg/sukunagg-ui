@@ -22,6 +22,18 @@
   --sk-text-dim: #9A948A;
   --sk-text-faint: #8C8479;
   --sk-success: #31C877;
+  --sk-danger: #FF7A59;
+  --sk-chart-1: #FF3B4E;
+  --sk-chart-2: #4C8EEF;
+  --sk-chart-3: #00A699;
+  --sk-chart-4: #C98000;
+  --sk-chart-5: #A072E6;
+  --sk-chart-6: #749F2B;
+  --sk-chart-other: #6F6B63;
+  --sk-heat-1: #941424;
+  --sk-heat-2: #B3363D;
+  --sk-heat-3: #D25456;
+  --sk-heat-4: #F17070;
   --sk-gradient-accent: linear-gradient(135deg, #D8253A, #B01221);
 
   /* Elevation */
@@ -104,6 +116,18 @@
   --sk-text-dim: #5E5A52;
   --sk-text-faint: #6F6B63;
   --sk-success: #177B46;
+  --sk-danger: #B4380A;
+  --sk-chart-1: #D8253A;
+  --sk-chart-2: #3072D0;
+  --sk-chart-3: #008A7E;
+  --sk-chart-4: #A96100;
+  --sk-chart-5: #8557C8;
+  --sk-chart-6: #5A8400;
+  --sk-chart-other: #B5B0A6;
+  --sk-heat-1: #FF908E;
+  --sk-heat-2: #E66E6D;
+  --sk-heat-3: #C04B4E;
+  --sk-heat-4: #9A282F;
   --sk-gradient-accent: linear-gradient(135deg, #D8253A, #9A0E1C);
 
   /* Elevation */
@@ -129,6 +153,18 @@
   --color-text-dim: var(--sk-text-dim);
   --color-text-faint: var(--sk-text-faint);
   --color-success: var(--sk-success);
+  --color-danger: var(--sk-danger);
+  --color-chart-1: var(--sk-chart-1);
+  --color-chart-2: var(--sk-chart-2);
+  --color-chart-3: var(--sk-chart-3);
+  --color-chart-4: var(--sk-chart-4);
+  --color-chart-5: var(--sk-chart-5);
+  --color-chart-6: var(--sk-chart-6);
+  --color-chart-other: var(--sk-chart-other);
+  --color-heat-1: var(--sk-heat-1);
+  --color-heat-2: var(--sk-heat-2);
+  --color-heat-3: var(--sk-heat-3);
+  --color-heat-4: var(--sk-heat-4);
 
   /* Font families → font-* */
   --font-sans: var(--sk-font-sans);

@@ -6,9 +6,9 @@ Q31 (design, tokens) and Q32 (sukuna-gg-web review, revised waves, owner answers
 → "Data visualization".
 
 This file holds what is shared across the wave, plus the specs for **additions to existing
-components**. Those additions are merged into the component's own `docs/component-<name>.md` in
-the PR that ships the code. Until then they live here, so the generated agent docs (`llms*.txt`)
-never advertise an unshipped prop. New components have their own specs:
+components** until they ship: an addition is merged into the component's own
+`docs/component-<name>.md` in the PR that ships the code, so the generated agent docs
+(`llms*.txt`) never advertise an unshipped prop. New components have their own specs:
 `component-stat-tile.md`, `component-sparkline.md`, `component-empty-state.md`.
 
 ## 1. Where things live
@@ -38,39 +38,16 @@ These go into each spec's tests.
    property and read by a literal utility. The library never builds a class name from it (rule 7).
    Text never wears a series color.
 
-## 3. Addition — Badge `pulse` (wave 1)
+## 3. Additions to existing components
 
-- **API:** `pulse?: boolean` — animates the dot for a live state ("In game"). Needs `dot`; without
-  `dot` it does nothing (dev-only `console.warn`).
-- **Styles:** dot `relative motion-safe:animate-pulse`; ring = `after:` pseudo-element in
-  `currentColor`, `after:absolute after:inset-0 after:rounded-full after:bg-current
-  motion-safe:after:animate-ping`. Tailwind built-in keyframes, so no new motion tokens (D36).
-- **A11y:** still decorative (`aria-hidden`); the text carries the state. Still under
-  `prefers-reduced-motion`; never more than 3 flashes per second.
-- **Tests:** `pulse` adds the motion-safe classes to the dot; `pulse` without `dot` renders no dot.
-- **Stories:** `Live` gains In game (pulse) / Not in game / Live status unavailable / Checking.
-- **Replaces** sukuna-gg-web's `t-live` blink + ripple.
+Wave 1 shipped these, so their specs moved into the component docs:
 
-## 4. Addition — Input `reveal` (wave 1)
+- **Badge `pulse`** → `docs/component-badge.md` (replaces sukuna-gg-web's `t-live` blink + ripple).
+- **Input `reveal`** → `docs/component-input.md` (replaces sukuna-gg-web's `PasswordInput`).
 
-- **API:** `reveal?: boolean` (only with `type="password"`, ignored otherwise) and
-  `revealLabels?: { show: string; hide: string }` (default Show / Hide; an sr-only " password" is
-  appended).
-- **Styles:** field gets `pr-20`; toggle is absolutely positioned (`right-1.5`, vertically centred)
-  with the `Button variant="ghost" size="sm"` look.
-- **Logic:** Input stays a server component. `type="password" reveal` renders `<RevealInput>`
-  from a fourth file, `input.reveal.tsx` (`'use client'`), which owns shown/hidden state and renders
-  the same styled `<input>` + toggle; the ref still reaches the `<input>` (D36).
-- **States:** pressing the toggle flips `type` password ↔ text, label Show ↔ Hide, `aria-pressed`;
-  focus stays on the toggle; the caret position is kept.
-- **A11y:** native `<button type="button">`, `aria-controls` = input id, `aria-pressed`; name
-  "Show password" / "Hide password"; never submits the form; next in Tab order after the field.
-- **Tests:** toggle flips `type` + `aria-pressed`; ignored for non-password; `revealLabels`; ref
-  reaches the input; a plain Input module still has no `'use client'` (RSC boundary test).
-- **Stories:** `PasswordReveal`.
-- **Replaces** sukuna-gg-web's `PasswordInput`.
+Wave 3's additions (Table `scroll`) will be specced here first, then moved the same way.
 
-## 5. Waves
+## 4. Waves
 
 See `docs/roadmap.md` §D8 for status. Wave 2 (`@sukunagg/charts`) and wave 3 get their own specs
 before code: `component-bar-chart.md`, `component-line-chart.md` (Line + Area),

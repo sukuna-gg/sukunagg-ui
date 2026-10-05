@@ -62,3 +62,35 @@ export const WithLabel: Story = {
     </div>
   ),
 }
+
+/** `reveal` adds a Show/Hide toggle to a password field. Only these fields load client JS. */
+export const PasswordReveal: Story = {
+  render: (args) => (
+    <div style={col}>
+      <label
+        htmlFor="pw-demo"
+        style={{ color: 'var(--sk-text)', fontFamily: 'var(--sk-font-sans)' }}
+      >
+        Password
+      </label>
+      <Input
+        {...args}
+        id="pw-demo"
+        type="password"
+        autoComplete="current-password"
+        placeholder={undefined}
+        aria-label={undefined}
+        defaultValue="hunter2-but-longer"
+        reveal
+      />
+      <Input
+        {...args}
+        type="password"
+        aria-label="New password"
+        placeholder="New password"
+        size="lg"
+        reveal
+      />
+    </div>
+  ),
+}

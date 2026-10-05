@@ -554,6 +554,8 @@ EmptyState, Input `reveal`, Badge `pulse`), wave 2 (`@sukunagg/charts`: BarChart
 colors, Line/Area with baseline/reverse/gaps, DataBar), wave 3 (icons, Table `scroll`); Donut,
 RadialGauge, Heatmap later. Tokens recorded in `tokens.md`; roadmap §D8; mechanics in D36.
 
+**Then** "lets start working on it bb" (2026-10-05) → wave 1 specs approved and built (roadmap §D8).
+
 ---
 
 ## Decisions recorded so far
@@ -594,4 +596,3 @@ RadialGauge, Heatmap later. Tokens recorded in `tokens.md`; roadmap §D8; mechan
 | Q25 | `sk-ticker` keyframe + `animate-ticker` utility for the VideoPlayer news-ticker overlay? | Proposed; blocks only the ticker variant. |
 | Q26 | Next VideoPlayer SDK adapter (dash.js, IMA/VAST ads, Cast, three.js VR) — each a separate optional peer? | Waiting; hls.js shipped. |
 | Q28 | Approve the `--vp-*` variable set (names + Sukuna-dark defaults) for `@sukuna-ui/video`? | Shipped as built with the first `@sukunagg/video` publish (Q29); renaming now = breaking release. |
-| Q32 | Review the wave 1 specs (`component-stat-tile.md`, `component-sparkline.md`, `component-empty-state.md`, Input `reveal`, Badge `pulse`) before code starts? | Specs written 2026-10-05; blocks wave 1 code. |

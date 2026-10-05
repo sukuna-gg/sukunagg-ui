@@ -173,8 +173,11 @@ const themeInline = [
 const vpGroup = (vpPrefix: string, keys: string[], skPrefix = vpPrefix) =>
   keys.map((k) => `${INDENT}--vp-${vpPrefix}${k}: var(--sk-${skPrefix}${k});`).join('\n')
 
+// Data-viz colors (danger, chart-*, heat-*) are not part of the player's theme; keep them out.
+const vpColorKeys = colorKeys.filter((k) => k !== 'danger' && !/^(chart|heat)-/.test(k))
+
 const videoPlayerBridge = [
-  vpGroup('color-', colorKeys, ''),
+  vpGroup('color-', vpColorKeys, ''),
   `${INDENT}--vp-gradient-accent: var(--sk-gradient-accent);`,
   vpGroup('font-', Object.keys(fonts)),
   vpGroup('text-', Object.keys(fontSizes)),

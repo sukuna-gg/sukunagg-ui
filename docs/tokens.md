@@ -23,7 +23,7 @@ Source: Pomo Design System (Sukuna language). Dark is the default theme. Light p
 | `--sk-text-dim` | `#9A948A` | `#5E5A52` | Secondary text |
 | `--sk-text-faint` | `#8C8479` | `#6F6B63` | Placeholders, disabled |
 | `--sk-success` | `#31C877` | `#177B46` | Done / positive |
-| `--sk-danger` | `#FF7A59` (coral) | `#B4380A` | **Approved Q31/Q32 (2026-10-05); not in `theme.css` yet (wave 1).** Worse / down: StatTile deltas, data "bad" states. Coral, not crimson, so the brand red never means "bad". Text-safe: 7.17:1 / 5.98:1 on `surface`. Not (yet) a Button/Badge variant — see D33 |
+| `--sk-danger` | `#FF7A59` (coral) | `#B4380A` | **Approved Q31/Q32 (2026-10-05).** Worse / down: StatTile deltas, data "bad" states. Coral, not crimson, so the brand red never means "bad". Text-safe: 7.17:1 / 5.98:1 on `surface`. Not (yet) a Button/Badge variant — see D33 |
 
 > **Contrast floor.** Every color used as text must clear WCAG AA — 4.5:1 (normal) / 3:1 (large or
 > non-text UI) — on `bg`, `surface` and `surface-2` in **both** themes. `text-faint` (both themes)
@@ -32,7 +32,7 @@ Source: Pomo Design System (Sukuna language). Dark is the default theme. Light p
 > Verify with `scratchpad` contrast script when changing any color token.
 | `--sk-gradient-accent` | `linear-gradient(135deg,#D8253A,#B01221)` | `linear-gradient(135deg,#D8253A,#9A0E1C)` | Wordmark, hero CTA, Button primary |
 
-## Data visualization (approved Q31/Q32, 2026-10-05 — not in `theme.css` yet; ships with charts & stats wave 1)
+## Data visualization (approved Q31/Q32, 2026-10-05)
 
 Used by `Sparkline`, `StatTile` and `@sukunagg/charts`. Apps pass their own domain colors (game
 placements, team sides) to charts as `color` props; these tokens are the library defaults.

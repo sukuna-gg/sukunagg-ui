@@ -72,6 +72,26 @@ export const Live: Story = {
   args: { tone: 'accent', dot: true, children: 'LIVE' },
 }
 
+/** `pulse` animates the dot for a live state; it is still under reduced motion. */
+export const LiveStatus: Story = {
+  render: (args) => (
+    <div style={row}>
+      <Badge {...args} tone="success" dot pulse>
+        In game · started 12 min ago
+      </Badge>
+      <Badge {...args} dot>
+        Not in game
+      </Badge>
+      <Badge {...args} dot>
+        Live status unavailable
+      </Badge>
+      <Badge {...args} dot aria-busy="true">
+        Checking live status
+      </Badge>
+    </div>
+  ),
+}
+
 export const InText: Story = {
   render: (args) => (
     <p style={{ color: 'var(--sk-text)', fontFamily: 'var(--sk-font-sans)' }}>

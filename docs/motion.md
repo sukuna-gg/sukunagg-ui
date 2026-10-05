@@ -42,9 +42,10 @@ the track, 1.4s, infinite) for indeterminate Progress. Both new tokens need no t
 | 4 | Toast | **stacked deck**: older toasts peek behind the newest (scaled, offset); hover/focus **expands** the stack; **swipe** right/down to dismiss | Base UI `--toast-index`, `--toast-offset-y`, `--toast-swipe-movement-*`, `data-expanded` |
 | 5 | Meter, Progress | determinate bar **grows in** on mount; indeterminate becomes a **sliding bar** (was a pulse) | `starting:scale-x-0` (origin-left), `animate-indeterminate` |
 | — | Dialog, AlertDialog, Popover, menus, Button, Card | **fix**: scale/translate now actually transition | rule 3 |
+| 6 | Badge (`pulse`, charts & stats wave 1, Q32) | the live dot **blinks** and a ring **ripples** out of it | Tailwind built-ins `motion-safe:animate-pulse` + `motion-safe:after:animate-ping` (no new keyframes) |
 
 Reduced motion: indicators jump, panels snap, popups/toasts appear without slide/scale, bars
-render at their value, indeterminate shows a static partial bar.
+render at their value, indeterminate shows a static partial bar, the Badge live dot is still.
 
 ## Deferred (listed so they aren't forgotten)
 

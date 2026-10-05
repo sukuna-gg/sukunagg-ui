@@ -4,7 +4,7 @@
 >
 > Legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[-]` dropped (say why)
 
-Last updated: 2026-10-05 — charts & stats (§D8, Q31/Q32): wave 1 specs written, awaiting owner review. 46 components.
+Last updated: 2026-10-05 — charts & stats wave 1 shipped in code (§D8): tokens, StatTile, Sparkline, EmptyState, Input `reveal`, Badge `pulse`. 49 components.
 Current phase: **Phase 8 (1 of 4 examples) + Phase 9 (docs/CI done; publish pending owner).** Phases 0–7 done.
 Current version: none published. Target for first publish: `0.1.0`.
 
@@ -291,14 +291,17 @@ the frame, loading matches the final size; full list in `docs/charts-and-stats.m
 
 ### Wave 1 — `@sukunagg/ui`
 
-| Item | Kind | Doc | Code |
-|---|---|---|---|
-| Tokens: `--sk-chart-1…6`, `--sk-chart-other`, `--sk-heat-1…4`, `--sk-danger` (+ theme.css utilities, contrast test) | tokens | [x] tokens.md | [ ] |
-| StatTile | static (server) | [~] written, owner review | [ ] |
-| Sparkline | static (server, CSS-sized SVG) | [~] written, owner review | [ ] |
-| EmptyState | static (server) | [~] written, owner review | [ ] |
-| Input `reveal` (client file `input.reveal.tsx`) | variant | [~] `charts-and-stats.md` §4, owner review | [ ] |
-| Badge `pulse` | variant | [~] `charts-and-stats.md` §3, owner review | [ ] |
+Specs approved by the owner ("lets start working on it", 2026-10-05). Review = owner's visual pass
+in Storybook, still pending for every row.
+
+| Item | Kind | Doc | Code | Review |
+|---|---|---|---|---|
+| Tokens: `--sk-chart-1…6`, `--sk-chart-other`, `--sk-heat-1…4`, `--sk-danger` (+ theme.css utilities, contrast test) | tokens | [x] tokens.md | [x] `tokens.ts` → `tokens.css`/`theme.css`; contrast gate +3 tests (all themes pass); kept out of the video bridge | n/a |
+| StatTile | static (server) | [x] | [x] 15 tests, 100% cov, 2.67 kB (budget 3 kB, includes Sparkline) | [ ] |
+| Sparkline | static (server, CSS-sized SVG) | [x] | [x] 21 tests, 100% cov, 1.68 kB | [ ] |
+| EmptyState | static (server) | [x] | [x] 10 tests, 100% cov, 0.60 kB | [ ] |
+| Input `reveal` (client file `input.reveal.tsx`) | variant | [x] component-input.md | [x] +6 tests, 100% cov; plain Input still server-only, 0.86 kB | [ ] |
+| Badge `pulse` | variant | [x] component-badge.md | [x] +1 test, 100% cov | [ ] |
 
 ### Wave 2 — new `@sukunagg/charts` package
 
@@ -407,3 +410,4 @@ Agents append one line per meaningful status change: `YYYY-MM-DD · <what flippe
 - 2026-09-29 · Q30 — variants wave (#12) ported onto the workspace layout: sm/md/lg size scale on Checkbox/Switch/Progress/Select/RadioGroup; Toast `tone`; Card `tone` premium + `glow` (v1.3 `interactive` kept); Tabs `variant` underline/pill + `size` + `fitted` beside `orientation` (pill/fitted horizontal-only); form `variant` filled/outline/ghost on Input/Select/Combobox/NumberField; Badge/Chip `variant` + Chip `selected`; Skeleton shimmer; Table density/striped/hoverable. Fixed the rename's docs regression (VideoPlayer back in README/llms, 46 components; generator now fails on a missing re-export). 104 + 397 unit · (feat/variants-wave-v2)
 - 2026-09-29 · Q30 — brand kit (#13) ported: brand/ = source of truth (Ember Gate mark, wordmark, lockups, favicon set, social/OG, Storybook logos, textures; excluded from Biome + npm). Showcase: full favicon set + site.webmanifest + og.svg/og.png (1200×630) and og:image:alt; Storybook manager brandImage via staticDirs → brand/storybook; README hero banner (raw GitHub URL so npm renders it too). Manual steps left for the owner: GitHub → Settings → Social preview (brand/social/github-social-preview.png) and the npm/GitHub avatar (brand/social/avatar-512.png) · (feat/brand-assets-v2)
 - 2026-10-05 · Q31/Q32 — charts & stats designed (mockup approved, revised after a sukuna-gg-web review); §D8 added; tokens approved in tokens.md; wave 1 specs written: component-stat-tile.md, component-sparkline.md, component-empty-state.md, Input `reveal` + Badge `pulse` in docs/charts-and-stats.md (merged into their component docs with the code); owner review pending, no code yet · (feat/charts-wave1-specs)
+- 2026-10-05 · Q32 — charts & stats wave 1 built: chart/heat/danger tokens (+ contrast gate), StatTile, Sparkline, EmptyState (new, exported, stories), Input `reveal` (client file `input.reveal.tsx`) and Badge `pulse` (specs merged into their component docs). 456 ui + 104 video unit tests, React 18 green, every new file 100% cov, size budgets added. Owner visual review pending · (feat/charts-wave1-specs)

@@ -189,6 +189,20 @@
     ]
   },
   {
+    "name": "EmptyState (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ EmptyState }",
+    "limit": "2 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "Drawer + deps",
     "path": "dist/index.js",
     "import": "{ Drawer }",
@@ -350,10 +364,38 @@
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
+    "name": "Sparkline (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ Sparkline }",
+    "limit": "2 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "Spinner (static, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ Spinner }",
     "limit": "2 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "StatTile (static + Sparkline, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ StatTile }",
+    "limit": "3 kB",
     "ignore": [
       "react",
       "react-dom",

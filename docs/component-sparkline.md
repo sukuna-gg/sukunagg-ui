@@ -84,10 +84,14 @@ No hover, no focus: it is a figure, not a control.
   any container width with crisp 1.5px lines. Dots are **not** SVG circles (they would stretch into
   ovals): each is an absolutely positioned `<span>` at `left: x%` / `top: ypx` inside the root, so it
   stays round at every width. `width` sets the root's inline size.
+- **`bar` and `winloss` are HTML, not SVG:** a flex row of spans (2px gap) whose heights are
+  percentages. A stretched SVG would distort their rounded corners; HTML keeps them crisp and the
+  gap a true 2px at any width.
 - Scale: min/max of the known values with 6px vertical padding so the dot + ring never clip; flat
   data maps to the middle.
-- Root gets `role="img"` + the `aria-label` (default summary); inner SVG is `aria-hidden`.
-- Path math lives in exported pure helpers (`toSegments`, `scalePoints`) so tests cover gaps and
+- Root gets `role="img"` + the `aria-label` (default summary); inner SVG is `aria-hidden`. The empty
+  state has no role: "–" is `aria-hidden` and an sr-only span says "no data" (or the `aria-label`).
+- Path math lives in exported pure helpers (`toSegments`, `scaleY`) so tests cover gaps and
   edge cases without rendering.
 
 ## 7. Styles (`sparkline.styles.tsx`)

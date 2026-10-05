@@ -15,7 +15,7 @@
 
 **SSR-safe, accessible React components for dark-first products — and for the AI agents that build them.**
 
-<!-- count -->46<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
+<!-- count -->49<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
 contrast in both themes, `prefers-reduced-motion` honored, zero runtime styling, React Server
 Components-ready, React 18 and 19. Dark is the identity; light is a mode.
 
@@ -122,6 +122,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `Dialog` | A modal dialog. | [docs/llms/dialog.md](docs/llms/dialog.md) |
 | `Divider` | A thin rule that separates content, horizontally or vertically. | [docs/llms/divider.md](docs/llms/divider.md) |
 | `Drawer` | A panel that slides in from an edge (nav, filters, details). | [docs/llms/drawer.md](docs/llms/drawer.md) |
+| `EmptyState` | Takes the place of content that isn't there: no results, nothing yet this season, a player not found, a service not answering. | [docs/llms/empty-state.md](docs/llms/empty-state.md) |
 | `Field` | Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you. | [docs/llms/field.md](docs/llms/field.md) |
 | `GradientText` | Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases. | [docs/llms/gradient-text.md](docs/llms/gradient-text.md) |
 | `HoverCard` | Preview richer context for a link without a click — a user card, a repo summary, a footnote. | [docs/llms/hover-card.md](docs/llms/hover-card.md) |
@@ -139,7 +140,9 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `ShinyText` | Sweeps a soft light band across dimmed text — for "New" flags, premium labels, and subtle CTA emphasis. | [docs/llms/shiny-text.md](docs/llms/shiny-text.md) |
 | `Skeleton` | A placeholder shimmer shown while content loads. | [docs/llms/skeleton.md](docs/llms/skeleton.md) |
 | `Slider` | Pick a number from a range by dragging or with the keyboard. | [docs/llms/slider.md](docs/llms/slider.md) |
+| `Sparkline` | A word-sized trend with no axes: a rating over the last games, matches per day, a win/loss streak. | [docs/llms/sparkline.md](docs/llms/sparkline.md) |
 | `Spinner` | An indeterminate loading indicator (CSS spin). | [docs/llms/spinner.md](docs/llms/spinner.md) |
+| `StatTile` | One headline number with what it means: a label, the value, a caption line (record, breakdown, scope) and optionally a signed change against a named period and a small trend. | [docs/llms/stat-tile.md](docs/llms/stat-tile.md) |
 | `Stepper` | Show progress through an ordered sequence of steps. | [docs/llms/stepper.md](docs/llms/stepper.md) |
 | `Switch` | An on/off toggle for an immediate setting (not form submission). | [docs/llms/switch.md](docs/llms/switch.md) |
 | `Table` | Present tabular data with Sukuna styling. | [docs/llms/table.md](docs/llms/table.md) |

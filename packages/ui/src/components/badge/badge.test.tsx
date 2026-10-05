@@ -28,6 +28,23 @@ describe('Badge', () => {
     expect(container.querySelectorAll('[aria-hidden="true"]')).toHaveLength(1)
   })
 
+  it('pulse animates the dot (motion-safe only); without dot it renders nothing', () => {
+    const { rerender, container } = render(<Badge dot>on</Badge>)
+    const dot = () => container.querySelector('[aria-hidden="true"]')
+    expect(dot()?.className).not.toContain('animate')
+    rerender(
+      <Badge dot pulse>
+        In game
+      </Badge>,
+    )
+    expect(dot()?.className).toContain('motion-safe:animate-pulse')
+    expect(dot()?.className).toContain('motion-safe:after:animate-ping')
+    expect(dot()?.className).not.toMatch(/(^|\s)animate-/)
+    rerender(<Badge pulse>In game</Badge>)
+    expect(dot()).toBeNull()
+    expect(container.firstElementChild?.hasAttribute('pulse')).toBe(false)
+  })
+
   it('does not leak variant props to the DOM', () => {
     render(
       <Badge tone="accent" variant="outline" size="sm" dot data-testid="b">

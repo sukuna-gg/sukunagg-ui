@@ -85,6 +85,101 @@ describe('Input', () => {
 
   it('hydrates without warnings', async () => {
     await expectHydrates(<Input aria-label="h" defaultValue="x" />)
+    await expectHydrates(<Input aria-label="pw" type="password" reveal defaultValue="secret" />)
+  })
+
+  describe('reveal', () => {
+    it('toggles the password between hidden and shown', async () => {
+      render(
+        <>
+          <label htmlFor="pw">Password</label>
+          <Input id="pw" type="password" reveal defaultValue="hunter2" />
+        </>,
+      )
+      const field = screen.getByLabelText('Password')
+      const toggle = screen.getByRole('button', { name: 'Show password' })
+      expect(field).toHaveAttribute('type', 'password')
+      expect(toggle).toHaveAttribute('aria-pressed', 'false')
+      expect(toggle).toHaveAttribute('aria-controls', 'pw')
+      expect(toggle).toHaveAttribute('type', 'button')
+      await userEvent.click(toggle)
+      expect(field).toHaveAttribute('type', 'text')
+      expect(screen.getByRole('button', { name: 'Hide password' })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      )
+      expect(field).toHaveValue('hunter2')
+      await userEvent.click(toggle)
+      expect(field).toHaveAttribute('type', 'password')
+    })
+
+    it('is ignored for non-password types', () => {
+      render(<Input aria-label="email" type="email" reveal />)
+      expect(screen.queryByRole('button')).toBeNull()
+    })
+
+    it('takes translated labels and generates an id when none is given', () => {
+      render(
+        <Input
+          aria-label="Contraseña"
+          type="password"
+          reveal
+          revealLabels={{ show: 'Mostrar', hide: 'Ocultar' }}
+        />,
+      )
+      const toggle = screen.getByRole('button', { name: 'Mostrar password' })
+      const field = screen.getByLabelText('Contraseña')
+      expect(field.id).not.toBe('')
+      expect(toggle).toHaveAttribute('aria-controls', field.id)
+    })
+
+    it('keeps styles, invalid and ref on the input; className wins; never submits', async () => {
+      const ref = createRef<HTMLInputElement>()
+      let submitted = false
+      render(
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            submitted = true
+          }}
+        >
+          <Input
+            ref={ref}
+            aria-label="pw"
+            type="password"
+            reveal
+            invalid
+            size="lg"
+            className="pr-24"
+          />
+        </form>,
+      )
+      expect(ref.current).toBeInstanceOf(HTMLInputElement)
+      expect(ref.current).toHaveAttribute('aria-invalid', 'true')
+      expect(ref.current?.className).toContain('h-12')
+      expect(ref.current?.className).toContain('pr-24')
+      expect(ref.current?.className).not.toContain('pr-20')
+      await userEvent.click(screen.getByRole('button'))
+      expect(submitted).toBe(false)
+    })
+
+    it('disables the toggle with the field', () => {
+      render(<Input aria-label="pw" type="password" reveal disabled />)
+      expect(screen.getByRole('button')).toBeDisabled()
+    })
+
+    it('is accessible in both themes', async () => {
+      for (const theme of ['dark', 'light'] as const) {
+        const { container, unmount } = render(
+          <div data-theme={theme}>
+            <label htmlFor="pw2">Password</label>
+            <Input id="pw2" type="password" reveal />
+          </div>,
+        )
+        await expectAccessible(container)
+        unmount()
+      }
+    })
   })
 
   it('is accessible in both themes', async () => {

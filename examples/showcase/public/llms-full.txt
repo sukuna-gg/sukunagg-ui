@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt). This file concatenates every component page plus the design-token reference; the index is at https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt.
 
-@sukunagg/ui is a React 18/19 component library: 46 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 49 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -31,6 +31,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - Dialog: A modal dialog.
 - Divider: A thin rule that separates content, horizontally or vertically.
 - Drawer: A panel that slides in from an edge (nav, filters, details).
+- EmptyState: Takes the place of content that isn't there: no results, nothing yet this season, a player not found, a service not answering.
 - Field: Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you.
 - GradientText: Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases.
 - HoverCard: Preview richer context for a link without a click — a user card, a repo summary, a footnote.
@@ -48,7 +49,9 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - ShinyText: Sweeps a soft light band across dimmed text — for "New" flags, premium labels, and subtle CTA emphasis.
 - Skeleton: A placeholder shimmer shown while content loads.
 - Slider: Pick a number from a range by dragging or with the keyboard.
+- Sparkline: A word-sized trend with no axes: a rating over the last games, matches per day, a win/loss streak.
 - Spinner: An indeterminate loading indicator (CSS spin).
+- StatTile: One headline number with what it means: a label, the value, a caption line (record, breakdown, scope) and optionally a signed change against a named period and a small trend.
 - Stepper: Show progress through an ordered sequence of steps.
 - Switch: An on/off toggle for an immediate setting (not form submission).
 - Table: Present tabular data with Sukuna styling.
@@ -290,10 +293,11 @@ export interface BadgeProps extends ComponentPropsWithoutRef<'span'> {
   variant?: 'soft' | 'solid' | 'outline'                // unset = each tone's original look
   size?: 'sm' | 'md'                                    // default 'md'
   dot?: boolean   // leading status dot in currentColor
+  pulse?: boolean // charts & stats wave 1 (Q32): animates the dot for a live state ("In game"). Needs `dot`.
 }
 ```
 
-Extends `<span>`; adds only `tone`, `variant`, `size`, `dot`. Pill radius is fixed (not a prop).
+Extends `<span>`; adds only `tone`, `variant`, `size`, `dot`, `pulse`. Pill radius is fixed (not a prop).
 
 ## Variants & tokens
 
@@ -320,9 +324,15 @@ Base: `inline-flex items-center justify-center rounded-pill font-semibold whites
 
 Static; no interactive states.
 
+**`pulse` (Q32):** the dot blinks (`motion-safe:animate-pulse`) and a ring ripples out of it
+(`after:` pseudo-element in `currentColor`, `motion-safe:after:animate-ping`). Both are Tailwind's
+built-in keyframes, so no new motion tokens. Under reduced motion the dot is still. `pulse`
+without `dot` does nothing (documented in the prop's TSDoc).
+
 ## Accessibility
 
 - [ ] The dot is decorative (`aria-hidden`); status is conveyed by the text, never color/dot alone.
+- [ ] `pulse` stops under `prefers-reduced-motion` (WCAG 2.3.3); it never flashes more than 3×/s.
 - [ ] `accent` text on the crimson gradient meets contrast in both themes (shares the Button
       primary treatment; verify).
 - [ ] Not a `button`/`a` — no role, not focusable. Clickable status → wrap in Button/Link.
@@ -1159,6 +1169,74 @@ closed · open (slides in from `side`, focus trapped) · enter/leave transforms.
 
 ---
 
+# EmptyState — @sukunagg/ui
+
+> Takes the place of content that isn't there: no results, nothing yet this season, a player not found, a service not answering.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { EmptyState } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/empty-state · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-empty-state.md
+
+## Purpose
+
+Takes the place of content that isn't there: no results, nothing yet this season, a player not
+found, a service not answering. It says what happened, then offers a way forward. The same
+component, at `size="sm"`, is what charts show inside an empty plot.
+
+Copy rule (goes in the TSDoc): say what happened, then what to do. No error codes, no blame.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+
+export interface EmptyStateProps extends Omit<ComponentPropsWithoutRef<'div'>, 'title'> {
+  title: ReactNode
+  /** Decorative glyph in the rounded square (aria-hidden). */
+  icon?: ReactNode
+  /** Body text: the reason, then what to do. */
+  children?: ReactNode
+  /** Buttons/links. Always give a way forward when there is one. */
+  actions?: ReactNode
+  /** Heading element for `title`. Default 'h3'. */
+  headingLevel?: 'h2' | 'h3' | 'h4'
+  /** 'md' for a page section, 'sm' inside a chart or table cell area. Default 'md'. */
+  size?: 'sm' | 'md'
+  /** 'panel' draws the surface + border (stand-alone); 'plain' sits inside an existing card. Default 'plain'. */
+  surface?: 'plain' | 'panel'
+}
+```
+
+Not here: illustrations (pass any node as `icon`), automatic live-region behaviour (pass
+`role="status"` or `role="alert"` yourself when the state appears after an action).
+
+## Variants & tokens
+
+| Slot | md | sm |
+|---|---|---|
+| root | `flex flex-col items-center text-center gap-3 px-6 py-10` | `gap-1.5 px-4 py-3` |
+| icon | `size-12 rounded-lg bg-surface-2 text-text-dim grid place-items-center` (glyph 22px) | `size-9 rounded-md` (glyph 18px) |
+| title | `font-display font-extrabold font-stretch-[112%] text-lg text-text text-balance` | `font-sans font-semibold text-md` |
+| description | `text-sm text-text-dim max-w-[46ch]` | `text-xs max-w-[34ch]` |
+| actions | `flex flex-wrap justify-center gap-2` | same, `Button size="sm"` recommended |
+
+`surface="panel"`: `bg-surface border border-line rounded-lg`.
+
+## States
+
+Static. The component *is* a state; it has none of its own.
+
+## Accessibility
+
+- [ ] Title is a real heading at the level the page needs (`headingLevel`).
+- [ ] Icon is decorative (`aria-hidden`); the title carries the meaning.
+- [ ] Actions are real buttons/links (consumer passes `Button`), reachable in order after the text.
+- [ ] Text ≥ 4.5:1 in all themes.
+- [ ] When shown in response to an action, the consumer adds `role="status"` (documented in TSDoc).
+
+---
+
 # Field — @sukunagg/ui
 
 > Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you.
@@ -1408,6 +1486,10 @@ export interface InputProps extends Omit<ComponentPropsWithoutRef<'input'>, 'siz
   variant?: 'filled' | 'outline' | 'ghost'   // default 'filled' (the original look)
   size?: 'sm' | 'md' | 'lg'   // default 'md' (shadows the native numeric `size` attr — omitted)
   invalid?: boolean           // sets aria-invalid + crimson border
+  /** Q32: with type="password", adds a Show/Hide toggle inside the field. Ignored for other types. */
+  reveal?: boolean
+  /** Toggle text for i18n. Default { show: 'Show', hide: 'Hide' }; sr-only " password" is appended. */
+  revealLabels?: { show: string; hide: string }
 }
 ```
 
@@ -1439,6 +1521,9 @@ The same `variant` map is shared by Select, Combobox and NumberField so the form
 
 Sukuna has one red (crimson), so the invalid border reuses `--sk-accent` (see `docs/questions.md` Q10).
 
+**`reveal` (Q32):** the field gets right padding (`pr-20`) and an absolutely positioned toggle —
+`Button variant="ghost" size="sm"` look, vertically centred, `right-1.5`.
+
 ## States
 
 | State | Behavior |
@@ -1447,6 +1532,7 @@ Sukuna has one red (crimson), so the invalid border reuses `--sk-accent` (see `d
 | focus-visible | 2px `--sk-accent-glow` ring, border → accent |
 | invalid | crimson border always; `aria-invalid="true"` |
 | disabled | `opacity .45`, `cursor: not-allowed` (native disabled) |
+| reveal: hidden → shown | toggle press flips `type` password ↔ text, label Show ↔ Hide, `aria-pressed`; focus stays on the toggle; the value is untouched. Disabled with the field. |
 
 ## Accessibility
 
@@ -1455,6 +1541,9 @@ Sukuna has one red (crimson), so the invalid border reuses `--sk-accent` (see `d
 - [ ] `invalid` sets `aria-invalid`; pair with `aria-describedby` pointing at the error text.
 - [ ] Placeholder is not a label (it disappears on input); never rely on it alone.
 - [ ] Focus ring ≥ 3:1 against the surface in both themes.
+- [ ] Reveal toggle is a native `<button type="button">` with `aria-controls` (the input id) and
+      `aria-pressed`; its name is "Show password" / "Hide password" (visible text + sr-only suffix).
+- [ ] The toggle never submits the form and is reachable by Tab right after the field.
 
 ---
 
@@ -2267,6 +2356,86 @@ default · dragging · focus-visible ring on thumb · disabled.
 
 ---
 
+# Sparkline — @sukunagg/ui
+
+> A word-sized trend with no axes: a rating over the last games, matches per day, a win/loss streak.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { Sparkline } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/sparkline · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-sparkline.md
+
+## Purpose
+
+A word-sized trend with no axes: a rating over the last games, matches per day, a win/loss
+streak. It sits inside a `StatTile`, a `Table` cell or a line of text and is read at a glance;
+anything that needs axes, hover or exact values is a chart from `@sukunagg/charts`.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef } from 'react'
+
+export interface SparklineProps extends Omit<ComponentPropsWithoutRef<'span'>, 'children'> {
+  /** Oldest → newest. `null` = missing point: the line breaks there (never drawn as 0). */
+  data: readonly (number | null)[]
+  variant?: 'line' | 'area' | 'bar' | 'winloss'   // default 'line'
+  /** CSS length. Default '100%' of the container (min 48px). */
+  width?: number | string
+  height?: number            // px, default 28
+  /** Mark color as a CSS color value, e.g. 'var(--l-win)'. Default: line/area/bar
+   *  `--sk-text-faint` (de-emphasis) with the last point in `--sk-chart-1`. */
+  color?: string
+  /** winloss only: colors for wins (> 0) and losses (< 0). Defaults `--sk-chart-1` / `--sk-text-faint`. */
+  winColor?: string
+  lossColor?: string
+  /** Mark the latest point (dot on line/area, accent bar on bar). Default true. */
+  highlightLast?: boolean
+  /** Shown when `data` has no numbers. Default '–'. */
+  emptyLabel?: string
+  /** Accessible summary. Default: "Trend from {first} to {last}" / "{w} wins, {l} losses". */
+  'aria-label'?: string
+}
+```
+
+Deliberately **not** here: axes, tooltips, multiple series, min/max reference lines (those are
+charts). `winloss` reads only the sign of each value (`> 0` win, `< 0` loss, `0`/`null` = gap).
+
+## Variants & tokens
+
+| Variant | Marks |
+|---|---|
+| line | 1.5px stroke, round caps/joins; last point = 6px dot in `--sk-chart-1` with a 2px `--sk-surface` ring |
+| area | line + fill of the line color at 12% opacity down to the bottom edge |
+| bar | bars 2px apart, 1.5px rounded top, square at the baseline; older bars `--sk-text-faint` at 55%, last bar `--sk-chart-1` |
+| winloss | 6px bars, 2px apart: wins rise from the middle, losses hang below it; position carries the result, color only reinforces it |
+
+Every color is a CSS value (`var(--sk-…)` or a consumer `var(--app-…)`) set through a CSS custom
+property on the root (`--sk-spark-color`, `--sk-spark-win`, `--sk-spark-loss`) and read by literal
+utilities (`stroke-(--sk-spark-color)`). No class name is ever built from a value (rule 7).
+
+## States
+
+| State | Behavior |
+|---|---|
+| data | as above |
+| missing points | `null` breaks the line/area into segments; a lone known point between gaps is a 3px dot |
+| one point | a single dot at the right edge (no line) |
+| empty (`[]` or all `null`) | renders `emptyLabel` ("–") in `--sk-text-faint` plus sr-only "no data"; same height so rows don't jump |
+| flat (all equal) | a horizontal line through the middle |
+
+No hover, no focus: it is a figure, not a control.
+
+## Accessibility
+
+- [ ] Root `role="img"` with a meaningful `aria-label`; the SVG is `aria-hidden`.
+- [ ] Default label says the range ("Trend from 1,810 to 1,902") or the record ("6 wins, 4 losses").
+- [ ] Empty state has sr-only text ("no data"), not just a dash.
+- [ ] Win/loss is readable without color (up vs down).
+- [ ] Marks ≥ 3:1 against `surface` in all themes (tokens are validated; custom colors are the app's call).
+
+---
+
 # Spinner — @sukunagg/ui
 
 > An indeterminate loading indicator (CSS spin).
@@ -2304,6 +2473,112 @@ Static; always spinning while mounted.
 
 - [ ] `role="status"` + `aria-label` announces loading; the SVG is `aria-hidden`.
 - [ ] Motion is decorative; respect reduced-motion at the app level if needed.
+
+---
+
+# StatTile — @sukunagg/ui
+
+> One headline number with what it means: a label, the value, a caption line (record, breakdown, scope) and optionally a signed change against a named period and a small trend.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { StatTile } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/stat-tile · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-stat-tile.md
+
+## Purpose
+
+One headline number with what it means: a label, the value, a caption line (record, breakdown,
+scope) and optionally a signed change against a named period and a small trend. Used for the
+summary row of a stats page ("Win rate 58.3% · 35W 25L", "KDA 3.42 · 7.1 / 4.2 / 7.3").
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+
+export interface StatTileDelta {
+  /** Signed change. 0 renders "No change". */
+  value: number
+  /** What it's compared to: "vs last act", "since yesterday". */
+  period?: ReactNode
+  format?: Intl.NumberFormatOptions   // e.g. { maximumFractionDigits: 1 }; unit text goes in `unit`
+  unit?: string                       // " pts", "%", " LP" — appended after the number
+  /** true when down is good (deaths, churn, latency): flips the good/bad color. */
+  invert?: boolean
+}
+
+export interface StatTileProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
+  label: ReactNode
+  /** Locale for numbers; fixed so server and browser print the same string. Default 'en-US'. */
+  locale?: string
+  /** number → formatted with `format`; string/node → shown as is; null → "—" (missing, never 0). */
+  value: number | string | ReactNode | null
+  format?: Intl.NumberFormatOptions
+  /** Line under the value: record, breakdown, or why the value is missing. */
+  caption?: ReactNode
+  /** Value color from your own thresholds. Default 'default'. */
+  tone?: 'default' | 'positive' | 'negative' | 'premium'
+  /** Any CSS color for the value (app palettes, e.g. 'var(--l-great)'); overrides `tone`. */
+  valueColor?: string
+  delta?: StatTileDelta
+  /** Sparkline data, oldest → newest (nulls allowed). */
+  trend?: readonly (number | null)[]
+  size?: 'md' | 'lg'                 // default 'md'; 'lg' = hero (52px value, full-width trend)
+  /** Default 'display' (Archivo 900 italic, expanded) per owner (Q32). 'sans' for dense admin UIs. */
+  valueFont?: 'display' | 'sans'
+  /** Screen-reader text for a null value. Default 'Not reported'. */
+  missingLabel?: string
+  /** Skeleton of the same size; sets aria-busy. */
+  loading?: boolean
+}
+```
+
+Deliberately **not** here: count-up animation (wrap the value in `Counter` yourself — it's a
+client component), click behaviour (wrap in a link or use `Card interactive`), threshold logic
+(the app knows what "good" is; pass `tone`).
+
+## Variants & tokens
+
+| Slot | Utilities / tokens |
+|---|---|
+| root | `bg-surface border border-line rounded-lg px-4 py-3.5 flex flex-col gap-1.5 min-w-0` |
+| label | `font-display italic font-extrabold uppercase tracking-[.14em] text-xs text-text-dim` |
+| value (display) | `font-display italic font-black font-stretch-expanded text-[28px] leading-none tabular-nums` |
+| value (sans) | `font-sans font-semibold text-[28px] tracking-tight leading-none` |
+| caption | `text-xs text-text-dim` |
+| delta | `text-xs font-semibold`; good `text-success`, bad `text-danger`, zero `text-text-dim`; period `text-text-faint font-normal` |
+| trend | `Sparkline` (`line`, md: up to 96px beside the value; lg: `area`, full width, 56px tall) |
+
+| tone | value color |
+|---|---|
+| default | `text-text` |
+| positive | `text-success` |
+| negative | `text-danger` |
+| premium | `text-premium` |
+
+`valueColor` sets `--sk-stat-value` on the root and the value uses `text-(--sk-stat-value)`.
+`size="lg"`: value `text-[52px]`, trend moves under the delta at full width. Archivo's `wdth` axis
+must be loaded by the app for `font-stretch-expanded` (tokens.md: the library doesn't bundle fonts).
+
+## States
+
+| State | Behavior |
+|---|---|
+| default | label, value, caption, optional delta + trend |
+| missing value (`null`) | "—" in `text-text-faint` (aria-hidden) + sr-only `missingLabel`; the caption says why ("Not reported by Riot for Set 18") |
+| no delta change (`value: 0`) | "– No change" in `text-text-dim` |
+| no trend data | the Sparkline's own empty state is skipped: the trend slot isn't rendered |
+| loading | three Skeleton bars at label/value/caption sizes, same min-height (112px md), `aria-busy="true"` |
+
+No hover/focus of its own — it is not interactive.
+
+## Accessibility
+
+- [ ] Reading order is label → value → caption → delta, so a screen reader hears a sentence.
+- [ ] Delta meaning is in words (sr-only), never only color or arrow.
+- [ ] Missing values announce `missingLabel`, not "dash".
+- [ ] Value and delta text ≥ 4.5:1 in all four themes (`success`, `danger`, `premium` are text-safe).
+- [ ] `loading` sets `aria-busy`; skeleton is `aria-hidden`.
 
 ---
 
@@ -3133,7 +3408,7 @@ Source: Pomo Design System (Sukuna language). Dark is the default theme. Light p
 | `--sk-text-dim` | `#9A948A` | `#5E5A52` | Secondary text |
 | `--sk-text-faint` | `#8C8479` | `#6F6B63` | Placeholders, disabled |
 | `--sk-success` | `#31C877` | `#177B46` | Done / positive |
-| `--sk-danger` | `#FF7A59` (coral) | `#B4380A` | **Approved Q31/Q32 (2026-10-05); not in `theme.css` yet (wave 1).** Worse / down: StatTile deltas, data "bad" states. Coral, not crimson, so the brand red never means "bad". Text-safe: 7.17:1 / 5.98:1 on `surface`. Not (yet) a Button/Badge variant — see D33 |
+| `--sk-danger` | `#FF7A59` (coral) | `#B4380A` | **Approved Q31/Q32 (2026-10-05).** Worse / down: StatTile deltas, data "bad" states. Coral, not crimson, so the brand red never means "bad". Text-safe: 7.17:1 / 5.98:1 on `surface`. Not (yet) a Button/Badge variant — see D33 |
 
 > **Contrast floor.** Every color used as text must clear WCAG AA — 4.5:1 (normal) / 3:1 (large or
 > non-text UI) — on `bg`, `surface` and `surface-2` in **both** themes. `text-faint` (both themes)
@@ -3142,7 +3417,7 @@ Source: Pomo Design System (Sukuna language). Dark is the default theme. Light p
 > Verify with `scratchpad` contrast script when changing any color token.
 | `--sk-gradient-accent` | `linear-gradient(135deg,#D8253A,#B01221)` | `linear-gradient(135deg,#D8253A,#9A0E1C)` | Wordmark, hero CTA, Button primary |
 
-## Data visualization (approved Q31/Q32, 2026-10-05 — not in `theme.css` yet; ships with charts & stats wave 1)
+## Data visualization (approved Q31/Q32, 2026-10-05)
 
 Used by `Sparkline`, `StatTile` and `@sukunagg/charts`. Apps pass their own domain colors (game
 placements, team sides) to charts as `color` props; these tokens are the library defaults.
