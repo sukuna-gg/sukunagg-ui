@@ -4,7 +4,7 @@
 >
 > Legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[-]` dropped (say why)
 
-Last updated: 2026-09-27 — v1.3 wave (§D4) + VideoPlayer W1 (§D6) on branch `feat/v1.3-wave`. 46 components.
+Last updated: 2026-10-05 — charts & stats (§D8, Q31/Q32): wave 1 specs written, awaiting owner review. 46 components.
 Current phase: **Phase 8 (1 of 4 examples) + Phase 9 (docs/CI done; publish pending owner).** Phases 0–7 done.
 Current version: none published. Target for first publish: `0.1.0`.
 
@@ -280,6 +280,48 @@ Spec: `docs/theming.md` (owner request Q24: Midnight + Paper, TS config + CLI, `
 | T6 | Storybook toolbar + showcase picker + docs (tokens.md, README) | [ ] |
 | T7 | Browser tests: midnight/paper render; `system` follows emulated color scheme | [ ] |
 
+## D8. Charts & stats (Q31, Q32)
+
+Owner request "let's design components for graphs, stats" (2026-10-05). Designed from a mockup the
+owner approved, then revised against sukuna-gg-web's real screens (Q32). Tokens approved in
+`docs/tokens.md` → "Data visualization" + `--sk-danger`. Charts take app colors as props; every
+component follows the missing-data rules (null = "—" + reason, lines break at gaps, empty keeps
+the frame, loading matches the final size; full list in `docs/charts-and-stats.md`). Same contract as v1: docs-first, three-file split,
+≥90% cov, axe, stories.
+
+### Wave 1 — `@sukunagg/ui`
+
+| Item | Kind | Doc | Code |
+|---|---|---|---|
+| Tokens: `--sk-chart-1…6`, `--sk-chart-other`, `--sk-heat-1…4`, `--sk-danger` (+ theme.css utilities, contrast test) | tokens | [x] tokens.md | [ ] |
+| StatTile | static (server) | [~] written, owner review | [ ] |
+| Sparkline | static (server, CSS-sized SVG) | [~] written, owner review | [ ] |
+| EmptyState | static (server) | [~] written, owner review | [ ] |
+| Input `reveal` (client file `input.reveal.tsx`) | variant | [~] `charts-and-stats.md` §4, owner review | [ ] |
+| Badge `pulse` | variant | [~] `charts-and-stats.md` §3, owner review | [ ] |
+
+### Wave 2 — new `@sukunagg/charts` package
+
+| Item | Replaces in sukuna-gg-web | Doc | Code |
+|---|---|---|---|
+| Package scaffold (workspace, tsup, size-limit, docs:build, peer `@sukunagg/ui` theme) | — | [ ] | [ ] |
+| Shared parts: axis, grid, legend, table view, `ChartTooltip` client island, plot-area EmptyState | — | [ ] | [ ] |
+| BarChart (grouped/stacked/horizontal, per-bar `color`, value labels) | `PlacementHistogram` | [ ] | [ ] |
+| LineChart / AreaChart (`baseline` + above/below fill, `reverse`, `band`, `null` gaps, `minPoints`) | `GoldGraph`, TODO "Placement over time" | [ ] | [ ] |
+| DataBar (bar in a table cell) | Scoreboard damage bar | [ ] | [ ] |
+
+### Wave 3 — `@sukunagg/ui`
+
+| Item | Doc | Code |
+|---|---|---|
+| Icon set (`@sukunagg/ui/icons`, per-icon tree-shaking) | [ ] | [ ] |
+| Table `scroll` (sideways scroll, focusable only while overflowing) | [ ] | [ ] |
+
+### Later — when a page needs them
+
+DonutChart (3 colors + Other), RadialGauge, Heatmap (tracked vs untracked days). Designed in the
+mockup; no spec until a consumer needs one.
+
 ---
 
 ## E. Update log
@@ -364,3 +406,4 @@ Agents append one line per meaningful status change: `YYYY-MM-DD · <what flippe
 - 2026-09-29 · Q29 — repo transferred to `sukuna-gg/sukuna-ui`; packages renamed `sukuna-ui` → `@sukunagg/ui` (0.10.0) and `@sukuna-ui/video` → `@sukunagg/video` (0.1.0) across code, CSS paths, TSDoc, docs, examples, CI; first publish of both from the owner's machine. 104 + 381 unit, 60 Playwright, examples + standalone smoke green · (docs/video-standalone-plan)
 - 2026-09-29 · Q30 — variants wave (#12) ported onto the workspace layout: sm/md/lg size scale on Checkbox/Switch/Progress/Select/RadioGroup; Toast `tone`; Card `tone` premium + `glow` (v1.3 `interactive` kept); Tabs `variant` underline/pill + `size` + `fitted` beside `orientation` (pill/fitted horizontal-only); form `variant` filled/outline/ghost on Input/Select/Combobox/NumberField; Badge/Chip `variant` + Chip `selected`; Skeleton shimmer; Table density/striped/hoverable. Fixed the rename's docs regression (VideoPlayer back in README/llms, 46 components; generator now fails on a missing re-export). 104 + 397 unit · (feat/variants-wave-v2)
 - 2026-09-29 · Q30 — brand kit (#13) ported: brand/ = source of truth (Ember Gate mark, wordmark, lockups, favicon set, social/OG, Storybook logos, textures; excluded from Biome + npm). Showcase: full favicon set + site.webmanifest + og.svg/og.png (1200×630) and og:image:alt; Storybook manager brandImage via staticDirs → brand/storybook; README hero banner (raw GitHub URL so npm renders it too). Manual steps left for the owner: GitHub → Settings → Social preview (brand/social/github-social-preview.png) and the npm/GitHub avatar (brand/social/avatar-512.png) · (feat/brand-assets-v2)
+- 2026-10-05 · Q31/Q32 — charts & stats designed (mockup approved, revised after a sukuna-gg-web review); §D8 added; tokens approved in tokens.md; wave 1 specs written: component-stat-tile.md, component-sparkline.md, component-empty-state.md, Input `reveal` + Badge `pulse` in docs/charts-and-stats.md (merged into their component docs with the code); owner review pending, no code yet · (feat/charts-wave1-specs)
