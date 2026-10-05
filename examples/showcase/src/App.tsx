@@ -1,4 +1,12 @@
-import { Component, type ErrorInfo, type ReactNode, useEffect, useId, useState } from 'react'
+import {
+  Component,
+  type ErrorInfo,
+  type ReactNode,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react'
 // Consume the library from source so the explorer shares one module instance with the stories
 // (matters for context components like Toast) and always reflects the current code.
 import { Badge, Button, Card, Text, ToastProvider } from '../../../packages/ui/src/index'
@@ -95,7 +103,38 @@ function Header({ theme, onToggle }: { theme: 'dark' | 'light'; onToggle: () => 
   )
 }
 
+/** Rotates a quarter turn when its `<details>` (named group `sec`) is open. */
+function SectionChevron() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="size-3 shrink-0 transition-transform duration-fast ease-sukuna group-open/sec:rotate-90 motion-reduce:transition-none"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M9 6l6 6-6 6" />
+    </svg>
+  )
+}
+
+/** Native disclosure toggle: works before hydration, keyboard + screen reader for free. */
+const summaryClass =
+  'flex cursor-pointer list-none items-center gap-1.5 rounded-md select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring [&::-webkit-details-marker]:hidden'
+
 function Sidebar({ active }: { active: string }) {
+  const navRef = useRef<HTMLElement>(null)
+  // Opening a component inside a collapsed section re-opens that section, so the current item
+  // is never hidden. Sections the person collapsed otherwise stay collapsed.
+  useEffect(() => {
+    navRef.current
+      ?.querySelector(`a[href="#${active}"]`)
+      ?.closest('details')
+      ?.setAttribute('open', '')
+  }, [active])
   const linkBase =
     'block rounded-md px-3 py-1.5 text-sm no-underline transition-colors duration-fast'
   const itemClass = (isActive: boolean) =>
@@ -104,34 +143,32 @@ function Sidebar({ active }: { active: string }) {
       : `${linkBase} text-text-dim hover:bg-line-soft hover:text-text`
   return (
     <nav
+      ref={navRef}
       aria-label="Components"
       className="sticky top-[57px] hidden h-[calc(100vh-57px)] w-56 shrink-0 overflow-y-auto border-r border-line py-6 pr-4 md:block"
     >
       <a href={`#${OVERVIEW}`} className={itemClass(active === OVERVIEW)}>
         Overview
       </a>
-      {sections.map((s) => {
-        const headingId = `nav-${s.name.toLowerCase()}`
-        return (
-          <div key={s.name}>
-            <p
-              id={headingId}
-              className="mt-5 mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-text-faint"
-            >
-              {s.name} · {s.components.length}
-            </p>
-            <ul aria-labelledby={headingId} className="list-none p-0">
-              {s.components.map((c) => (
-                <li key={c.slug}>
-                  <a href={`#${c.slug}`} className={itemClass(active === c.slug)}>
-                    {c.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )
-      })}
+      {sections.map((s) => (
+        <details key={s.name} open className="group/sec mt-5">
+          <summary
+            className={`${summaryClass} px-3 py-1 text-xs font-semibold uppercase tracking-wider text-text-faint hover:text-text-dim`}
+          >
+            <SectionChevron />
+            {s.name} · {s.components.length}
+          </summary>
+          <ul className="mt-1 list-none p-0">
+            {s.components.map((c) => (
+              <li key={c.slug}>
+                <a href={`#${c.slug}`} className={itemClass(active === c.slug)}>
+                  {c.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details>
+      ))}
     </nav>
   )
 }
@@ -208,17 +245,13 @@ function Overview() {
       </div>
 
       {sections.map((s) => (
-        <section key={s.name} aria-label={s.name} className="mt-8">
-          <Text
-            as="h2"
-            size="xs"
-            weight="semibold"
-            tone="faint"
-            tracking="eyebrow"
-            className="mb-3"
-          >
-            {s.name} · {s.components.length}
-          </Text>
+        <details key={s.name} open className="group/sec mt-8">
+          <summary className={`${summaryClass} mb-3 w-fit text-text-faint`}>
+            <SectionChevron />
+            <Text as="h2" size="xs" weight="semibold" tone="faint" tracking="eyebrow">
+              {s.name} · {s.components.length}
+            </Text>
+          </summary>
           <div className="flex flex-wrap gap-2">
             {s.components.map((c) => (
               <a
@@ -235,7 +268,7 @@ function Overview() {
               </a>
             ))}
           </div>
-        </section>
+        </details>
       ))}
     </div>
   )
