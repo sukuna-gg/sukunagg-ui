@@ -36,9 +36,9 @@ import { fileURLToPath } from 'node:url'
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
 /** The published `@sukunagg/ui` package inside the Bun workspace. */
 const PKG = join(ROOT, 'packages/ui')
-const REPO_URL = 'https://github.com/sukuna-gg/sukuna-ui'
+const REPO_URL = 'https://github.com/sukuna-gg/sukunagg-ui'
 /** Raw file base — real Markdown over HTTP, live today, no deployment required. */
-const RAW_URL = 'https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main'
+const RAW_URL = 'https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main'
 
 const pkg = JSON.parse(readFileSync(join(PKG, 'package.json'), 'utf8')) as {
   name: string

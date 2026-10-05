@@ -13,81 +13,81 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 
 ## Getting started
 
-- [README](https://github.com/sukuna-gg/sukuna-ui#readme): install, setup (Tailwind or precompiled CSS), theming, RSC notes, performance guidance
-- [Full docs in one file](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms-full.txt): every component page concatenated — paste this URL into your agent for complete context
+- [README](https://github.com/sukuna-gg/sukunagg-ui#readme): install, setup (Tailwind or precompiled CSS), theming, RSC notes, performance guidance
+- [Full docs in one file](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms-full.txt): every component page concatenated — paste this URL into your agent for complete context
 
 ## Components
 
-- [Accordion](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/accordion.md): Vertically stacked, expandable sections.
-- [Alert](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/alert.md): An inline message that draws attention to information, success, a caution, or an error.
-- [AlertDialog](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/alert-dialog.md): Ask the user to confirm something that is hard to undo ("Delete project?", "Discard changes?").
-- [Avatar](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/avatar.md): A user/entity image with a graceful fallback (initials or icon) while loading or on error.
-- [Badge](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/badge.md): A small, pill-shaped label for status and metadata — "LIVE", counts, tags.
-- [Breadcrumbs](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/breadcrumbs.md): Show the path to the current page and let users jump back up it.
-- [Button](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/button.md): Triggers an action.
-- [Card](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/card.md): A surface container that groups related content on an elevation.
-- [Carousel](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/carousel.md): A horizontal, one-slide-at-a-time content carousel for images, cards, or arbitrary nodes — the gap Slider (a range input) doesn't fill.
-- [Checkbox](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/checkbox.md): A boolean checkbox.
-- [Chip](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/chip.md): A compact token for filters, selections, or tags — optionally removable.
-- [Collapsible](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/collapsible.md): A single disclosure: "Show advanced options", "Read more", a sidebar group.
-- [Combobox](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/combobox.md): A text input with a filtered list of suggestions (free-text autocomplete).
-- [ContextMenu](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/context-menu.md): Offer contextual actions where the pointer is — right-click on desktop, long-press on touch.
-- [Counter](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/counter.md): Animates a number from a start to a target value — for stat tiles, KPIs, pricing, and dashboards.
-- [Dialog](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/dialog.md): A modal dialog.
-- [Divider](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/divider.md): A thin rule that separates content, horizontally or vertically.
-- [Drawer](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/drawer.md): A panel that slides in from an edge (nav, filters, details).
-- [EmptyState](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/empty-state.md): Takes the place of content that isn't there: no results, nothing yet this season, a player not found, a service not answering.
-- [Field](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/field.md): Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you.
-- [GradientText](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/gradient-text.md): Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases.
-- [HoverCard](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/hover-card.md): Preview richer context for a link without a click — a user card, a repo summary, a footnote.
-- [Icon](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/icon.md): A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links.
-- [Input](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/input.md): A single-line text input.
-- [Menu](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/menu.md): A dropdown menu of actions triggered by a button.
-- [Meter](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/meter.md): Show a scalar measurement within a known range: storage used, quota, password strength, a score.
-- [NumberField](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/number-field.md): Enter a number precisely.
-- [Pagination](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/pagination.md): Navigate between pages of results, with first/last always shown and ellipses in between.
-- [Popover](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/popover.md): Show a small, interactive panel next to the element that opened it — filters, quick settings, a share box, a date picker later.
-- [Progress](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/progress.md): A horizontal progress bar, determinate or indeterminate.
-- [RadioGroup](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/radio-group.md): Choose one option from a small set.
-- [RowActions](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/row-actions.md): Every data table eventually needs a per-row "Edit / Duplicate / Delete" menu.
-- [ScrollArea](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/scroll-area.md): Give a bounded region (a list, a code block, a sidebar) an overlay scrollbar that looks the same in every browser and matches the Sukuna surface, instead of the OS default.
-- [Select](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/select.md): A single-select dropdown.
-- [ShinyText](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/shiny-text.md): Sweeps a soft light band across dimmed text — for "New" flags, premium labels, and subtle CTA emphasis.
-- [Skeleton](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/skeleton.md): A placeholder shimmer shown while content loads.
-- [Slider](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/slider.md): Pick a number from a range by dragging or with the keyboard.
-- [Sparkline](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/sparkline.md): A word-sized trend with no axes: a rating over the last games, matches per day, a win/loss streak.
-- [Spinner](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/spinner.md): An indeterminate loading indicator (CSS spin).
-- [StatTile](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/stat-tile.md): One headline number with what it means: a label, the value, a caption line (record, breakdown, scope) and optionally a signed change against a named period and a small trend.
-- [Stepper](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/stepper.md): Show progress through an ordered sequence of steps.
-- [Switch](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/switch.md): An on/off toggle for an immediate setting (not form submission).
-- [Table](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/table.md): Present tabular data with Sukuna styling.
-- [Tabs](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/tabs.md): Switch between panels of related content.
-- [Text](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/text.md): The typographic primitive.
-- [Textarea](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/textarea.md): Multi-line free text: comments, descriptions, messages.
-- [Toast](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/toast.md): Transient notifications.
-- [ToggleGroup](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/toggle-group.md): Pick one option from a small, mutually-exclusive set (segmented control), or toggle several independent options (a formatting toolbar).
-- [Tooltip](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/tooltip.md): A hover/focus tooltip for supplementary text.
-- [VideoPlayer](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/video-player.md): Plays a single video with Sukuna-branded controls instead of each browser's native chrome, so video looks the same in Chrome, Safari and Firefox and matches the rest of the library.
+- [Accordion](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/accordion.md): Vertically stacked, expandable sections.
+- [Alert](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/alert.md): An inline message that draws attention to information, success, a caution, or an error.
+- [AlertDialog](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/alert-dialog.md): Ask the user to confirm something that is hard to undo ("Delete project?", "Discard changes?").
+- [Avatar](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/avatar.md): A user/entity image with a graceful fallback (initials or icon) while loading or on error.
+- [Badge](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/badge.md): A small, pill-shaped label for status and metadata — "LIVE", counts, tags.
+- [Breadcrumbs](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/breadcrumbs.md): Show the path to the current page and let users jump back up it.
+- [Button](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/button.md): Triggers an action.
+- [Card](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/card.md): A surface container that groups related content on an elevation.
+- [Carousel](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/carousel.md): A horizontal, one-slide-at-a-time content carousel for images, cards, or arbitrary nodes — the gap Slider (a range input) doesn't fill.
+- [Checkbox](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/checkbox.md): A boolean checkbox.
+- [Chip](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/chip.md): A compact token for filters, selections, or tags — optionally removable.
+- [Collapsible](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/collapsible.md): A single disclosure: "Show advanced options", "Read more", a sidebar group.
+- [Combobox](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/combobox.md): A text input with a filtered list of suggestions (free-text autocomplete).
+- [ContextMenu](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/context-menu.md): Offer contextual actions where the pointer is — right-click on desktop, long-press on touch.
+- [Counter](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/counter.md): Animates a number from a start to a target value — for stat tiles, KPIs, pricing, and dashboards.
+- [Dialog](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/dialog.md): A modal dialog.
+- [Divider](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/divider.md): A thin rule that separates content, horizontally or vertically.
+- [Drawer](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/drawer.md): A panel that slides in from an edge (nav, filters, details).
+- [EmptyState](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/empty-state.md): Takes the place of content that isn't there: no results, nothing yet this season, a player not found, a service not answering.
+- [Field](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/field.md): Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you.
+- [GradientText](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/gradient-text.md): Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases.
+- [HoverCard](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/hover-card.md): Preview richer context for a link without a click — a user card, a repo summary, a footnote.
+- [Icon](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/icon.md): A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links.
+- [Input](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/input.md): A single-line text input.
+- [Menu](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/menu.md): A dropdown menu of actions triggered by a button.
+- [Meter](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/meter.md): Show a scalar measurement within a known range: storage used, quota, password strength, a score.
+- [NumberField](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/number-field.md): Enter a number precisely.
+- [Pagination](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/pagination.md): Navigate between pages of results, with first/last always shown and ellipses in between.
+- [Popover](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/popover.md): Show a small, interactive panel next to the element that opened it — filters, quick settings, a share box, a date picker later.
+- [Progress](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/progress.md): A horizontal progress bar, determinate or indeterminate.
+- [RadioGroup](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/radio-group.md): Choose one option from a small set.
+- [RowActions](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/row-actions.md): Every data table eventually needs a per-row "Edit / Duplicate / Delete" menu.
+- [ScrollArea](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/scroll-area.md): Give a bounded region (a list, a code block, a sidebar) an overlay scrollbar that looks the same in every browser and matches the Sukuna surface, instead of the OS default.
+- [Select](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/select.md): A single-select dropdown.
+- [ShinyText](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/shiny-text.md): Sweeps a soft light band across dimmed text — for "New" flags, premium labels, and subtle CTA emphasis.
+- [Skeleton](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/skeleton.md): A placeholder shimmer shown while content loads.
+- [Slider](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/slider.md): Pick a number from a range by dragging or with the keyboard.
+- [Sparkline](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/sparkline.md): A word-sized trend with no axes: a rating over the last games, matches per day, a win/loss streak.
+- [Spinner](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/spinner.md): An indeterminate loading indicator (CSS spin).
+- [StatTile](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/stat-tile.md): One headline number with what it means: a label, the value, a caption line (record, breakdown, scope) and optionally a signed change against a named period and a small trend.
+- [Stepper](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/stepper.md): Show progress through an ordered sequence of steps.
+- [Switch](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/switch.md): An on/off toggle for an immediate setting (not form submission).
+- [Table](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/table.md): Present tabular data with Sukuna styling.
+- [Tabs](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/tabs.md): Switch between panels of related content.
+- [Text](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/text.md): The typographic primitive.
+- [Textarea](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/textarea.md): Multi-line free text: comments, descriptions, messages.
+- [Toast](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/toast.md): Transient notifications.
+- [ToggleGroup](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/toggle-group.md): Pick one option from a small, mutually-exclusive set (segmented control), or toggle several independent options (a formatting toolbar).
+- [Tooltip](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/tooltip.md): A hover/focus tooltip for supplementary text.
+- [VideoPlayer](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/video-player.md): Plays a single video with Sukuna-branded controls instead of each browser's native chrome, so video looks the same in Chrome, Safari and Firefox and matches the rest of the library.
 
 ## @sukunagg/charts
 
 Install `bun add @sukunagg/charts` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton). Tailwind apps add `@source "../node_modules/@sukunagg/charts/dist"`; others `import "@sukunagg/charts/styles.css"`.
 
-- [BarChart](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/bar-chart.md): Compares amounts across categories: games per placement, kills per weapon by season, revenue per plan per month, pick rate per agent.
-- [DataBar](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/data-bar.md): A number with a small bar under it, for comparing rows of a table at a glance: damage to champions in a scoreboard, pick rate in a meta table.
-- [DonutChart](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/donut-chart.md): Shows a part-to-whole split with few parts: time played by role, games by queue, plans by share.
-- [Heatmap](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/heatmap.md): A calendar of activity: one square per day, weeks as columns, darker or brighter by how much happened — games played per day, commits, sessions.
-- [LineChart](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/line-chart.md): Shows change across an ordered axis: rating over the last 30 matches, damage per round by role per week, placement per game, gold difference per minute.
-- [RadialGauge](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/radial-gauge.md): One value against a range, drawn as a 270° arc with the number in the middle: LP to the next division, plan usage, a score out of 100.
+- [BarChart](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/bar-chart.md): Compares amounts across categories: games per placement, kills per weapon by season, revenue per plan per month, pick rate per agent.
+- [DataBar](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/data-bar.md): A number with a small bar under it, for comparing rows of a table at a glance: damage to champions in a scoreboard, pick rate in a meta table.
+- [DonutChart](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/donut-chart.md): Shows a part-to-whole split with few parts: time played by role, games by queue, plans by share.
+- [Heatmap](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/heatmap.md): A calendar of activity: one square per day, weeks as columns, darker or brighter by how much happened — games played per day, commits, sessions.
+- [LineChart](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/line-chart.md): Shows change across an ordered axis: rating over the last 30 matches, damage per round by role per week, placement per game, gold difference per minute.
+- [RadialGauge](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/radial-gauge.md): One value against a range, drawn as a 270° arc with the number in the middle: LP to the next division, plan usage, a score out of 100.
 
 ## Theming
 
-- [Design tokens](https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/tokens.md): every `--sk-*` token with dark and light values and the AA contrast floor
-- [Styling engine](https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/styling.md): Tailwind v4 + tailwind-variants, how utilities map to tokens, overriding
+- [Design tokens](https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/tokens.md): every `--sk-*` token with dark and light values and the AA contrast floor
+- [Styling engine](https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/styling.md): Tailwind v4 + tailwind-variants, how utilities map to tokens, overriding
 
 ## Optional
 
-- [Known issues & audit](https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/known-issues-and-audit.md): ecosystem lessons and the library's own a11y/perf audit
-- [Improvement backlog](https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/improvements.md)
-- [Source repository](https://github.com/sukuna-gg/sukuna-ui)
+- [Known issues & audit](https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/known-issues-and-audit.md): ecosystem lessons and the library's own a11y/perf audit
+- [Improvement backlog](https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/improvements.md)
+- [Source repository](https://github.com/sukuna-gg/sukunagg-ui)
 - [npm](https://www.npmjs.com/package/@sukunagg/ui)

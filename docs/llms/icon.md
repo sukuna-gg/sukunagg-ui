@@ -5,8 +5,8 @@
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { AlertIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, InfoIcon, LockIcon, MoonIcon, RefreshIcon, SearchIcon, SunIcon, UserIcon } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/icon · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-icon.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/icon · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-icon.md
 
 ## Purpose
 

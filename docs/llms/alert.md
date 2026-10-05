@@ -5,8 +5,8 @@
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Alert } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/alert · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-alert.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/alert · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-alert.md
 
 ## Purpose
 

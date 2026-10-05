@@ -584,6 +584,23 @@ and npm publishing stay with the owner (CLAUDE.md non-negotiable 2).
 
 **Decision.** Charts & stats waves 1–3 + the later trio approved as built; D37 accepted.
 
+## Q35. "Published failed... i think we forgot to update the npm version ... check ci"
+
+**Answer.** The versions were right: the Release run bumped `@sukunagg/ui` 0.10.0 → 0.11.0 and
+`@sukunagg/charts` 0.0.0 → 0.1.0 on the `changeset-release/main` branch (the "must depend on the
+current version" lines are warnings, gone once ui is 0.11.0). It failed at the step after:
+**"GitHub Actions is not permitted to create or approve pull requests"** — every Release run since
+the repo moved to the `sukuna-gg` org (#22, 2026-09-29) has failed there, because the org/repo
+setting is off by default. A second blocker was waiting behind it: the repo was renamed to
+`sukuna-gg/sukunagg-ui`, but every `package.json` still said `sukuna-gg/sukuna-ui`, and npm
+provenance rejects a publish whose `repository.url` doesn't match the repo that built it.
+
+**Decision.** Repo URLs moved to `sukuna-gg/sukunagg-ui` everywhere except the history logs
+(`fix/release-repo-rename`). The owner turns on **Allow GitHub Actions to create and approve pull
+requests** (org → Settings → Actions → General → Workflow permissions, then the same box on the
+repo); the next push to `main` then opens the Version Packages PR. Added both to
+`docs/releasing.md` one-time setup.
+
 ---
 
 ## Decisions recorded so far
@@ -591,7 +608,7 @@ and npm publishing stay with the owner (CLAUDE.md non-negotiable 2).
 | Topic | Decision |
 |---|---|
 | Design source | Pomo Design System (Sukuna language) as base |
-| Package name | `sukuna-ui` → **`@sukunagg/ui`** (+ `@sukunagg/video`), repo `sukuna-gg/sukuna-ui` (Q29) |
+| Package name | `sukuna-ui` → **`@sukunagg/ui`** (+ `@sukunagg/video`, `@sukunagg/charts`), repo `sukuna-gg/sukunagg-ui` (Q29, renamed Q35) |
 | v1 components | Text, Badge, Card, Button, Input, Checkbox, Switch, Tooltip, Dialog, Select |
 | Docs language | English |
 | Package layout | Single package; **except** the VideoPlayer, which becomes standalone `@sukuna-ui/video` in a Bun-workspaces monorepo (no `sukuna-ui` dependency, `--vp-*` vars, dark default; `sukuna-ui` re-exports it) (Q3, Q27) |
@@ -610,7 +627,7 @@ and npm publishing stay with the owner (CLAUDE.md non-negotiable 2).
 | Virtualization | Deferred, no `@tanstack/react-virtual` for now; revisit on a real large-Table need (Q17) |
 | VideoPlayer | Native `<video>`, always-dark chrome, Nuevo parity in three tiers, parts as named exports, SDKs as optional peers (hls.js first), four waves (Q21-Q23) |
 | Light palette | Approved as proposed in `tokens.md` (Q10) |
-| Charts & stats | `@sukunagg/charts` (peers on `@sukunagg/ui`; server-rendered SVG/HTML sized by CSS, d3-scale/d3-shape bundled, client tooltip island); StatTile, Sparkline, EmptyState in `@sukunagg/ui`; chart/heat/danger tokens **approved**; app colors passed as props; StatTile display face by default; waves in roadmap §D8 (Q31, Q32) |
+| Charts & stats | `@sukunagg/charts` (peers on `@sukunagg/ui`; server-rendered SVG/HTML sized by CSS, in-house scale/path math (D37), client tooltip island); StatTile, Sparkline, EmptyState in `@sukunagg/ui`; chart/heat/danger tokens **approved**; app colors passed as props; StatTile display face by default; waves in roadmap §D8 (Q31, Q32) |
 | Status tracking | `docs/roadmap.md` living board; agents update it in the same commit as the work (rule 9) |
 | Versioning enforcement | CLAUDE.md + CI classifiers (API diff, visual, token, peer) + human-only merge/publish (Q7) |
 

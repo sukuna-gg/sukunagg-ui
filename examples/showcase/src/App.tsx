@@ -20,7 +20,7 @@ import {
   storySnippet,
 } from './stories'
 
-const GITHUB_URL = 'https://github.com/sukuna-gg/sukuna-ui'
+const GITHUB_URL = 'https://github.com/sukuna-gg/sukunagg-ui'
 const NPM_URL = 'https://www.npmjs.com/package/@sukunagg/ui'
 const OVERVIEW = 'overview'
 const COUNT = components.length

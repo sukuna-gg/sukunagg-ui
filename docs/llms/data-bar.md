@@ -5,8 +5,8 @@
 
 - **Package:** `@sukunagg/charts` — `bun add @sukunagg/charts @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton)
 - **Import:** `import { DataBar } from '@sukunagg/charts'`
-- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/charts/src/components/data-bar · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-data-bar.md
+- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/charts/src/components/data-bar · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-data-bar.md
 
 ## Purpose
 

@@ -6,7 +6,7 @@ export default create({
   brandTitle: 'sukuna-ui',
   // Ember Gate lockup from the brand kit, served via `staticDirs` in main.ts.
   brandImage: '/brand/storybook-logo-dark.svg',
-  brandUrl: 'https://github.com/sukuna-gg/sukuna-ui',
+  brandUrl: 'https://github.com/sukuna-gg/sukunagg-ui',
   brandTarget: '_self',
   colorPrimary: '#FF3B4E',
   colorSecondary: '#FF3B4E',

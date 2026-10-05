@@ -21,12 +21,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sukuna-gg/sukuna-ui.git",
+    "url": "git+https://github.com/sukuna-gg/sukunagg-ui.git",
     "directory": "packages/video"
   },
-  "homepage": "https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/video#readme",
+  "homepage": "https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/video#readme",
   "bugs": {
-    "url": "https://github.com/sukuna-gg/sukuna-ui/issues"
+    "url": "https://github.com/sukuna-gg/sukunagg-ui/issues"
   },
   "sideEffects": [
     "**/*.css"

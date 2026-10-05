@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://sukuna-ui.vercel.app/">
-    <img src="https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/brand/social/readme-banner.png" alt="sukuna-ui — Accessible React components. One crimson." width="100%" />
+    <img src="https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/brand/social/readme-banner.png" alt="sukuna-ui — Accessible React components. One crimson." width="100%" />
   </a>
 </p>
 
@@ -10,7 +10,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/@sukunagg/ui?color=D8253A)](https://www.npmjs.com/package/@sukunagg/ui)
 [![bundle size](https://img.shields.io/bundlephobia/minzip/@sukunagg/ui?label=minzip)](https://bundlephobia.com/package/@sukunagg/ui)
 [![types](https://img.shields.io/npm/types/@sukunagg/ui)](https://www.npmjs.com/package/@sukunagg/ui)
-[![CI](https://github.com/sukuna-gg/sukuna-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/sukuna-gg/sukuna-ui/actions/workflows/ci.yml)
+[![CI](https://github.com/sukuna-gg/sukunagg-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/sukuna-gg/sukunagg-ui/actions/workflows/ci.yml)
 [![license](https://img.shields.io/npm/l/@sukunagg/ui)](./LICENSE)
 
 **SSR-safe, accessible React components for dark-first products — and for the AI agents that build them.**
@@ -43,15 +43,15 @@ export function Example() {
 }
 ```
 
-→ **[llms.txt](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)** · [npm](https://www.npmjs.com/package/@sukunagg/ui) · [showcase source](examples/showcase) (a prerendered one-page site; deploys to Vercel from the root `vercel.json`)
+→ **[llms.txt](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)** · [npm](https://www.npmjs.com/package/@sukunagg/ui) · [showcase source](examples/showcase) (a prerendered one-page site; deploys to Vercel from the root `vercel.json`)
 
 ## For AI agents
 
 This library is documented for machines as carefully as for people:
 
-- **`https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt`** — an [llmstxt.org](https://llmstxt.org) index of every component with a one-line purpose and a link to its Markdown page.
-- **`https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms-full.txt`** — everything in one file. Paste this URL into your agent (Claude Code, Cursor, Codex, Copilot…) for complete context on every component, variant, state and accessibility rule.
-- **`docs/llms/<component>.md`** — one page per component, e.g. `https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/button.md`.
+- **`https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt`** — an [llmstxt.org](https://llmstxt.org) index of every component with a one-line purpose and a link to its Markdown page.
+- **`https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms-full.txt`** — everything in one file. Paste this URL into your agent (Claude Code, Cursor, Codex, Copilot…) for complete context on every component, variant, state and accessibility rule.
+- **`docs/llms/<component>.md`** — one page per component, e.g. `https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/button.md`.
 - **Source-level TSDoc** — every exported component and prop in the published `.d.ts` carries usage notes, defaults, accessibility requirements and copy-pasteable `@example`s, so an agent reading `node_modules/@sukunagg/ui` is self-sufficient.
 - Also indexable via [Context7](https://context7.com) (search `@sukunagg/ui`).
 
