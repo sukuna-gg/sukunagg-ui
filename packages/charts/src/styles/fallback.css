@@ -1,0 +1,12 @@
+/*
+ * Precompiled chart utilities for NON-Tailwind apps (`@sukunagg/charts/styles.css`), compiled by
+ * `bun run css:build`. Import it after `@sukunagg/ui/styles.css`, which brings the base reset and
+ * the `--sk-*` tokens. Utilities only — no second reset. Tailwind apps skip this and add
+ * `@source "../node_modules/@sukunagg/charts/dist"` instead.
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "../../../ui/src/styles/theme.css";
+@source "../components";
+@source "../internal";

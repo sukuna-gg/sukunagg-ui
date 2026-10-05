@@ -102,6 +102,26 @@ export type {
   HoverCardTriggerProps,
 } from './components/hover-card'
 export { HoverCard } from './components/hover-card'
+export type { IconProps } from './components/icon'
+export {
+  AlertIcon,
+  ChartIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronUpIcon,
+  ClockIcon,
+  CloseIcon,
+  ExternalIcon,
+  InfoIcon,
+  LockIcon,
+  MoonIcon,
+  RefreshIcon,
+  SearchIcon,
+  SunIcon,
+  UserIcon,
+} from './components/icon'
 export type { InputProps } from './components/input'
 export { Input } from './components/input'
 export type { MenuItemOption, MenuProps } from './components/menu'

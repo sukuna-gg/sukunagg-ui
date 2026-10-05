@@ -29,8 +29,14 @@ const config: StorybookConfig = {
             find,
             replacement,
           }))),
-      { find: /^@sukuna-ui\/video\/hls$/, replacement: src('hls.ts') },
-      { find: /^@sukuna-ui\/video$/, replacement: src('index.ts') },
+      { find: /^@sukunagg\/video\/hls$/, replacement: src('hls.ts') },
+      { find: /^@sukunagg\/video$/, replacement: src('index.ts') },
+      // `@sukunagg/charts` imports `@sukunagg/ui` (EmptyState, Skeleton, Table): resolve it to the
+      // same source the ui stories use, so there's one copy and no prior build is needed.
+      {
+        find: /^@sukunagg\/ui$/,
+        replacement: fileURLToPath(new URL('../packages/ui/src/index.ts', import.meta.url)),
+      },
     ]
     return cfg
   },

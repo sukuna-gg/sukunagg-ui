@@ -73,21 +73,30 @@ const sources = import.meta.glob('../../../packages/*/src/components/*/*.stories
   import: 'default',
 }) as Record<string, string>
 
-const indexSources = import.meta.glob('../../../packages/ui/src/index.ts', {
-  eager: true,
-  query: '?raw',
-  import: 'default',
-}) as Record<string, string>
+const indexSources = import.meta.glob(
+  ['../../../packages/ui/src/index.ts', '../../../packages/charts/src/index.ts'],
+  { eager: true, query: '?raw', import: 'default' },
+) as Record<string, string>
 
-/** Every value export of the package: the `export { A, B } from …` lines in src/index.ts. */
-const EXPORTS: string[] = Object.values(indexSources)
-  .flatMap((src) => [...src.matchAll(/^export \{([^}]+)\} from/gm)])
-  .flatMap((m) =>
-    (m[1] ?? '')
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean),
-  )
+/**
+ * Every value export → the package it comes from: the `export { A, B } from …` lines in each
+ * package's src/index.ts (`@sukunagg/ui`, and `@sukunagg/charts` for the Charts section).
+ */
+const EXPORT_PKG = new Map<string, string>(
+  Object.entries(indexSources).flatMap(([path, src]) =>
+    [...src.matchAll(/^export \{([^}]+)\} from/gm)].flatMap((m) =>
+      (m[1] ?? '')
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .map((name): [string, string] => [
+          name,
+          path.includes('/charts/') ? '@sukunagg/charts' : '@sukunagg/ui',
+        ]),
+    ),
+  ),
+)
+const EXPORTS: string[] = [...EXPORT_PKG.keys()]
 
 const prettify = (key: string) =>
   key
@@ -338,9 +347,15 @@ function withHelpers(raw: string, snippet: string, exclude: Set<string>): string
   return [...helpers, snippet].filter(Boolean).join('\n\n')
 }
 
-/** The package exports the snippet mentions (word-boundary match), for the import line. */
+/**
+ * The package exports the snippet uses as code, for the import line: a JSX tag (`<Button`,
+ * `<Table.Row`) or an identifier in an expression (`= Button`, `{ Button }`, `(useToast`,
+ * `Badge.` …) — not the same word in prose ("Switch to all queues" doesn't import Switch).
+ */
 function importsOf(code: string, fallback: string): string[] {
-  const used = EXPORTS.filter((n) => new RegExp(`\\b${n}\\b`).test(code))
+  const used = EXPORTS.filter((n) =>
+    new RegExp(`(?:<${n}\\b|[=({,:?]\\s*${n}\\b|\\b${n}\\s*[.(])`).test(code),
+  )
   return (used.length ? used : [fallback]).sort((a, b) => a.localeCompare(b))
 }
 
@@ -430,7 +445,15 @@ export function renderStory(entry: ComponentEntry, item: StoryEntry): ReactNode 
 
 /** The full snippet shown in the explorer: import line(s) + usage. */
 export function storySnippet(item: StoryEntry): string {
-  const lines = [`import { ${item.imports.join(', ')} } from '@sukunagg/ui'`]
+  // One import line per package, `@sukunagg/charts` before `@sukunagg/ui` (alphabetical).
+  const byPkg = new Map<string, string[]>()
+  for (const name of item.imports) {
+    const from = EXPORT_PKG.get(name) ?? '@sukunagg/ui'
+    byPkg.set(from, [...(byPkg.get(from) ?? []), name])
+  }
+  const lines = [...byPkg]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([from, names]) => `import { ${names.join(', ')} } from '${from}'`)
   if (item.hooks.length) lines.unshift(`import { ${item.hooks.join(', ')} } from 'react'`)
   return `${lines.join('\n')}\n\n${item.code}`
 }

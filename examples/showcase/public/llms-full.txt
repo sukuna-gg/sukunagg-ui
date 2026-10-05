@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt). This file concatenates every component page plus the design-token reference; the index is at https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt.
 
-@sukunagg/ui is a React 18/19 component library: 49 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 56 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -18,6 +18,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - AlertDialog: Ask the user to confirm something that is hard to undo ("Delete project?", "Discard changes?").
 - Avatar: A user/entity image with a graceful fallback (initials or icon) while loading or on error.
 - Badge: A small, pill-shaped label for status and metadata — "LIVE", counts, tags.
+- BarChart (@sukunagg/charts): Compares amounts across categories: games per placement, kills per weapon by season, revenue per plan per month, pick rate per agent.
 - Breadcrumbs: Show the path to the current page and let users jump back up it.
 - Button: Triggers an action.
 - Card: A surface container that groups related content on an elevation.
@@ -28,20 +29,26 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - Combobox: A text input with a filtered list of suggestions (free-text autocomplete).
 - ContextMenu: Offer contextual actions where the pointer is — right-click on desktop, long-press on touch.
 - Counter: Animates a number from a start to a target value — for stat tiles, KPIs, pricing, and dashboards.
+- DataBar (@sukunagg/charts): A number with a small bar under it, for comparing rows of a table at a glance: damage to champions in a scoreboard, pick rate in a meta table.
 - Dialog: A modal dialog.
 - Divider: A thin rule that separates content, horizontally or vertically.
+- DonutChart (@sukunagg/charts): Shows a part-to-whole split with few parts: time played by role, games by queue, plans by share.
 - Drawer: A panel that slides in from an edge (nav, filters, details).
 - EmptyState: Takes the place of content that isn't there: no results, nothing yet this season, a player not found, a service not answering.
 - Field: Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you.
 - GradientText: Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases.
+- Heatmap (@sukunagg/charts): A calendar of activity: one square per day, weeks as columns, darker or brighter by how much happened — games played per day, commits, sessions.
 - HoverCard: Preview richer context for a link without a click — a user card, a repo summary, a footnote.
+- Icon: A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links.
 - Input: A single-line text input.
+- LineChart (@sukunagg/charts): Shows change across an ordered axis: rating over the last 30 matches, damage per round by role per week, placement per game, gold difference per minute.
 - Menu: A dropdown menu of actions triggered by a button.
 - Meter: Show a scalar measurement within a known range: storage used, quota, password strength, a score.
 - NumberField: Enter a number precisely.
 - Pagination: Navigate between pages of results, with first/last always shown and ellipses in between.
 - Popover: Show a small, interactive panel next to the element that opened it — filters, quick settings, a share box, a date picker later.
 - Progress: A horizontal progress bar, determinate or indeterminate.
+- RadialGauge (@sukunagg/charts): One value against a range, drawn as a 270° arc with the number in the middle: LP to the next division, plan usage, a score out of 100.
 - RadioGroup: Choose one option from a small set.
 - RowActions: Every data table eventually needs a per-row "Edit / Duplicate / Delete" menu.
 - ScrollArea: Give a bounded region (a list, a code block, a sidebar) an overlay scrollbar that looks the same in every browser and matches the Sukuna surface, instead of the OS default.
@@ -337,6 +344,70 @@ without `dot` does nothing (documented in the prop's TSDoc).
       primary treatment; verify).
 - [ ] Not a `button`/`a` — no role, not focusable. Clickable status → wrap in Button/Link.
 - [ ] Text contrast ≥ 4.5:1 for every tone in both themes.
+
+---
+
+# BarChart — @sukunagg/charts
+
+> Compares amounts across categories: games per placement, kills per weapon by season, revenue per plan per month, pick rate per agent.
+
+- **Package:** `@sukunagg/charts` — `bun add @sukunagg/charts @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton)
+- **Import:** `import { BarChart } from '@sukunagg/charts'`
+- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/charts/src/components/bar-chart · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-bar-chart.md
+
+## Purpose
+
+Compares amounts across categories: games per placement, kills per weapon by season, revenue per
+plan per month, pick rate per agent. One component, three layouts: `grouped` (side by side),
+`stacked` (parts of a total) and `horizontal` (long category names, ranked lists).
+
+## API
+
+```ts
+import type { ChartBaseProps } from '../../internal/types'
+
+export interface BarChartProps<Row> extends ChartBaseProps<Row> {
+  /** default 'grouped' */
+  layout?: 'grouped' | 'stacked' | 'horizontal'
+  /** Print each bar's value at its end (stacked: the total on top). Default false. */
+  valueLabels?: boolean
+  /** Value axis. Default nice(0, max). Must include 0. */
+  yDomain?: readonly [number, number]
+}
+```
+
+`series[i].color` may be a function `(row, index) => string` for one color per bar (placement
+buckets). Pass `legend={[{ label: '1st', color: 'var(--t-first)' }, …]}` to explain such colors.
+
+Deliberately **not** in v1: negative values (diverging bars), a time axis, more than 24
+categories (use a horizontal layout or a table), animated bar growth, bar click handlers.
+
+## Variants & tokens
+
+| Mark | Spec |
+|---|---|
+| bar (grouped) | ≤ 24px thick, centred in its band; 2px gap between bars of a group; 4px rounded data end, square at the baseline; color `--sk-chart-n` or the series/row color |
+| segment (stacked) | same width; 2px surface gap between segments; only the top segment is rounded |
+| row (horizontal) | category label column (`text-text-dim`, auto width) · bar ≤ 18px tall, rounded right end · value at the tip |
+| cap label | `text-xs font-bold text-text tabular-nums`, 6px above the bar; `0` printed, `null` → "–" in `text-text-faint` |
+| grid / axis | gridlines `--sk-line-soft`, baseline `--sk-line`; tick labels `text-xs text-text-faint` |
+| hover band | `bg-text/5` across the category |
+
+## States
+
+Shared table in `charts-and-stats.md` §5.4. Specific to bars: a `null` value draws no bar and its
+cap shows "–"; a `0` draws no bar and its cap shows "0"; a stacked category with every segment
+`null` shows "–" as its total. Hover/focus highlights the whole category and the tooltip lists
+every series (stacked adds a Total row).
+
+## Accessibility
+
+- [ ] `<figure>` named by `aria-label`/`aria-labelledby` (type-enforced), summary as description.
+- [ ] Bars and labels `aria-hidden`; the table view (sr-only by default) has every value.
+- [ ] Per-bar colors are explained by a legend; the category label and value are always text.
+- [ ] Keyboard: one tab stop, ←/→ (↑/↓ horizontal) through categories, Escape hides the tooltip.
+- [ ] Marks ≥ 3:1 against the surface with default tokens; app colors are the app's call.
 
 ---
 
@@ -1024,6 +1095,74 @@ No new color/spacing tokens required.
 
 ---
 
+# DataBar — @sukunagg/charts
+
+> A number with a small bar under it, for comparing rows of a table at a glance: damage to champions in a scoreboard, pick rate in a meta table.
+
+- **Package:** `@sukunagg/charts` — `bun add @sukunagg/charts @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton)
+- **Import:** `import { DataBar } from '@sukunagg/charts'`
+- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/charts/src/components/data-bar · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-data-bar.md
+
+## Purpose
+
+A number with a small bar under it, for comparing rows of a table at a glance: damage to
+champions in a scoreboard, pick rate in a meta table. The bar is scaled to a `max` the caller
+passes (usually the column's top value), so every row shares one scale.
+
+Not a `Meter` (a single gauge with `role="meter"` and its own range) and not a chart (no axes).
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef } from 'react'
+
+export interface DataBarProps extends Omit<ComponentPropsWithoutRef<'span'>, 'children'> {
+  /** `null` = not reported: "–" and no bar, never an empty bar that reads as 0. */
+  value: number | null
+  /** The value a full bar represents — usually the column's top value. */
+  max: number
+  /** Any CSS color. Default 'var(--sk-chart-1)'. */
+  color?: string
+  format?: Intl.NumberFormatOptions | ((v: number) => string)
+  locale?: string            // default 'en-US'
+  showValue?: boolean        // default true; false = bar only (then pass aria-label)
+  missingLabel?: string      // default 'Not reported' (screen readers)
+  size?: 'sm' | 'md'         // track 4px / 6px. Default 'md'
+}
+```
+
+Not here: negative values, a target marker, labels inside the bar.
+
+## Variants & tokens
+
+| Slot | Spec |
+|---|---|
+| root | `inline-grid gap-1 min-w-24 align-middle` |
+| value | `text-xs tabular-nums text-text` (formatted) |
+| track | `--sk-surface-2`, full width, rounded 3px; `sm` 4px / `md` 6px tall |
+| fill | `bg-(--sk-databar-color)`, width = `value / max` clamped to 0–100%, rounded 3px |
+| missing | "–" `text-text-faint` + sr-only `missingLabel`; no track |
+
+## States
+
+| State | Behavior |
+|---|---|
+| value | text + bar at `value / max` |
+| `0` | "0" + an empty track (a real zero) |
+| `null` | "–" + sr-only "Not reported", no track |
+| `value > max` | bar clamps to 100%, text shows the real value |
+| `max <= 0` | bar width 0 (no division by zero) |
+
+## Accessibility
+
+- [ ] The number is real text, read in table order; the bar is decorative.
+- [ ] `null` announces `missingLabel`, never "dash" or "0".
+- [ ] Bar-only usage requires an `aria-label` (dev error).
+- [ ] Fill ≥ 3:1 against `surface-2` with default tokens.
+
+---
+
 # Dialog — @sukunagg/ui
 
 > A modal dialog.
@@ -1125,6 +1264,76 @@ Static; no interactive states.
 - [ ] Non-decorative dividers expose `role="separator"` + `aria-orientation`.
 - [ ] Purely visual dividers set `decorative` so AT ignores them.
 - [ ] Line meets ≥ 3:1 against the surface where it conveys structure.
+
+---
+
+# DonutChart — @sukunagg/charts
+
+> Shows a part-to-whole split with few parts: time played by role, games by queue, plans by share.
+
+- **Package:** `@sukunagg/charts` — `bun add @sukunagg/charts @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton)
+- **Import:** `import { DonutChart } from '@sukunagg/charts'`
+- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/charts/src/components/donut-chart · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-donut-chart.md
+
+## Purpose
+
+Shows a part-to-whole split with few parts: time played by role, games by queue, plans by share.
+The total sits in the middle and a legend lists each part with its share. More than three parts
+fold into "Other" — a donut is for "mostly this, some that", not for comparing many values
+(use a horizontal `BarChart`).
+
+## API
+
+```ts
+export type DonutChartProps<Row> = {
+  data: readonly Row[]
+  /** Key of each part's name. */
+  x: keyof Row & string
+  /** Key of each part's amount (null / non-numbers = missing, left out and noted). */
+  y: keyof Row & string
+  /** Colored parts before the rest fold into "Other". Default 3 (palette rule, tokens.md). */
+  maxSegments?: number
+  /** Per-part color (any CSS color). Default --sk-chart-1…3, Other = --sk-chart-other. */
+  color?: (row: Row, index: number) => string
+  /** Middle text. Default: the formatted total. */
+  centerValue?: ReactNode
+  /** Small text under it, e.g. "hours". */
+  centerCaption?: ReactNode
+  size?: number            // px, default 160
+  thickness?: number       // ring width px, default 22
+  valueFormat?: Intl.NumberFormatOptions | ((v: number) => string)
+  locale?: string          // default 'en-US'
+  legend?: boolean         // default true: name + share per part
+  empty?: ChartEmpty; loading?: boolean; table?: 'sr-only' | 'details' | 'none'
+  summary?: string; id?: string; className?: string
+} & ChartLabelProps         // aria-label or aria-labelledby, required
+```
+
+## Variants & tokens
+
+Ring segments in `--sk-chart-1…3` (or `color`), Other in `--sk-chart-other`, separated by a 2px
+gap (the gap is parallel: computed per radius). Empty ring `--sk-surface-2`. Center value
+`text-2xl font-semibold text-text tabular-nums`, caption `text-xs text-text-faint`. Legend rows:
+swatch + name (`text-text-dim`) + share (`font-semibold text-text tabular-nums`).
+
+## States
+
+| State | Behavior |
+|---|---|
+| data | ring + center total + legend |
+| some parts missing | they are left out; a note says "N parts not reported" |
+| one part | full ring, no gap |
+| empty (no positive amounts) | grey ring, "—" in the middle, `EmptyState size="sm"` beside it |
+| loading | skeleton ring, `aria-busy` |
+
+Hover: each segment carries an SVG `<title>` ("Duelist: 97 h, 46%") — native tooltip, no JS.
+
+## Accessibility
+
+- [ ] `<figure>` named (type-enforced) and described by a summary ("Duelist 97, Initiator 61 …").
+- [ ] Ring is `role="img"`-free decoration (`aria-hidden`); the legend and table carry the data.
+- [ ] Shares are text, never color alone; Other is labelled.
 
 ---
 
@@ -1396,6 +1605,71 @@ text.
 
 ---
 
+# Heatmap — @sukunagg/charts
+
+> A calendar of activity: one square per day, weeks as columns, darker or brighter by how much happened — games played per day, commits, sessions.
+
+- **Package:** `@sukunagg/charts` — `bun add @sukunagg/charts @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton)
+- **Import:** `import { Heatmap } from '@sukunagg/charts'`
+- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/charts/src/components/heatmap · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-heatmap.md
+
+## Purpose
+
+A calendar of activity: one square per day, weeks as columns, darker or brighter by how much
+happened — games played per day, commits, sessions. It shows rhythm (weekends, streaks, breaks)
+at a glance, and tells "nothing happened" apart from "we weren't tracking yet".
+
+## API
+
+```ts
+export type HeatmapProps<Row> = {
+  data: readonly Row[]
+  /** Key of the day, as 'YYYY-MM-DD' (read as a calendar date, no time zone). */
+  date: keyof Row & string
+  /** Key of the amount. A day with no row, or a null amount, is "not tracked" — never 0. */
+  value: keyof Row & string
+  /** Last day shown, 'YYYY-MM-DD'. Default: the latest date in `data`. */
+  end?: string
+  weeks?: number           // default 20
+  /** Upper bounds of levels 1–3 (level 4 is above). Default: quarters of the max. */
+  levels?: readonly [number, number, number]
+  /** Unit in tooltips/summary, e.g. 'games'. Default 'events'. */
+  unit?: string
+  valueFormat?: Intl.NumberFormatOptions | ((v: number) => string)
+  locale?: string          // default 'en-US' (month/day names)
+  empty?: ChartEmpty; loading?: boolean; table?: 'sr-only' | 'details' | 'none'
+  summary?: string; id?: string; className?: string
+} & ChartLabelProps
+```
+
+## Variants & tokens
+
+Level 0 (a tracked day with 0) `--sk-surface-2`; levels 1–4 `--sk-heat-1…4`; not tracked =
+transparent with a 1px `--sk-line` outline. Cells are squares that shrink with the container
+(CSS grid, max 14px, 3px gaps). Month labels over the first week of each month, Mon/Wed/Fri
+labels, a Less → More legend (+ "Not tracked" when any day is untracked).
+
+## States
+
+| State | Behavior |
+|---|---|
+| data | colored cells, labels, legend |
+| untracked days | outlined, legend says "Not tracked"; summary counts tracked days only |
+| every tracked day 0 | the grid stays (level 0 / outlined), plus `EmptyState size="sm"` over it |
+| no rows and no `end` | nothing to place on a calendar: just the `EmptyState` (pass `end` to keep the grid) |
+| loading | skeleton cells, `aria-busy` |
+
+Each cell has a native `title` ("Tue, Aug 12: 4 games" / "Tue, Aug 12: not tracked").
+
+## Accessibility
+
+- [ ] `<figure>` named (type-enforced) with a summary ("142 games over 20 weeks, 61 active days").
+- [ ] Cells are `aria-hidden`; the table view lists week × day values ("Not tracked" for gaps).
+- [ ] Levels are explained by the legend; untracked is a shape (outline), not only a color.
+
+---
+
 # HoverCard — @sukunagg/ui
 
 > Preview richer context for a link without a click — a user card, a repo summary, a footnote.
@@ -1461,6 +1735,64 @@ motion: enter/exit transforms collapse to instant (`motion-reduce:*`).
 - [ ] Interactive content inside the card is focusable and the card stays open while focus is in it.
 - [ ] `prefers-reduced-motion` honored (no scale/slide).
 - [ ] Text contrast ≥4.5:1 in both themes.
+
+---
+
+# Icon — @sukunagg/ui
+
+> A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { AlertIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, InfoIcon, LockIcon, MoonIcon, RefreshIcon, SearchIcon, SunIcon, UserIcon } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/icon · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-icon.md
+
+## Purpose
+
+A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and
+error states, the theme toggle, search, external links. One stroke style (24px grid, 2px,
+round caps, `currentColor`), so icons match each other and the text around them.
+
+Not an icon library: the set grows when a component or a consumer needs a glyph, not ahead of it.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef } from 'react'
+
+export interface IconProps extends Omit<ComponentPropsWithoutRef<'svg'>, 'children'> {
+  /** Width and height in px. Default 18. */
+  size?: number | string
+  /** Stroke width in px at 24px (scales with size). Default 2. */
+  strokeWidth?: number
+  /** Accessible name. Without it the icon is decorative (aria-hidden). */
+  title?: string
+}
+
+// One component per glyph, each a forwardRef<SVGSVGElement, IconProps>:
+AlertIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon,
+ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, InfoIcon, LockIcon, MoonIcon,
+RefreshIcon, SearchIcon, SunIcon, UserIcon
+```
+
+Exported from the main entry: the build is per-file and the package is side-effect free (except
+CSS), so bundlers keep only the icons you import — no separate `/icons` subpath needed.
+
+## Variants & tokens
+
+No variants. `fill="none"`, `stroke="currentColor"` (inherits the text color, so `text-*` utilities
+color it), `stroke-linecap/linejoin="round"`. Base class `inline-block shrink-0 align-[-0.125em]`.
+
+## States
+
+Static.
+
+## Accessibility
+
+- [ ] Decorative icons are `aria-hidden` and not focusable.
+- [ ] Meaningful standalone icons get `title` (→ `role="img"` + `<title>`) or `aria-label`.
+- [ ] Inside a button, the button carries the name (`Button iconOnly aria-label`), the icon stays decorative.
+- [ ] `currentColor` keeps contrast tied to the text color (already AA).
 
 ---
 
@@ -1544,6 +1876,102 @@ Sukuna has one red (crimson), so the invalid border reuses `--sk-accent` (see `d
 - [ ] Reveal toggle is a native `<button type="button">` with `aria-controls` (the input id) and
       `aria-pressed`; its name is "Show password" / "Hide password" (visible text + sr-only suffix).
 - [ ] The toggle never submits the form and is reachable by Tab right after the field.
+
+---
+
+# LineChart — @sukunagg/charts
+
+> Shows change across an ordered axis: rating over the last 30 matches, damage per round by role per week, placement per game, gold difference per minute.
+
+- **Package:** `@sukunagg/charts` — `bun add @sukunagg/charts @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton)
+- **Import:** `import { AreaChart, LineChart } from '@sukunagg/charts'`
+- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/charts/src/components/line-chart · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-line-chart.md
+
+## Purpose
+
+Shows change across an ordered axis: rating over the last 30 matches, damage per round by role
+per week, placement per game, gold difference per minute. `AreaChart` adds a fill, either down to
+a baseline or split above/below it (who is ahead).
+
+## API
+
+```ts
+import type { ChartBaseProps } from '../../internal/types'
+
+export interface LineChartProps<Row> extends ChartBaseProps<Row> {
+  /** default 'linear' (honest); 'monotone' smooths without overshooting */
+  curve?: 'linear' | 'monotone'
+  /** Value axis. Default: nice(min, max) of the data — a line need not start at 0. */
+  yDomain?: readonly [number, number]
+  /** Exact ticks instead of round ones, e.g. [1, 4, 8] for placements. */
+  yTickValues?: readonly number[]
+  /** Tick label, e.g. v => ordinal(v). Default: valueFormat. */
+  yTickFormat?: (v: number) => string
+  /** Smaller values at the top (placements: 1st on top). Default false. */
+  reverse?: boolean
+  /** A shaded value range, e.g. { from: 1, to: 4, label: 'Top 4' }. */
+  band?: { from: number; to: number; label?: string; color?: string }
+  /** Horizontal reference lines, e.g. [{ value: 3.84, label: 'avg 3.84' }]. */
+  references?: readonly { value: number; label: string }[]
+  /** Dots: none, the latest point (default), or every point. */
+  points?: 'none' | 'last' | 'all'
+  /** Per-point dot color (placement buckets). Line stays the series color. */
+  pointColor?: (row: Row, index: number, seriesKey: string) => string
+  /** End labels: 'auto' = value for one series, series name for several. */
+  endLabels?: 'auto' | 'value' | 'series' | false
+  /** How a run of nulls is drawn. Default 'shade' (tinted + "Not reported"). */
+  gaps?: 'shade' | 'none'
+  /** Fewer known points than this → "Not enough data for a chart". Default 1. */
+  minPoints?: number
+}
+
+export interface AreaChartProps<Row> extends LineChartProps<Row> {
+  /** Value the fill reaches. Default: the bottom of `yDomain`. */
+  baseline?: number
+  /** Diverging fill (single series): color above / below `baseline`. */
+  above?: string
+  below?: string
+  /** Make `yDomain` symmetric around `baseline` (gold difference). Default false. */
+  symmetric?: boolean
+  /** Default 2 — an area needs two points. */
+  minPoints?: number
+}
+```
+
+The x axis is ordinal (evenly spaced by index); `xFormat` labels it. Deliberately **not** in v1:
+a time scale, two y axes (never — use two charts), stacked areas, zoom/brush, annotations beyond
+`band` + `references`.
+
+## Variants & tokens
+
+| Mark | Spec |
+|---|---|
+| line | 2px, round joins/caps, non-scaling stroke; series color |
+| area fill | series color at 10% (single-color); `above`/`below` at 32% split by a clip at `baseline` |
+| dot | 8px HTML dot, 2px `--sk-surface` ring; `pointColor` overrides fill |
+| end label | 1 series: value, `text-xs font-semibold text-text`; ≥ 2: series name, `text-text-dim`, 8px right of the last point |
+| band | color (default `--sk-chart-3`) at 7% + optional label top-left, `text-text-faint` |
+| reference | 1px `--sk-text-dim` at 60% + label at the right edge |
+| gap shade | `bg-text/4` over the null run + "Not reported" label |
+| crosshair (hover) | 1px `--sk-text-faint` + ringed dots per series |
+
+## States
+
+Shared table in `charts-and-stats.md` §5.4. Specific: a lone known point between nulls is a dot;
+one point total renders a centred dot (`LineChart`) or the too-few state (`AreaChart`,
+`minPoints` 2). With `symmetric`, the domain is ± the largest |value| rounded up to a nice step;
+for a floor (the app's gold graph never shows less than ±1k) pass `yDomain` — the chart holds no
+game-specific rules.
+
+## Accessibility
+
+- [ ] `<figure>` named by `aria-label`/`aria-labelledby` (type-enforced); summary covers range and
+      end values per series ("Rating from 1,838 to 2,012 over 30 matches").
+- [ ] Marks `aria-hidden`; table view lists every point, "Not reported" for nulls.
+- [ ] ≥ 2 series → legend + end labels; identity never color-alone.
+- [ ] Keyboard: ←/→ move the crosshair, Home/End, Escape; live region reads the point.
+- [ ] Diverging fills are explained by a legend ("Blue side ahead" / "Red side ahead").
 
 ---
 
@@ -1915,6 +2343,69 @@ determinate (width = value) · indeterminate (pulsing partial bar).
 - [ ] `role="progressbar"` with `aria-valuenow/min/max` (determinate) from Base UI.
 - [ ] Accessible name via `aria-label` or a visible `label`.
 - [ ] Indeterminate omits `aria-valuenow`.
+
+---
+
+# RadialGauge — @sukunagg/charts
+
+> One value against a range, drawn as a 270° arc with the number in the middle: LP to the next division, plan usage, a score out of 100.
+
+- **Package:** `@sukunagg/charts` — `bun add @sukunagg/charts @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton)
+- **Import:** `import { RadialGauge } from '@sukunagg/charts'`
+- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/charts/src/components/radial-gauge · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-radial-gauge.md
+
+## Purpose
+
+One value against a range, drawn as a 270° arc with the number in the middle: LP to the next
+division, plan usage, a score out of 100. Use it where a single figure is the point and the
+"how full" shape helps; inside a table or a form use `Meter` (a bar) instead.
+
+## API
+
+```ts
+export interface RadialGaugeProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
+  /** null = not reported: track only, "—", announced as not reported. */
+  value: number | null
+  min?: number             // default 0
+  max?: number             // default 100
+  /** Visible name under the gauge (also names the meter). Or pass aria-label. */
+  label?: ReactNode
+  /** Middle text. Default: the formatted value. */
+  valueLabel?: ReactNode
+  /** Small text under the middle value, e.g. "of 100 LP". */
+  caption?: ReactNode
+  /** Line under the label, e.g. "Diamond II → I". */
+  description?: ReactNode
+  color?: string           // fill, any CSS color; default --sk-chart-1
+  size?: number            // px, default 150
+  thickness?: number       // arc width px, default 12
+  format?: Intl.NumberFormatOptions
+  locale?: string          // default 'en-US'
+  missingLabel?: string    // default 'Not reported'
+  'aria-valuetext'?: string
+}
+```
+
+## Variants & tokens
+
+Track = the fill color at 16% over `--sk-surface` (`color-mix`); fill = `color`; round caps.
+Value `text-[26px] font-semibold text-text tabular-nums`; caption `text-xs text-text-faint`;
+label `text-sm font-semibold text-text`; description `text-xs text-text-dim`.
+
+## States
+
+| State | Behavior |
+|---|---|
+| value | fill from the start to `(value − min) / (max − min)`, clamped |
+| at min | track only (no zero-length cap blob) |
+| `null` | track only, "—" in `text-text-faint`; not a meter (see §6) |
+
+## Accessibility
+
+- [ ] `role="meter"` with min/max/now and a text value; named.
+- [ ] Missing value: `role="img"` described as `missingLabel` — never a meter at 0.
+- [ ] The number is text in the middle; the arc is decorative.
 
 ---
 
@@ -2711,6 +3202,7 @@ export interface TableProps extends ComponentPropsWithoutRef<'table'> {
   density?: 'comfortable' | 'compact'   // default 'comfortable'
   striped?: boolean                     // even body rows get a line-soft background
   hoverable?: boolean                   // every body row highlights on hover
+  scroll?: boolean                      // charts & stats wave 3: keyboard-scrollable while it overflows
 }
 export const Table: ForwardRefExoticComponent<TableProps> & {
   Header, Body, Row, HeaderCell, Cell   // thin styled wrappers over thead/tbody/tr/th/td
@@ -2750,11 +3242,18 @@ context (and a descendant rule beats a cell's own `h-11` on specificity):
 
 Static. Rows highlight on hover when the table is `hoverable`, or per row with `data-interactive`.
 
+**`scroll` (wave 3, Q32/Q33):** the wrapper always scrolls sideways; with `scroll` it also becomes a
+keyboard tab stop **only while the table overflows** (arrow keys then scroll it), with a focus ring,
+and it is a `role="region"` named by the table's own `aria-label` / `aria-labelledby`. When nothing
+overflows it stays out of the tab order. Replaces sukuna-gg-web's `Scrollable`.
+
 ## Accessibility
 
 - [ ] Real `<table>`/`<thead>`/`<th>` semantics (use `Table.HeaderCell` for headers).
 - [ ] Add `scope="col"`/`scope="row"` on header cells where appropriate (native prop passthrough).
 - [ ] The wrapper scrolls horizontally so the table never breaks the page layout.
+- [ ] With `scroll`, keyboard users can reach and scroll an overflowing table (WCAG 2.1.1); the
+      region has the table's name and a visible focus ring; no extra tab stop when it fits.
 
 ---
 

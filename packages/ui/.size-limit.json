@@ -238,6 +238,20 @@
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
+    "name": "One icon (tree-shaken from the main entry: the other 16 must drop out)",
+    "path": "dist/index.js",
+    "import": "{ ChevronDownIcon }",
+    "limit": "0.6 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "Input (static, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ Input }",

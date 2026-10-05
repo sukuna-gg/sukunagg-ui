@@ -556,6 +556,34 @@ RadialGauge, Heatmap later. Tokens recorded in `tokens.md`; roadmap §D8; mechan
 
 **Then** "lets start working on it bb" (2026-10-05) → wave 1 specs approved and built (roadmap §D8).
 
+## Q33. "what's left?" → "Use your suggestions"
+
+**Answer.** The suggested order was: owner reviews and pushes the wave 1 branch, then wave 2 specs;
+plus a stale roadmap header and the `bun.lock` drift on `main` (`@sukunagg/video ^0.0.0` vs
+`package.json`'s `^0.1.0`). Also recommended earlier: `@sukunagg/charts` peers on
+`@sukunagg/ui` instead of being standalone.
+
+**Decision.** Adopted the recommendations: the charts package **peers on `@sukunagg/ui`**. Wave 2
+specs written (`charts-and-stats.md` §5, `component-bar-chart.md`, `component-line-chart.md`,
+`component-data-bar.md`) on `feat/charts-wave2-specs` (stacked on the wave 1 branch); roadmap
+header fixed; lockfile fixed on its own branch. **Not done:** pushing — CLAUDE.md requires the
+owner's literal "push"; the visual review is the owner's.
+
+**Then** "Build the rest of the components non-stop" (2026-10-05) → treated as approval of the wave 2
+specs and of building waves 2, 3 and the later trio without stopping. The scale-math gate (Q33b)
+became an agent decision: in-house math instead of d3 (D37), because the per-file build can't
+bundle ESM-only d3 for Node 18 CommonJS consumers.
+
+## Q34. "lgtm ship it"
+
+**Answer.** Read as the owner's sign-off on the open Q33 items: the visual review of the charts &
+stats components, the in-house scale/path math instead of d3 (D37), and pushing. Pushed
+`feat/charts-wave1-specs`, `feat/charts-wave2-specs` (stacked on it) and
+`chore/bun-lock-video-range`, and opened their PRs. Merging, the Version Packages PR, release tags
+and npm publishing stay with the owner (CLAUDE.md non-negotiable 2).
+
+**Decision.** Charts & stats waves 1–3 + the later trio approved as built; D37 accepted.
+
 ---
 
 ## Decisions recorded so far
@@ -582,7 +610,7 @@ RadialGauge, Heatmap later. Tokens recorded in `tokens.md`; roadmap §D8; mechan
 | Virtualization | Deferred, no `@tanstack/react-virtual` for now; revisit on a real large-Table need (Q17) |
 | VideoPlayer | Native `<video>`, always-dark chrome, Nuevo parity in three tiers, parts as named exports, SDKs as optional peers (hls.js first), four waves (Q21-Q23) |
 | Light palette | Approved as proposed in `tokens.md` (Q10) |
-| Charts & stats | `@sukunagg/charts` (own SVG + d3-scale/d3-shape, SSR + client tooltip island); StatTile, Sparkline, EmptyState in `@sukunagg/ui`; chart/heat/danger tokens **approved**; app colors passed as props; StatTile display face by default; waves in roadmap §D8 (Q31, Q32) |
+| Charts & stats | `@sukunagg/charts` (peers on `@sukunagg/ui`; server-rendered SVG/HTML sized by CSS, d3-scale/d3-shape bundled, client tooltip island); StatTile, Sparkline, EmptyState in `@sukunagg/ui`; chart/heat/danger tokens **approved**; app colors passed as props; StatTile display face by default; waves in roadmap §D8 (Q31, Q32) |
 | Status tracking | `docs/roadmap.md` living board; agents update it in the same commit as the work (rule 9) |
 | Versioning enforcement | CLAUDE.md + CI classifiers (API diff, visual, token, peer) + human-only merge/publish (Q7) |
 

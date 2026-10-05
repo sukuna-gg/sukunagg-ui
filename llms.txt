@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt).
 
-@sukunagg/ui is a React 18/19 component library: 49 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 56 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -40,6 +40,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - [Field](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/field.md): Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you.
 - [GradientText](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/gradient-text.md): Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases.
 - [HoverCard](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/hover-card.md): Preview richer context for a link without a click — a user card, a repo summary, a footnote.
+- [Icon](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/icon.md): A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links.
 - [Input](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/input.md): A single-line text input.
 - [Menu](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/menu.md): A dropdown menu of actions triggered by a button.
 - [Meter](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/meter.md): Show a scalar measurement within a known range: storage used, quota, password strength, a score.
@@ -67,6 +68,17 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - [ToggleGroup](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/toggle-group.md): Pick one option from a small, mutually-exclusive set (segmented control), or toggle several independent options (a formatting toolbar).
 - [Tooltip](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/tooltip.md): A hover/focus tooltip for supplementary text.
 - [VideoPlayer](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/video-player.md): Plays a single video with Sukuna-branded controls instead of each browser's native chrome, so video looks the same in Chrome, Safari and Firefox and matches the rest of the library.
+
+## @sukunagg/charts
+
+Install `bun add @sukunagg/charts` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton). Tailwind apps add `@source "../node_modules/@sukunagg/charts/dist"`; others `import "@sukunagg/charts/styles.css"`.
+
+- [BarChart](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/bar-chart.md): Compares amounts across categories: games per placement, kills per weapon by season, revenue per plan per month, pick rate per agent.
+- [DataBar](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/data-bar.md): A number with a small bar under it, for comparing rows of a table at a glance: damage to champions in a scoreboard, pick rate in a meta table.
+- [DonutChart](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/donut-chart.md): Shows a part-to-whole split with few parts: time played by role, games by queue, plans by share.
+- [Heatmap](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/heatmap.md): A calendar of activity: one square per day, weeks as columns, darker or brighter by how much happened — games played per day, commits, sessions.
+- [LineChart](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/line-chart.md): Shows change across an ordered axis: rating over the last 30 matches, damage per round by role per week, placement per game, gold difference per minute.
+- [RadialGauge](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/radial-gauge.md): One value against a range, drawn as a 270° arc with the number in the middle: LP to the next division, plan usage, a score out of 100.
 
 ## Theming
 

@@ -143,3 +143,90 @@ describe('Table', () => {
     }
   })
 })
+
+describe('Table scroll', () => {
+  // happy-dom has no layout: drive the overflow measurements and the ResizeObserver by hand.
+  function setup(widths: { scroll: number; client: number }) {
+    let notify: () => void = () => {}
+    const RO = globalThis.ResizeObserver
+    globalThis.ResizeObserver = class {
+      constructor(cb: () => void) {
+        notify = cb
+      }
+      observe() {}
+      disconnect() {}
+      unobserve() {}
+    } as unknown as typeof ResizeObserver
+    const scrollW = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollWidth')
+    const clientW = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'clientWidth')
+    Object.defineProperty(HTMLElement.prototype, 'scrollWidth', {
+      configurable: true,
+      get: () => widths.scroll,
+    })
+    Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+      configurable: true,
+      get: () => widths.client,
+    })
+    const utils = render(
+      <Table scroll aria-label="Stats by champion">
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell>Ahri</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table>,
+    )
+    const restore = () => {
+      globalThis.ResizeObserver = RO
+      if (scrollW) Object.defineProperty(HTMLElement.prototype, 'scrollWidth', scrollW)
+      if (clientW) Object.defineProperty(HTMLElement.prototype, 'clientWidth', clientW)
+    }
+    return {
+      ...utils,
+      region: () => screen.getByRole('region', { name: 'Stats by champion' }),
+      notify: () => notify(),
+      restore,
+    }
+  }
+
+  it('is a tab stop only while the table overflows', () => {
+    const widths = { scroll: 800, client: 360 }
+    const t = setup(widths)
+    try {
+      expect(t.region()).toHaveAttribute('tabindex', '0')
+      widths.scroll = 360
+      t.notify()
+      expect(t.region().hasAttribute('tabindex')).toBe(false)
+      t.unmount()
+    } finally {
+      t.restore()
+    }
+  })
+
+  it('names the region from aria-labelledby too, and a plain Table renders no region', () => {
+    const t = setup({ scroll: 100, client: 100 })
+    t.restore()
+    t.unmount()
+    render(
+      <>
+        <h2 id="t">Roles</h2>
+        <Table scroll aria-labelledby="t">
+          <Table.Body>
+            <Table.Row>
+              <Table.Cell>Mid</Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table>
+        <Table aria-label="Plain">
+          <Table.Body>
+            <Table.Row>
+              <Table.Cell>x</Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table>
+      </>,
+    )
+    expect(screen.getByRole('region', { name: 'Roles' })).toBeTruthy()
+    expect(screen.getAllByRole('region')).toHaveLength(1)
+  })
+})

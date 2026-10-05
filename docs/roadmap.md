@@ -4,9 +4,9 @@
 >
 > Legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[-]` dropped (say why)
 
-Last updated: 2026-10-05 — charts & stats wave 1 shipped in code (§D8): tokens, StatTile, Sparkline, EmptyState, Input `reveal`, Badge `pulse`. 49 components.
-Current phase: **Phase 8 (1 of 4 examples) + Phase 9 (docs/CI done; publish pending owner).** Phases 0–7 done.
-Current version: none published. Target for first publish: `0.1.0`.
+Last updated: 2026-10-05 — charts & stats: wave 1 built (branch `feat/charts-wave1-specs`), wave 2 specs written (§D8). 49 components.
+Current phase: **Phase 8 (remix example left) + Phase 9 (CI enforcement jobs left).** Phases 0–7 done; the library is on npm.
+Current version: `@sukunagg/ui` **0.10.0** + `@sukunagg/video` **0.1.0**, published by the owner 2026-09-29 (Q29). Next: `@sukunagg/ui` 0.11.0 (charts & stats wave 1 changeset), then `@sukunagg/charts` 0.1.0 (wave 2).
 
 ---
 
@@ -92,6 +92,9 @@ owner's visual pass._
 ---
 
 ## C. Release checklist (`0.1.0`)
+
+> Historical: the first publish shipped as `@sukunagg/ui` 0.10.0 + `@sukunagg/video` 0.1.0 from
+> the owner's machine (Q29). The open boxes are still the gate for CI-driven (Changesets) releases.
 
 - [x] All ten components `[x]` in section B
 - [x] `bun run check && bun run test:coverage && bun run build && bun run check:pkg && bun run size` green locally
@@ -292,38 +295,41 @@ the frame, loading matches the final size; full list in `docs/charts-and-stats.m
 ### Wave 1 — `@sukunagg/ui`
 
 Specs approved by the owner ("lets start working on it", 2026-10-05). Review = owner's visual pass
-in Storybook, still pending for every row.
+in Storybook: "lgtm ship it" (2026-10-05, Q34).
 
 | Item | Kind | Doc | Code | Review |
 |---|---|---|---|---|
 | Tokens: `--sk-chart-1…6`, `--sk-chart-other`, `--sk-heat-1…4`, `--sk-danger` (+ theme.css utilities, contrast test) | tokens | [x] tokens.md | [x] `tokens.ts` → `tokens.css`/`theme.css`; contrast gate +3 tests (all themes pass); kept out of the video bridge | n/a |
-| StatTile | static (server) | [x] | [x] 15 tests, 100% cov, 2.67 kB (budget 3 kB, includes Sparkline) | [ ] |
-| Sparkline | static (server, CSS-sized SVG) | [x] | [x] 21 tests, 100% cov, 1.68 kB | [ ] |
-| EmptyState | static (server) | [x] | [x] 10 tests, 100% cov, 0.60 kB | [ ] |
-| Input `reveal` (client file `input.reveal.tsx`) | variant | [x] component-input.md | [x] +6 tests, 100% cov; plain Input still server-only, 0.86 kB | [ ] |
-| Badge `pulse` | variant | [x] component-badge.md | [x] +1 test, 100% cov | [ ] |
+| StatTile | static (server) | [x] | [x] 15 tests, 100% cov, 2.67 kB (budget 3 kB, includes Sparkline) | [x] |
+| Sparkline | static (server, CSS-sized SVG) | [x] | [x] 21 tests, 100% cov, 1.68 kB | [x] |
+| EmptyState | static (server) | [x] | [x] 10 tests, 100% cov, 0.60 kB | [x] |
+| Input `reveal` (client file `input.reveal.tsx`) | variant | [x] component-input.md | [x] +6 tests, 100% cov; plain Input still server-only, 0.86 kB | [x] |
+| Badge `pulse` | variant | [x] component-badge.md | [x] +1 test, 100% cov | [x] |
 
 ### Wave 2 — new `@sukunagg/charts` package
 
 | Item | Replaces in sukuna-gg-web | Doc | Code |
 |---|---|---|---|
-| Package scaffold (workspace, tsup, size-limit, docs:build, peer `@sukunagg/ui` theme) | — | [ ] | [ ] |
-| Shared parts: axis, grid, legend, table view, `ChartTooltip` client island, plot-area EmptyState | — | [ ] | [ ] |
-| BarChart (grouped/stacked/horizontal, per-bar `color`, value labels) | `PlacementHistogram` | [ ] | [ ] |
-| LineChart / AreaChart (`baseline` + above/below fill, `reverse`, `band`, `null` gaps, `minPoints`) | `GoldGraph`, TODO "Placement over time" | [ ] | [ ] |
-| DataBar (bar in a table cell) | Scoreboard damage bar | [ ] | [ ] |
+| Package scaffold (workspace, tsup, size-limit, docs:build, peer `@sukunagg/ui` theme) | — | [x] `charts-and-stats.md` §5 | [x] `packages/charts`, publint + attw green, `styles.css` fallback, generator + showcase know it |
+| Shared parts: axis, grid, legend, table view, `ChartTooltip` client island, plot-area EmptyState | — | [x] §5.2–5.6 | [x] frame + island 100% cov; island 1.18 kB |
+| BarChart (grouped/stacked/horizontal, per-bar `color`, value labels) | `PlacementHistogram` | [x] | [x] 19 tests + 2 browser, 100% cov, 4.6 kB |
+| LineChart / AreaChart (`baseline` + above/below fill, `reverse`, `band`, `null` gaps, `minPoints`) | `GoldGraph`, TODO "Placement over time" | [x] (+ `yTickValues`, D37) | [x] 13 tests + 1 browser, 100% lines, 5.7 kB |
+| DataBar (bar in a table cell) | Scoreboard damage bar | [x] | [x] 8 tests, 100% cov, 0.78 kB |
 
 ### Wave 3 — `@sukunagg/ui`
 
 | Item | Doc | Code |
 |---|---|---|
-| Icon set (`@sukunagg/ui/icons`, per-icon tree-shaking) | [ ] | [ ] |
-| Table `scroll` (sideways scroll, focusable only while overflowing) | [ ] | [ ] |
+| Icon set (17 icons from the main entry, per-icon tree-shaking — spec §11 explains no subpath) | [x] component-icon.md | [x] 11 tests, 100% cov, one icon 481 B |
+| Table `scroll` (sideways scroll, focusable only while overflowing) | [x] component-table.md | [x] client file `table.scroll.tsx`, +2 tests, 100% cov; Table 949 B |
 
-### Later — when a page needs them
+### Later trio — built on request (Q33 "build the rest non-stop")
 
-DonutChart (3 colors + Other), RadialGauge, Heatmap (tracked vs untracked days). Designed in the
-mockup; no spec until a consumer needs one.
+| Item | Doc | Code |
+|---|---|---|
+| DonutChart (3 colors + Other, native `<title>` tooltips, no JS) | [x] component-donut-chart.md | [x] 7 tests, 100% cov, 3.02 kB |
+| RadialGauge (270° meter; `null` is a described image, never a meter at 0) | [x] component-radial-gauge.md | [x] 6 tests, 100% cov, 1.23 kB |
+| Heatmap (UTC calendar, "not tracked" ≠ 0, month labels skip crowded partial months) | [x] component-heatmap.md | [x] 7 tests, 100% cov, 3.19 kB |
 
 ---
 
@@ -412,3 +418,8 @@ Agents append one line per meaningful status change: `YYYY-MM-DD · <what flippe
 - 2026-10-05 · Q31/Q32 — charts & stats designed (mockup approved, revised after a sukuna-gg-web review); §D8 added; tokens approved in tokens.md; wave 1 specs written: component-stat-tile.md, component-sparkline.md, component-empty-state.md, Input `reveal` + Badge `pulse` in docs/charts-and-stats.md (merged into their component docs with the code); owner review pending, no code yet · (feat/charts-wave1-specs)
 - 2026-10-05 · Q32 — charts & stats wave 1 built: chart/heat/danger tokens (+ contrast gate), StatTile, Sparkline, EmptyState (new, exported, stories), Input `reveal` (client file `input.reveal.tsx`) and Badge `pulse` (specs merged into their component docs). 456 ui + 104 video unit tests, React 18 green, every new file 100% cov, size budgets added. Owner visual review pending · (feat/charts-wave1-specs)
 - 2026-10-05 · Owner request — Storybook + showcase split into sections: Components (46), Charts (StatTile, Sparkline), Video (VideoPlayer). Story titles carry the section (`Charts/…`, `Video/…`), `storySort` pins Design → Components → Charts → Video, showcase sidebar/mobile picker/overview group by it; video browser-test ids → `video-videoplayer--*` (all 40 test ids resolve) · (feat/charts-wave1-specs)
+- 2026-10-05 · Q33 — wave 2 specs written: `charts-and-stats.md` §5 (package, server-rendered CSS-sized model, shared props/states, client island, d3 bundling + d3-scale size gate), `component-bar-chart.md`, `component-line-chart.md` (Line + Area), `component-data-bar.md`; roadmap header corrected (0.10.0 is published, Q29) · (feat/charts-wave2-specs)
+- 2026-10-05 · Q33 "build the rest non-stop" — wave 2 built: new `@sukunagg/charts` package (BarChart, LineChart, AreaChart, DataBar; server-rendered, CSS-sized; ~1.2 kB client island), no runtime deps (in-house d3-equivalent math, D37); 65 unit tests (~100% cov), 4 Playwright tests; docs generator, README, showcase snippets and Storybook/showcase aliases updated (old `@sukuna-ui/video` alias fixed); changeset → `@sukunagg/charts` 0.1.0 · (feat/charts-wave2-specs)
+- 2026-10-05 · Q33 — wave 3 built: 17 icons (server components, `/* @__PURE__ */` factory calls so one icon is 481 B, not all 17) and Table `scroll` (a named `<section>` that is a tab stop only while overflowing; client file like Input `reveal`); specs in component-icon.md / component-table.md; changeset @sukunagg/ui minor · (feat/charts-wave2-specs)
+- 2026-10-05 · Q33 — later trio built in @sukunagg/charts: DonutChart, RadialGauge, Heatmap (server components, no client JS); shared summary/table extracted to `ChartTail`; axe caught a meter without a value → a null gauge is now a described `role="img"`; 85 charts tests (~100% cov) · (feat/charts-wave2-specs)
+- 2026-10-05 · Q34 "lgtm ship it" — owner review + D37 sign-off; wave 1 Review boxes flipped; branches pushed and PRs opened (wave 1 → main, waves 2/3/trio stacked on it, lockfile → main). Merge/publish stay with the owner · (feat/charts-wave2-specs)

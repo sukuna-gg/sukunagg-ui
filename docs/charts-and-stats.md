@@ -45,10 +45,142 @@ Wave 1 shipped these, so their specs moved into the component docs:
 - **Badge `pulse`** → `docs/component-badge.md` (replaces sukuna-gg-web's `t-live` blink + ripple).
 - **Input `reveal`** → `docs/component-input.md` (replaces sukuna-gg-web's `PasswordInput`).
 
-Wave 3's additions (Table `scroll`) will be specced here first, then moved the same way.
+- **Table `scroll`** (wave 3) → `docs/component-table.md` (replaces sukuna-gg-web's `Scrollable`).
+- **Icons** (wave 3) are a new component: `docs/component-icon.md`.
 
 ## 4. Waves
 
-See `docs/roadmap.md` §D8 for status. Wave 2 (`@sukunagg/charts`) and wave 3 get their own specs
-before code: `component-bar-chart.md`, `component-line-chart.md` (Line + Area),
-`component-data-bar.md`, plus icons and Table `scroll` amendments in the same style as above.
+See `docs/roadmap.md` §D8 for status. Wave 2 (`@sukunagg/charts`) specs: §5 below plus
+`component-bar-chart.md`, `component-line-chart.md` (LineChart + AreaChart) and
+`component-data-bar.md`. Wave 3 (icons, Table `scroll`) gets its specs before its code.
+
+## 5. The `@sukunagg/charts` package (wave 2)
+
+Owner: "Use your suggestions" (2026-10-05, Q33) → the package peers on `@sukunagg/ui`.
+
+### 5.1 Layout and dependencies
+
+```
+packages/charts/                 # @sukunagg/charts, starts at 0.1.0
+├── package.json                 # peer: react >=18, react-dom >=18, @sukunagg/ui (theme + EmptyState + Skeleton)
+├── tsup.config.ts               # same per-file ESM/CJS/d.ts build as ui; d3 bundled (see below)
+├── bunfig.toml                  # 90% coverage floor, like every package
+├── .size-limit.json
+└── src/
+    ├── index.ts                 # BarChart, LineChart, AreaChart, DataBar + Props types
+    ├── internal/                # shared, not exported: scale.ts, ticks.ts, frame.tsx (axes/grid/
+    │                            # legend/table/empty/loading), interaction.tsx ('use client' island)
+    └── components/<name>/       # the usual three files + test + stories per component
+```
+
+- **Peer on `@sukunagg/ui`**, not standalone like the video player: charts read the `--sk-*` tokens
+  from `@sukunagg/ui/theme.css` and reuse `EmptyState` and `Skeleton`. An app using charts
+  already uses the library.
+- **Math (as built, D37):** no runtime dependencies. `src/internal/scale.ts` (d3's `tickStep` /
+  `nice` / ticks algorithm, linear and band positions) and `src/internal/path.ts` (line/area paths
+  with null gaps, d3's `curveMonotoneX` tangents) replace `d3-scale` + `d3-shape`. The per-file
+  build (`bundle: false`, which keeps `'use client'` on its own file) can't inline dependencies,
+  and d3 is ESM-only, so the CommonJS output would `require()` an ES module — which Node 18 can't.
+- **CSS:** consumers add `@source "../node_modules/@sukunagg/charts/dist"` next to the ui one;
+  `@sukunagg/charts/styles.css` is the precompiled fallback, as in ui.
+
+### 5.2 Rendering model: server-rendered, sized by CSS
+
+Every chart is a **server component**. Nothing measures the DOM, so the first paint is the final
+layout at any width and there is no hydration shift. The same approach as `Sparkline`:
+
+- The plot is a CSS grid: y-axis label column (`auto` width, sized by an invisible copy of the
+  widest tick label) × plot area; x-axis label row under it.
+- **Lines and areas** are one SVG per plot, `viewBox="0 0 100 100"` + `preserveAspectRatio="none"`
+  with `vector-effect: non-scaling-stroke`, so lines stay 2px at any width.
+- **Bars, dots, labels and gridlines are HTML**, positioned with percentages: rounded corners,
+  2px gaps and text stay crisp instead of stretching with the SVG.
+- **Tick thinning without measuring:** x labels beyond every other one carry
+  `@max-md:hidden` (container query on the chart root), so narrow cards drop labels instead of
+  overlapping them.
+
+### 5.3 Shared props (every chart)
+
+```ts
+interface ChartSeries<Row> {
+  key: keyof Row & string
+  label: string
+  /** Any CSS color. BarChart also takes a per-row function (one color per bar). */
+  color?: string | ((row: Row, index: number) => string)
+}
+
+interface ChartBaseProps<Row> {
+  data: readonly Row[]
+  x: keyof Row & string                 // category / x key
+  series: readonly ChartSeries<Row>[]   // colors default to --sk-chart-1…6 in order; a 7th+ is --sk-chart-other
+  height?: number                       // plot height, px. Default 220
+  valueFormat?: Intl.NumberFormatOptions | ((v: number) => string)
+  xFormat?: (x: Row[keyof Row], index: number) => string
+  xLabel?: string                       // table header for the x column; default: the key, capitalised
+  locale?: string                       // default 'en-US' — same output on server and browser
+  yTicks?: number                       // default 4
+  legend?: 'auto' | false | readonly { label: string; color: string }[]  // auto = shown for ≥ 2 series
+  empty?: { title: ReactNode; description?: ReactNode; action?: ReactNode; icon?: ReactNode }
+  loading?: boolean
+  interactive?: boolean                 // default true: hover/keyboard tooltip island
+  table?: 'sr-only' | 'details' | 'none'  // default 'sr-only'; 'details' = native "Show as a table"
+  summary?: string                      // replaces the generated screen-reader summary
+  id?: string                           // figure id (also seeds internal ids); default: hash of the data
+  className?: string
+}
+// Plus exactly one of `aria-label` / `aria-labelledby` (enforced by the type).
+```
+
+### 5.4 States (rules from §2, made concrete)
+
+| State | Rendering |
+|---|---|
+| data | marks + axes + legend |
+| missing values | `null` → no mark; lines break (`gaps="shade"` shades the run and labels it "Not reported"); bar cap and tooltip say "–" / "Not reported" |
+| empty (no numbers) | grid + x labels kept at full size, no y labels; `EmptyState size="sm"` centred in the plot from `empty` (default title "No data yet") |
+| too few points | below `minPoints`, the empty state with "Not enough data for a chart" |
+| loading | grid + one `Skeleton` block over the plot, `aria-busy="true"` on the figure |
+
+### 5.5 Interaction island (`internal/interaction.tsx`, `'use client'`)
+
+The chart computes everything on the server and passes the island only strings and numbers
+(serializable across the RSC boundary): x positions (%), y positions per series (%), and each
+point's tooltip title + rows (label, formatted value, color). The island renders an overlay on
+the plot:
+
+- **Pointer:** nearest index by x; line charts get a crosshair + ringed dots, bar charts a band
+  highlight; the tooltip flips sides past 60% of the width.
+- **Keyboard:** the overlay is one tab stop (`role="group"`, `aria-roledescription="chart"`,
+  named by the chart's label + "use the arrow keys"). ←/→ (↑/↓ for horizontal bars) move,
+  Home/End jump, Escape hides. A polite live region reads the focused point.
+- `interactive={false}` renders no island: zero chart JS on the page.
+
+### 5.6 Accessibility
+
+`<figure>` named by `aria-label`/`aria-labelledby`; marks are `aria-hidden`; a generated summary
+("Placement distribution: 1st 4, 2nd 3, …") is the figure's description; the table view always
+exists (`sr-only` by default) and says "Not reported" for nulls. Legend whenever there are ≥ 2
+series; text never wears a series color. Marks ≥ 3:1 with the default tokens.
+
+### 5.7 Build, docs, tests
+
+- **Docs generator:** `scripts/build-docs.ts` also reads `packages/charts/src/index.ts`, so chart
+  specs generate `docs/llms/*.md` and README rows (labelled `@sukunagg/charts`). Until then the
+  generator skips chart specs, as it does any unshipped spec.
+- **Storybook / showcase:** stories titled `Charts/<Name>`; both pick them up from the existing
+  `packages/*` globs.
+- **Tests:** unit (server render, scales and ticks, gaps, every state, color props, summaries,
+  axe both themes, ≥ 90% per component) + **Playwright browser tests** for the island (hover shows
+  the tooltip, arrow keys, Escape, focus ring).
+- **Size budgets (brotli, react + ui excluded):** BarChart ≤ 6 kB, LineChart/AreaChart ≤ 7 kB,
+  DataBar ≤ 1.5 kB, the island ≤ 2.5 kB. Built: 4.6 / 5.7 / 0.78 / 1.18 kB.
+- **Release:** a changeset for `@sukunagg/charts` (new package → 0.1.0); the owner publishes.
+
+### 5.8 What it replaces in sukuna-gg-web (Q32 review)
+
+| App code | Replacement |
+|---|---|
+| `components/tft/PlacementHistogram.tsx` (+ `t-hist*` CSS) | `BarChart` with per-bar `color` (`var(--t-first)` / `--t-top4` / `--t-bot`), `valueLabels`, `table="details"` |
+| `components/lol/Timeline.tsx` `GoldGraph` (+ `l-graph*` CSS) | `AreaChart baseline={0} symmetric above="var(--l-blue)" below="var(--l-red)"` |
+| Stats page `TODO(lane B)` "Placement over time" | `LineChart reverse yDomain={[1, 8]} pointColor band={{ from: 1, to: 4, label: 'Top 4' }}` |
+| Scoreboard `l-dmg` bar | `DataBar value max color="var(--l-blue)"` |
