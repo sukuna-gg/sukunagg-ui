@@ -4,9 +4,9 @@
 >
 > Legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[-]` dropped (say why)
 
-Last updated: 2026-10-05 — charts & stats wave 1 shipped in code (§D8): tokens, StatTile, Sparkline, EmptyState, Input `reveal`, Badge `pulse`. 49 components.
-Current phase: **Phase 8 (1 of 4 examples) + Phase 9 (docs/CI done; publish pending owner).** Phases 0–7 done.
-Current version: none published. Target for first publish: `0.1.0`.
+Last updated: 2026-10-05 — charts & stats: wave 1 built (branch `feat/charts-wave1-specs`), wave 2 specs written (§D8). 49 components.
+Current phase: **Phase 8 (remix example left) + Phase 9 (CI enforcement jobs left).** Phases 0–7 done; the library is on npm.
+Current version: `@sukunagg/ui` **0.10.0** + `@sukunagg/video` **0.1.0**, published by the owner 2026-09-29 (Q29). Next: `@sukunagg/ui` 0.11.0 (charts & stats wave 1 changeset), then `@sukunagg/charts` 0.1.0 (wave 2).
 
 ---
 
@@ -92,6 +92,9 @@ owner's visual pass._
 ---
 
 ## C. Release checklist (`0.1.0`)
+
+> Historical: the first publish shipped as `@sukunagg/ui` 0.10.0 + `@sukunagg/video` 0.1.0 from
+> the owner's machine (Q29). The open boxes are still the gate for CI-driven (Changesets) releases.
 
 - [x] All ten components `[x]` in section B
 - [x] `bun run check && bun run test:coverage && bun run build && bun run check:pkg && bun run size` green locally
@@ -307,11 +310,11 @@ in Storybook, still pending for every row.
 
 | Item | Replaces in sukuna-gg-web | Doc | Code |
 |---|---|---|---|
-| Package scaffold (workspace, tsup, size-limit, docs:build, peer `@sukunagg/ui` theme) | — | [ ] | [ ] |
-| Shared parts: axis, grid, legend, table view, `ChartTooltip` client island, plot-area EmptyState | — | [ ] | [ ] |
-| BarChart (grouped/stacked/horizontal, per-bar `color`, value labels) | `PlacementHistogram` | [ ] | [ ] |
-| LineChart / AreaChart (`baseline` + above/below fill, `reverse`, `band`, `null` gaps, `minPoints`) | `GoldGraph`, TODO "Placement over time" | [ ] | [ ] |
-| DataBar (bar in a table cell) | Scoreboard damage bar | [ ] | [ ] |
+| Package scaffold (workspace, tsup, size-limit, docs:build, peer `@sukunagg/ui` theme) | — | [~] `charts-and-stats.md` §5, owner review | [ ] |
+| Shared parts: axis, grid, legend, table view, `ChartTooltip` client island, plot-area EmptyState | — | [~] `charts-and-stats.md` §5.2–5.6, owner review | [ ] |
+| BarChart (grouped/stacked/horizontal, per-bar `color`, value labels) | `PlacementHistogram` | [~] written, owner review | [ ] |
+| LineChart / AreaChart (`baseline` + above/below fill, `reverse`, `band`, `null` gaps, `minPoints`) | `GoldGraph`, TODO "Placement over time" | [~] written, owner review | [ ] |
+| DataBar (bar in a table cell) | Scoreboard damage bar | [~] written, owner review | [ ] |
 
 ### Wave 3 — `@sukunagg/ui`
 
@@ -412,3 +415,4 @@ Agents append one line per meaningful status change: `YYYY-MM-DD · <what flippe
 - 2026-10-05 · Q31/Q32 — charts & stats designed (mockup approved, revised after a sukuna-gg-web review); §D8 added; tokens approved in tokens.md; wave 1 specs written: component-stat-tile.md, component-sparkline.md, component-empty-state.md, Input `reveal` + Badge `pulse` in docs/charts-and-stats.md (merged into their component docs with the code); owner review pending, no code yet · (feat/charts-wave1-specs)
 - 2026-10-05 · Q32 — charts & stats wave 1 built: chart/heat/danger tokens (+ contrast gate), StatTile, Sparkline, EmptyState (new, exported, stories), Input `reveal` (client file `input.reveal.tsx`) and Badge `pulse` (specs merged into their component docs). 456 ui + 104 video unit tests, React 18 green, every new file 100% cov, size budgets added. Owner visual review pending · (feat/charts-wave1-specs)
 - 2026-10-05 · Owner request — Storybook + showcase split into sections: Components (46), Charts (StatTile, Sparkline), Video (VideoPlayer). Story titles carry the section (`Charts/…`, `Video/…`), `storySort` pins Design → Components → Charts → Video, showcase sidebar/mobile picker/overview group by it; video browser-test ids → `video-videoplayer--*` (all 40 test ids resolve) · (feat/charts-wave1-specs)
+- 2026-10-05 · Q33 — wave 2 specs written: `charts-and-stats.md` §5 (package, server-rendered CSS-sized model, shared props/states, client island, d3 bundling + d3-scale size gate), `component-bar-chart.md`, `component-line-chart.md` (Line + Area), `component-data-bar.md`; roadmap header corrected (0.10.0 is published, Q29) · (feat/charts-wave2-specs)

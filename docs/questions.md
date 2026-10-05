@@ -556,6 +556,19 @@ RadialGauge, Heatmap later. Tokens recorded in `tokens.md`; roadmap §D8; mechan
 
 **Then** "lets start working on it bb" (2026-10-05) → wave 1 specs approved and built (roadmap §D8).
 
+## Q33. "what's left?" → "Use your suggestions"
+
+**Answer.** The suggested order was: owner reviews and pushes the wave 1 branch, then wave 2 specs;
+plus a stale roadmap header and the `bun.lock` drift on `main` (`@sukunagg/video ^0.0.0` vs
+`package.json`'s `^0.1.0`). Also recommended earlier: `@sukunagg/charts` peers on
+`@sukunagg/ui` instead of being standalone.
+
+**Decision.** Adopted the recommendations: the charts package **peers on `@sukunagg/ui`**. Wave 2
+specs written (`charts-and-stats.md` §5, `component-bar-chart.md`, `component-line-chart.md`,
+`component-data-bar.md`) on `feat/charts-wave2-specs` (stacked on the wave 1 branch); roadmap
+header fixed; lockfile fixed on its own branch. **Not done:** pushing — CLAUDE.md requires the
+owner's literal "push"; the visual review is the owner's.
+
 ---
 
 ## Decisions recorded so far
@@ -582,7 +595,7 @@ RadialGauge, Heatmap later. Tokens recorded in `tokens.md`; roadmap §D8; mechan
 | Virtualization | Deferred, no `@tanstack/react-virtual` for now; revisit on a real large-Table need (Q17) |
 | VideoPlayer | Native `<video>`, always-dark chrome, Nuevo parity in three tiers, parts as named exports, SDKs as optional peers (hls.js first), four waves (Q21-Q23) |
 | Light palette | Approved as proposed in `tokens.md` (Q10) |
-| Charts & stats | `@sukunagg/charts` (own SVG + d3-scale/d3-shape, SSR + client tooltip island); StatTile, Sparkline, EmptyState in `@sukunagg/ui`; chart/heat/danger tokens **approved**; app colors passed as props; StatTile display face by default; waves in roadmap §D8 (Q31, Q32) |
+| Charts & stats | `@sukunagg/charts` (peers on `@sukunagg/ui`; server-rendered SVG/HTML sized by CSS, d3-scale/d3-shape bundled, client tooltip island); StatTile, Sparkline, EmptyState in `@sukunagg/ui`; chart/heat/danger tokens **approved**; app colors passed as props; StatTile display face by default; waves in roadmap §D8 (Q31, Q32) |
 | Status tracking | `docs/roadmap.md` living board; agents update it in the same commit as the work (rule 9) |
 | Versioning enforcement | CLAUDE.md + CI classifiers (API diff, visual, token, peer) + human-only merge/publish (Q7) |
 
@@ -596,3 +609,5 @@ RadialGauge, Heatmap later. Tokens recorded in `tokens.md`; roadmap §D8; mechan
 | Q25 | `sk-ticker` keyframe + `animate-ticker` utility for the VideoPlayer news-ticker overlay? | Proposed; blocks only the ticker variant. |
 | Q26 | Next VideoPlayer SDK adapter (dash.js, IMA/VAST ads, Cast, three.js VR) — each a separate optional peer? | Waiting; hls.js shipped. |
 | Q28 | Approve the `--vp-*` variable set (names + Sukuna-dark defaults) for `@sukuna-ui/video`? | Shipped as built with the first `@sukunagg/video` publish (Q29); renaming now = breaking release. |
+| Q33 | Review the wave 2 specs (`charts-and-stats.md` §5, BarChart, LineChart/AreaChart, DataBar), and say "push" for the wave 1 branch? | Specs written 2026-10-05; blocks wave 2 code and the wave 1 PR. |
+| Q33b | If tree-shaken `d3-scale` adds > 4 kB brotli to BarChart, swap it for ~60 lines of in-house linear/band/nice-tick helpers? | Asked at scaffold time (wave spec §5.1). |
