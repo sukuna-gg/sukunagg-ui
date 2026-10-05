@@ -574,6 +574,16 @@ specs and of building waves 2, 3 and the later trio without stopping. The scale-
 became an agent decision: in-house math instead of d3 (D37), because the per-file build can't
 bundle ESM-only d3 for Node 18 CommonJS consumers.
 
+## Q34. "lgtm ship it"
+
+**Answer.** Read as the owner's sign-off on the open Q33 items: the visual review of the charts &
+stats components, the in-house scale/path math instead of d3 (D37), and pushing. Pushed
+`feat/charts-wave1-specs`, `feat/charts-wave2-specs` (stacked on it) and
+`chore/bun-lock-video-range`, and opened their PRs. Merging, the Version Packages PR, release tags
+and npm publishing stay with the owner (CLAUDE.md non-negotiable 2).
+
+**Decision.** Charts & stats waves 1–3 + the later trio approved as built; D37 accepted.
+
 ---
 
 ## Decisions recorded so far
@@ -614,4 +624,3 @@ bundle ESM-only d3 for Node 18 CommonJS consumers.
 | Q25 | `sk-ticker` keyframe + `animate-ticker` utility for the VideoPlayer news-ticker overlay? | Proposed; blocks only the ticker variant. |
 | Q26 | Next VideoPlayer SDK adapter (dash.js, IMA/VAST ads, Cast, three.js VR) — each a separate optional peer? | Waiting; hls.js shipped. |
 | Q28 | Approve the `--vp-*` variable set (names + Sukuna-dark defaults) for `@sukuna-ui/video`? | Shipped as built with the first `@sukunagg/video` publish (Q29); renaming now = breaking release. |
-| Q33 | Say "push" for the charts branches (wave 1 → wave 2 → wave 3/later), and give the new components a visual review in Storybook. Also: d3 was replaced by in-house math (D37) — OK? | Built 2026-10-05 ("build the rest non-stop"); nothing pushed. |
