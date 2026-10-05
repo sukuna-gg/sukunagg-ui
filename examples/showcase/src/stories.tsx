@@ -347,9 +347,15 @@ function withHelpers(raw: string, snippet: string, exclude: Set<string>): string
   return [...helpers, snippet].filter(Boolean).join('\n\n')
 }
 
-/** The package exports the snippet mentions (word-boundary match), for the import line. */
+/**
+ * The package exports the snippet uses as code, for the import line: a JSX tag (`<Button`,
+ * `<Table.Row`) or an identifier in an expression (`= Button`, `{ Button }`, `(useToast`,
+ * `Badge.` …) — not the same word in prose ("Switch to all queues" doesn't import Switch).
+ */
 function importsOf(code: string, fallback: string): string[] {
-  const used = EXPORTS.filter((n) => new RegExp(`\\b${n}\\b`).test(code))
+  const used = EXPORTS.filter((n) =>
+    new RegExp(`(?:<${n}\\b|[=({,:?]\\s*${n}\\b|\\b${n}\\s*[.(])`).test(code),
+  )
   return (used.length ? used : [fallback]).sort((a, b) => a.localeCompare(b))
 }
 
