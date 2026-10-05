@@ -93,10 +93,6 @@
     "name": "Interaction island (the only chart client JS)",
     "path": "dist/internal/interaction.js",
     "limit": "2.5 kB",
-    "ignore": [
-      "react",
-      "react-dom",
-      "react/jsx-runtime"
-    ]
+    "ignore": ["react", "react-dom", "react/jsx-runtime"]
   }
 ]
