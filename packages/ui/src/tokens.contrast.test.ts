@@ -154,6 +154,24 @@ describe('WCAG 2.1 color-token contrast gate', () => {
     it('success clears UI 3:1 on bg', () => {
       assertRatio(`success on bg (${theme})`, ratio(theme, 'success', 'bg'), UI)
     })
+
+    it('danger clears AA 4.5:1 as text on bg, surface, surface-2 (StatTile deltas)', () => {
+      for (const bg of ['bg', 'surface', 'surface-2']) {
+        assertRatio(`danger on ${bg} (${theme})`, ratio(theme, 'danger', bg), TEXT)
+      }
+    })
+
+    it('chart-1…6 clear UI 3:1 as marks on bg, surface, surface-2', () => {
+      for (const fg of ['chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5', 'chart-6']) {
+        for (const bg of ['bg', 'surface', 'surface-2']) {
+          assertRatio(`${fg} on ${bg} (${theme})`, ratio(theme, fg, bg), UI)
+        }
+      }
+    })
+
+    it('heat-1 (lowest level) clears 2:1 on surface so it never reads as empty', () => {
+      assertRatio(`heat-1 on surface (${theme})`, ratio(theme, 'heat-1', 'surface'), 2)
+    })
   })
 
   describe('theme: light', () => {

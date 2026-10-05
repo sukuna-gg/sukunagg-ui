@@ -23,10 +23,11 @@ export interface BadgeProps extends ComponentPropsWithoutRef<'span'> {
   variant?: 'soft' | 'solid' | 'outline'                // unset = each tone's original look
   size?: 'sm' | 'md'                                    // default 'md'
   dot?: boolean   // leading status dot in currentColor
+  pulse?: boolean // charts & stats wave 1 (Q32): animates the dot for a live state ("In game"). Needs `dot`.
 }
 ```
 
-Extends `<span>`; adds only `tone`, `variant`, `size`, `dot`. Pill radius is fixed (not a prop).
+Extends `<span>`; adds only `tone`, `variant`, `size`, `dot`, `pulse`. Pill radius is fixed (not a prop).
 
 ## Variants & tokens
 
@@ -53,9 +54,15 @@ Base: `inline-flex items-center justify-center rounded-pill font-semibold whites
 
 Static; no interactive states.
 
+**`pulse` (Q32):** the dot blinks (`motion-safe:animate-pulse`) and a ring ripples out of it
+(`after:` pseudo-element in `currentColor`, `motion-safe:after:animate-ping`). Both are Tailwind's
+built-in keyframes, so no new motion tokens. Under reduced motion the dot is still. `pulse`
+without `dot` does nothing (documented in the prop's TSDoc).
+
 ## Accessibility
 
 - [ ] The dot is decorative (`aria-hidden`); status is conveyed by the text, never color/dot alone.
+- [ ] `pulse` stops under `prefers-reduced-motion` (WCAG 2.3.3); it never flashes more than 3×/s.
 - [ ] `accent` text on the crimson gradient meets contrast in both themes (shares the Button
       primary treatment; verify).
 - [ ] Not a `button`/`a` — no role, not focusable. Clickable status → wrap in Button/Link.

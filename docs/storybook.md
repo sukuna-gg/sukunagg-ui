@@ -87,7 +87,11 @@ Also add a `SideBySide` decorator (opt-in per story via `parameters.sideBySide: 
 
 ## Story conventions
 
-- One `*.stories.tsx` per component, co-located. `title: 'Components/Button'`.
+- One `*.stories.tsx` per component, co-located. The title's first segment is the sidebar
+  section, in this order (`storySort` in `.storybook/preview.tsx`; the showcase groups the same
+  way): `Components/Button` for general components, `Charts/StatTile` for data visualization
+  (StatTile, Sparkline, and `@sukunagg/charts` later), `Video/VideoPlayer` for the player. The
+  section is part of the story id (`charts-stattile--hero`), so browser tests use it too.
 - Required stories, in this order: `Playground` (all controls), then one per variant axis (`Variants`, `Sizes`), then each state (`Loading`, `Disabled`, ...). Names must match Section 10 of the component doc.
 - Use CSF3 with `satisfies Meta<typeof Button>` and `type Story = StoryObj<typeof meta>`.
 - Stories are fixtures, not tests. Keyboard-driven behavior is tested in `test/browser/` (`bun test` + Playwright) against these stories by id, so story ids are part of the contract and must not change without a changeset.

@@ -41,6 +41,25 @@ export const colors = {
   // every Input/Select/Combobox placeholder. See docs/tokens.md and D22 in docs/ai-decisions.md.
   'text-faint': { dark: '#8C8479', light: '#6F6B63' },
   success: { dark: '#31C877', light: '#177B46' },
+  // "Worse / down" for data (StatTile deltas). Coral, not crimson, so the brand red never means
+  // "bad"; text-safe in both themes. Not a Button/Badge variant (D33, D36). Approved Q31/Q32.
+  danger: { dark: '#FF7A59', light: '#B4380A' },
+  // Data visualization (Q31/Q32, docs/tokens.md → "Data visualization"). Series colors are used
+  // in this fixed order, never cycled — the order is part of the colorblind safety (neighbouring
+  // slots CVD ΔE ≥ 13.4). A 7th series folds into chart-other.
+  'chart-1': { dark: '#FF3B4E', light: '#D8253A' },
+  'chart-2': { dark: '#4C8EEF', light: '#3072D0' },
+  'chart-3': { dark: '#00A699', light: '#008A7E' },
+  'chart-4': { dark: '#C98000', light: '#A96100' },
+  'chart-5': { dark: '#A072E6', light: '#8557C8' },
+  'chart-6': { dark: '#749F2B', light: '#5A8400' },
+  'chart-other': { dark: '#6F6B63', light: '#B5B0A6' },
+  // Heatmap levels, low → high (an empty cell is surface-2). One crimson hue: brighter = more in
+  // dark, deeper = more in light. Level 1 clears 2:1 on surface so the lowest level stays visible.
+  'heat-1': { dark: '#941424', light: '#FF908E' },
+  'heat-2': { dark: '#B3363D', light: '#E66E6D' },
+  'heat-3': { dark: '#D25456', light: '#C04B4E' },
+  'heat-4': { dark: '#F17070', light: '#9A282F' },
   // Dark start darkened #FF3B4E → #D8253A so a white label on the primary Button clears AA 4.5:1
   // (was 3.51:1). Still crimson; the wordmark/hero share this gradient. See D23.
   'gradient-accent': {

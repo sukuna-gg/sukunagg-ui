@@ -87,6 +87,7 @@ leave a `// DECISION(open): ...` comment at the touch point.
 - `docs/styling.md` — Tailwind v4 + `tailwind-variants` engine, the `.styles.tsx` pattern, CSS files.
 - `docs/releasing.md` — Changesets flow, breaking-change table, CI gates, owner-only publish.
 - `docs/ai-decisions.md` — decisions the agent made on its own (open items, spec fixes, missing values).
+- `docs/charts-and-stats.md` — charts & stats wave spec: shared missing-data rules, `@sukunagg/charts` plan, pending additions to existing components.
 - `docs/testing.md` — `bun test` harness, coverage policy, required cases.
 - `docs/storybook.md` — Storybook 10 setup and story conventions.
 - `docs/tsdoc.md` — source-level TSDoc convention (what every component/prop comment must carry).

@@ -28,10 +28,11 @@ export interface BadgeProps extends ComponentPropsWithoutRef<'span'> {
   variant?: 'soft' | 'solid' | 'outline'                // unset = each tone's original look
   size?: 'sm' | 'md'                                    // default 'md'
   dot?: boolean   // leading status dot in currentColor
+  pulse?: boolean // charts & stats wave 1 (Q32): animates the dot for a live state ("In game"). Needs `dot`.
 }
 ```
 
-Extends `<span>`; adds only `tone`, `variant`, `size`, `dot`. Pill radius is fixed (not a prop).
+Extends `<span>`; adds only `tone`, `variant`, `size`, `dot`, `pulse`. Pill radius is fixed (not a prop).
 
 ## 4. Variants → tokens
 
@@ -58,12 +59,18 @@ Base: `inline-flex items-center justify-center rounded-pill font-semibold whites
 
 Static; no interactive states.
 
+**`pulse` (Q32):** the dot blinks (`motion-safe:animate-pulse`) and a ring ripples out of it
+(`after:` pseudo-element in `currentColor`, `motion-safe:after:animate-ping`). Both are Tailwind's
+built-in keyframes, so no new motion tokens. Under reduced motion the dot is still. `pulse`
+without `dot` does nothing (documented in the prop's TSDoc).
+
 ## 6. Logic (`badge.logic.tsx`)
 
 - No `'use client'`.
 - `forwardRef<HTMLSpanElement, BadgeProps>`.
 - Destructure `tone`, `size`, `dot`, `className`, `children` out; spread the rest onto `<span>`.
 - When `dot`, render a leading `<span aria-hidden="true">` dot before `children`.
+- When `dot && pulse`, the dot gets the `pulse` classes (`relative` + the `after:` ring).
 
 ## 7. Styles (`badge.styles.tsx`)
 
@@ -73,6 +80,7 @@ class is a static string exported alongside.
 ## 8. Accessibility checklist
 
 - [ ] The dot is decorative (`aria-hidden`); status is conveyed by the text, never color/dot alone.
+- [ ] `pulse` stops under `prefers-reduced-motion` (WCAG 2.3.3); it never flashes more than 3×/s.
 - [ ] `accent` text on the crimson gradient meets contrast in both themes (shares the Button
       primary treatment; verify).
 - [ ] Not a `button`/`a` — no role, not focusable. Clickable status → wrap in Button/Link.
@@ -82,6 +90,7 @@ class is a static string exported alongside.
 
 - Renders every `tone` × `size` on the server without throwing.
 - `dot` renders exactly one `aria-hidden` dot; without `dot`, none.
+- `pulse` adds the motion-safe pulse/ping classes to the dot; `pulse` without `dot` renders no dot.
 - Variant props never leak to the DOM.
 - Forwards `ref` to the `<span>`.
 - Native props pass through (`id`, `data-*`, `aria-label`).
@@ -90,8 +99,8 @@ class is a static string exported alongside.
 
 ## 10. Stories
 
-`Playground`, `Tones`, `Variants` (tone × soft/solid/outline grid), `Sizes`, `WithDot`, `Live`,
-`InText`. Both themes via toolbar.
+`Playground`, `Tones`, `Variants` (tone × soft/solid/outline grid), `Sizes`, `WithDot`, `Live`
+(now with `pulse`: In game / Not in game / unavailable / checking), `InText`. Both themes via toolbar.
 
 ## 11. Decisions
 
@@ -100,3 +109,4 @@ class is a static string exported alongside.
   (accent solid, others soft) so the addition is non-breaking; the trio is opt-in. Same map as Chip.
 - `dot` uses `currentColor`, not a separate color prop (kept minimal for v1).
 - No `count`/number formatting helper in v1 (pass the string yourself).
+- `pulse` (Q32): replaces sukuna-gg-web's hand-rolled `t-live` blink + ripple; built-in keyframes only.

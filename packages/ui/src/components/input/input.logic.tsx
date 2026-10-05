@@ -1,4 +1,5 @@
 import { type ComponentPropsWithoutRef, forwardRef } from 'react'
+import { RevealInput, type RevealLabels } from './input.reveal'
 import { type InputStyleProps, inputStyles } from './input.styles'
 
 /**
@@ -8,7 +9,19 @@ import { type InputStyleProps, inputStyles } from './input.styles'
  */
 export interface InputProps
   extends Omit<ComponentPropsWithoutRef<'input'>, 'size'>,
-    InputStyleProps {}
+    InputStyleProps {
+  /**
+   * With `type="password"`, adds a Show/Hide toggle inside the field. Ignored for other types.
+   * Only these fields load client JS; every other Input stays a server component.
+   * @default false
+   */
+  reveal?: boolean
+  /**
+   * Toggle text, for translation. An sr-only " password" is appended to each.
+   * @default { show: 'Show', hide: 'Hide' }
+   */
+  revealLabels?: RevealLabels
+}
 
 /**
  * Single-line text input styled to Sukuna: a plain native `<input>` with a size scale and an
@@ -29,6 +42,10 @@ export interface InputProps
  *   constrain width. The input is full width (`w-full`) by default.
  * - `size` and `invalid` are consumed here and never reach the DOM as attributes.
  * - The ref points at the `<input>` element.
+ * - `reveal` (with `type="password"`): renders a client child that adds a Show/Hide toggle — a
+ *   native button with `aria-pressed` and `aria-controls`, named "Show password" / "Hide
+ *   password". The field gets right padding for it. Give the input an `id` (one is generated
+ *   otherwise).
  *
  * @example
  * ```tsx
@@ -54,11 +71,33 @@ export interface InputProps
  * />
  * <p id="handle-error">Handles may only contain letters and digits.</p>
  * ```
+ *
+ * @example
+ * ```tsx
+ * import { Input } from '@sukunagg/ui'
+ *
+ * <label htmlFor="pw">Password</label>
+ * <Input id="pw" type="password" autoComplete="current-password" reveal />
+ * ```
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { variant, size, invalid, className, ...rest },
+  { variant, size, invalid, className, reveal, revealLabels, ...rest },
   ref,
 ) {
+  if (reveal && rest.type === 'password') {
+    const { type: _password, ...props } = rest
+    return (
+      <RevealInput
+        ref={ref}
+        variant={variant}
+        size={size}
+        invalid={invalid}
+        className={className}
+        revealLabels={revealLabels}
+        {...props}
+      />
+    )
+  }
   return (
     <input
       ref={ref}

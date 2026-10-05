@@ -53,6 +53,8 @@ const preview: Preview = {
   parameters: {
     backgrounds: { disable: true }, // the decorator owns the background
     layout: 'fullscreen',
+    // Sidebar sections: general components, then data viz, then the standalone video player.
+    options: { storySort: { order: ['Design', 'Components', 'Charts', 'Video'] } },
   },
 }
 

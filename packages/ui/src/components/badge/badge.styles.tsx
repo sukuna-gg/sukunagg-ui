@@ -42,4 +42,11 @@ export const badgeStyles = tv({
 /** Leading status dot. Decorative — always paired with `aria-hidden`. */
 export const badgeDot = 'inline-block size-1.5 rounded-full bg-current shrink-0'
 
+/**
+ * Live pulse for the dot (`pulse`): it blinks and a ring ripples out of it, both Tailwind's
+ * built-in keyframes (no new motion tokens). `motion-safe:` keeps it still under reduced motion.
+ */
+export const badgeDotPulse =
+  'relative motion-safe:animate-pulse after:absolute after:inset-0 after:rounded-full after:bg-current motion-safe:after:animate-ping'
+
 export type BadgeStyleProps = VariantProps<typeof badgeStyles>

@@ -494,6 +494,68 @@ column). The brand kit follows as a PR stacked on it; #12 and #13 are closed as 
 porting, found and fixed a docs regression from the rename (VideoPlayer missing from the generated
 docs).
 
+## Q31. "Let's design components for graphs, stats, etc... can you help me with that? ask me more questions if needed"
+
+**Answer.** Asked eight scoping questions in two rounds; the owner picked every recommended option
+and the widest scope:
+
+- Use cases: gaming/player stats, product/SaaS dashboards, marketing pages, generic, all four.
+- First-wave components: StatTile, Sparkline, Bar + Line/Area charts, Donut / RadialGauge / Heatmap.
+- Interaction: **SSR + hover tooltips**: server-rendered SVG readable with JS off; a small
+  `'use client'` layer adds crosshair, tooltips and arrow-key focus. No zoom/brush.
+- Colors: **new categorical chart tokens** (crimson first), validated for CVD + contrast in both themes.
+- Package: **new `@sukunagg/charts`** workspace package (like `@sukunagg/video`); StatTile and
+  Sparkline stay in `@sukunagg/ui`.
+- Engine: **own SVG + `d3-scale` / `d3-shape`** (pure math only, no d3 DOM code).
+- Deltas: up = `--sk-success`, down = a **new `--sk-danger`** distinct from the accent; `invert`
+  prop for metrics where down is good.
+- Deliverable: **visual mockup first, then docs**.
+
+**Decision.** Mockup published (private artifact
+https://claude.ai/artifact/Ta95RMu8WwVn6cJHjv49A6). Proposed tokens (dark / light), all run through
+the dataviz palette validator against `surface`, `surface-2` and `bg`:
+`--sk-chart-1..6` = crimson `#FF3B4E`/`#D8253A`, blue `#4C8EEF`/`#3072D0`, teal `#00A699`/`#008A7E`,
+amber `#C98000`/`#A96100`, violet `#A072E6`/`#8557C8`, lime `#749F2B`/`#5A8400`;
+`--sk-chart-other` `#6F6B63`/`#B5B0A6`; `--sk-danger` `#FF7A59`/`#B4380A`;
+`--sk-heat-1..4` dark `#941424 #B3363D #D25456 #F17070`, light `#FF908E #E66E6D #C04B4E #9A282F`.
+The order is fixed: neighbouring slots pass CVD ΔE ≥ 13.4 and normal-vision ΔE ≥ 16.4, and
+slots 1-3 pass all-pairs. Crimson beside amber fails under deuteranopia, so donuts cap at three
+colored segments + Other. No docs or code until the owner approves the mockup (see waiting table).
+
+## Q32. "ask the agent that is developing sukuna-gg-web more context about the project to know what else we need" → "Ok, you make the review for sukuna-gg-web project and see what else we could use..."
+
+**Answer.** Questions sent to the two sukuna-gg-web sessions expired unapproved, so the agent reviewed
+`Documents/Yo/sukuna-gg-web` (branch `feat/live-tab`, @sukunagg/ui 0.10.0, Next 16 App Router)
+read-only. Findings that change Q31's plan:
+
+- Hand-built charts to replace: `PlacementHistogram` (8 bars colored per bar by placement bucket,
+  value on each cap, "Show as a table"), `GoldGraph` (gold difference around 0, blue above / red
+  below), and the Scoreboard damage bar (a bar inside a table cell, scaled to the lobby max). A
+  "Placement over time" chart is a `TODO(lane B)` (needs an inverted 1-8 y axis).
+- Charts must take **caller colors** per series and per datum: the app owns game palettes
+  (`--t-first/top4/bot`, `--l-blue/red`, `--l-win/loss`, unit-cost `--t-c1..5`).
+- StatTile as used today: label, value, a **caption** line (W/L record, K/D/A) and a **value tone**
+  from thresholds; values in Archivo 900 italic (`t-tile-val`), not plain sans. No deltas yet.
+- No live charts: Riot policy limits live views to loading-screen data; pages refresh with
+  `router.refresh()` polling, so charts only need to survive a server re-render.
+- No current use for Donut, RadialGauge or Heatmap.
+- Non-chart gaps: empty/error state panel (`StatePanel`), password reveal on Input, a pulsing
+  "live" Badge dot, a small icon set (chevron, clock, lock, sun/moon drawn inline), Table that
+  scrolls sideways and is focusable only while it overflows (`Scrollable`).
+
+**Follow-up.** "show proposal with examples of empty data too" → mockup v4: every example switches
+between data / missing values / empty / loading, plus six missing-data rules. Open questions on
+the page and the owner's answers (2026-10-05): (1) StatTile values in the display face by
+default? **"yes"**; (2) game colors stay in the app and are passed to charts? **"passed to
+charts"**; (3) approve the token values? **"yes"**. Then **"lgtm"**.
+
+**Decision.** Revised plan approved: wave 1 (tokens, StatTile with caption/tone, Sparkline,
+EmptyState, Input `reveal`, Badge `pulse`), wave 2 (`@sukunagg/charts`: BarChart with per-bar
+colors, Line/Area with baseline/reverse/gaps, DataBar), wave 3 (icons, Table `scroll`); Donut,
+RadialGauge, Heatmap later. Tokens recorded in `tokens.md`; roadmap §D8; mechanics in D36.
+
+**Then** "lets start working on it bb" (2026-10-05) → wave 1 specs approved and built (roadmap §D8).
+
 ---
 
 ## Decisions recorded so far
@@ -520,6 +582,7 @@ docs).
 | Virtualization | Deferred, no `@tanstack/react-virtual` for now; revisit on a real large-Table need (Q17) |
 | VideoPlayer | Native `<video>`, always-dark chrome, Nuevo parity in three tiers, parts as named exports, SDKs as optional peers (hls.js first), four waves (Q21-Q23) |
 | Light palette | Approved as proposed in `tokens.md` (Q10) |
+| Charts & stats | `@sukunagg/charts` (own SVG + d3-scale/d3-shape, SSR + client tooltip island); StatTile, Sparkline, EmptyState in `@sukunagg/ui`; chart/heat/danger tokens **approved**; app colors passed as props; StatTile display face by default; waves in roadmap §D8 (Q31, Q32) |
 | Status tracking | `docs/roadmap.md` living board; agents update it in the same commit as the work (rule 9) |
 | Versioning enforcement | CLAUDE.md + CI classifiers (API diff, visual, token, peer) + human-only merge/publish (Q7) |
 

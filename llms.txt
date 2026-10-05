@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt).
 
-@sukunagg/ui is a React 18/19 component library: 46 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 49 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -36,6 +36,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - [Dialog](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/dialog.md): A modal dialog.
 - [Divider](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/divider.md): A thin rule that separates content, horizontally or vertically.
 - [Drawer](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/drawer.md): A panel that slides in from an edge (nav, filters, details).
+- [EmptyState](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/empty-state.md): Takes the place of content that isn't there: no results, nothing yet this season, a player not found, a service not answering.
 - [Field](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/field.md): Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you.
 - [GradientText](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/gradient-text.md): Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases.
 - [HoverCard](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/hover-card.md): Preview richer context for a link without a click — a user card, a repo summary, a footnote.
@@ -53,7 +54,9 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - [ShinyText](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/shiny-text.md): Sweeps a soft light band across dimmed text — for "New" flags, premium labels, and subtle CTA emphasis.
 - [Skeleton](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/skeleton.md): A placeholder shimmer shown while content loads.
 - [Slider](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/slider.md): Pick a number from a range by dragging or with the keyboard.
+- [Sparkline](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/sparkline.md): A word-sized trend with no axes: a rating over the last games, matches per day, a win/loss streak.
 - [Spinner](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/spinner.md): An indeterminate loading indicator (CSS spin).
+- [StatTile](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/stat-tile.md): One headline number with what it means: a label, the value, a caption line (record, breakdown, scope) and optionally a signed change against a named period and a small trend.
 - [Stepper](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/stepper.md): Show progress through an ordered sequence of steps.
 - [Switch](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/switch.md): An on/off toggle for an immediate setting (not form submission).
 - [Table](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/table.md): Present tabular data with Sukuna styling.

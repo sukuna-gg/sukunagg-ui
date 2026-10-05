@@ -9,6 +9,34 @@ agent's own calls. Newest first.
 
 ---
 
+## D36 — Charts & stats wave 1: how the specs meet the SSR rules
+
+- **Decision:** (1) **Sparkline** stays a server component and sizes itself with CSS: SVG
+  `viewBox` + `preserveAspectRatio="none"` + `vector-effect: non-scaling-stroke`, with dots as
+  absolutely positioned HTML spans so they stay round. No client measuring. (2) **Input `reveal`**
+  lives in a fourth, `'use client'` file (`input.reveal.tsx`) that Input renders only for
+  `type="password" reveal`, so every other Input stays zero-JS. (3) **Badge `pulse`** uses
+  Tailwind's built-in `animate-pulse` / `animate-ping` instead of new keyframes, so no motion-token
+  approval is needed. (4) **App colors** (StatTile `valueColor`, Sparkline `color`, chart `color`)
+  reach the markup as CSS custom properties read by literal utilities (`text-(--sk-stat-value)`),
+  never as built class names (rule 7). (5) **`--sk-danger`** is used only for data (deltas,
+  "worse" values). Button/Badge `danger` variants stay out (D33) until the owner asks.
+  **Found while building:** (6) Sparkline `bar`/`winloss` are HTML spans, not SVG — a stretched
+  SVG distorts rounded corners and the 2px gap. (7) StatTile gets a `locale` prop (default
+  `'en-US'`): `Intl` options can't carry a locale, and an unpinned locale prints differently on
+  server and browser (hydration mismatch). (8) The new color tokens are kept out of the generated
+  `[data-vp-root]` VideoPlayer bridge — the player reads none of them. (9) Input `reveal` does not
+  restore the caret after the type flip (restoring a selection can steal focus in WebKit; the value
+  is untouched anyway), and Badge `pulse` without `dot` silently does nothing (TSDoc says so)
+  instead of a dev warning.
+- **Why:** the owner approved the design (Q31/Q32) but not these mechanics. Each one keeps
+  "SSR is mandatory / `'use client'` only if stateful / never interpolate class names" intact
+  without changing the approved look.
+- **Reverse:** (1) client-measured Sparkline = a `'use client'` wrapper with ResizeObserver;
+  (2) make Input itself client, or ship a separate `PasswordInput`; (3) custom keyframes in
+  `theme.css` + motion.md; (5) one-line `danger` variants once asked; (7) drop the default to
+  follow the runtime locale (accepting mismatches); (8) delete the filter in `build-tokens.ts`.
+
 ## D35 — Standalone VideoPlayer: workspace layout, prefixed unlayered CSS, scoped reset
 
 - **Decision:** For Q27 (owner: share the player without sukuna-ui) the agent chose:
