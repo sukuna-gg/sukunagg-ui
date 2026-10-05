@@ -20,6 +20,7 @@ export interface TableProps extends ComponentPropsWithoutRef<'table'> {
   density?: 'comfortable' | 'compact'   // default 'comfortable'
   striped?: boolean                     // even body rows get a line-soft background
   hoverable?: boolean                   // every body row highlights on hover
+  scroll?: boolean                      // charts & stats wave 3: keyboard-scrollable while it overflows
 }
 export const Table: ForwardRefExoticComponent<TableProps> & {
   Header, Body, Row, HeaderCell, Cell   // thin styled wrappers over thead/tbody/tr/th/td
@@ -59,8 +60,15 @@ context (and a descendant rule beats a cell's own `h-11` on specificity):
 
 Static. Rows highlight on hover when the table is `hoverable`, or per row with `data-interactive`.
 
+**`scroll` (wave 3, Q32/Q33):** the wrapper always scrolls sideways; with `scroll` it also becomes a
+keyboard tab stop **only while the table overflows** (arrow keys then scroll it), with a focus ring,
+and it is a `role="region"` named by the table's own `aria-label` / `aria-labelledby`. When nothing
+overflows it stays out of the tab order. Replaces sukuna-gg-web's `Scrollable`.
+
 ## Accessibility
 
 - [ ] Real `<table>`/`<thead>`/`<th>` semantics (use `Table.HeaderCell` for headers).
 - [ ] Add `scope="col"`/`scope="row"` on header cells where appropriate (native prop passthrough).
 - [ ] The wrapper scrolls horizontally so the table never breaks the page layout.
+- [ ] With `scroll`, keyboard users can reach and scroll an overflowing table (WCAG 2.1.1); the
+      region has the table's name and a visible focus ring; no extra tab stop when it fits.

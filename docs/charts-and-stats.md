@@ -45,7 +45,8 @@ Wave 1 shipped these, so their specs moved into the component docs:
 - **Badge `pulse`** → `docs/component-badge.md` (replaces sukuna-gg-web's `t-live` blink + ripple).
 - **Input `reveal`** → `docs/component-input.md` (replaces sukuna-gg-web's `PasswordInput`).
 
-Wave 3's additions (Table `scroll`) will be specced here first, then moved the same way.
+- **Table `scroll`** (wave 3) → `docs/component-table.md` (replaces sukuna-gg-web's `Scrollable`).
+- **Icons** (wave 3) are a new component: `docs/component-icon.md`.
 
 ## 4. Waves
 

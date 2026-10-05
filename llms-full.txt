@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt). This file concatenates every component page plus the design-token reference; the index is at https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt.
 
-@sukunagg/ui is a React 18/19 component library: 52 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 53 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -37,6 +37,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - Field: Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you.
 - GradientText: Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases.
 - HoverCard: Preview richer context for a link without a click — a user card, a repo summary, a footnote.
+- Icon: A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links.
 - Input: A single-line text input.
 - LineChart (@sukunagg/charts): Shows change across an ordered axis: rating over the last 30 matches, damage per round by role per week, placement per game, gold difference per minute.
 - Menu: A dropdown menu of actions triggered by a button.
@@ -1599,6 +1600,64 @@ motion: enter/exit transforms collapse to instant (`motion-reduce:*`).
 
 ---
 
+# Icon — @sukunagg/ui
+
+> A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { AlertIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, InfoIcon, LockIcon, MoonIcon, RefreshIcon, SearchIcon, SunIcon, UserIcon } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/icon · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-icon.md
+
+## Purpose
+
+A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and
+error states, the theme toggle, search, external links. One stroke style (24px grid, 2px,
+round caps, `currentColor`), so icons match each other and the text around them.
+
+Not an icon library: the set grows when a component or a consumer needs a glyph, not ahead of it.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef } from 'react'
+
+export interface IconProps extends Omit<ComponentPropsWithoutRef<'svg'>, 'children'> {
+  /** Width and height in px. Default 18. */
+  size?: number | string
+  /** Stroke width in px at 24px (scales with size). Default 2. */
+  strokeWidth?: number
+  /** Accessible name. Without it the icon is decorative (aria-hidden). */
+  title?: string
+}
+
+// One component per glyph, each a forwardRef<SVGSVGElement, IconProps>:
+AlertIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon,
+ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, InfoIcon, LockIcon, MoonIcon,
+RefreshIcon, SearchIcon, SunIcon, UserIcon
+```
+
+Exported from the main entry: the build is per-file and the package is side-effect free (except
+CSS), so bundlers keep only the icons you import — no separate `/icons` subpath needed.
+
+## Variants & tokens
+
+No variants. `fill="none"`, `stroke="currentColor"` (inherits the text color, so `text-*` utilities
+color it), `stroke-linecap/linejoin="round"`. Base class `inline-block shrink-0 align-[-0.125em]`.
+
+## States
+
+Static.
+
+## Accessibility
+
+- [ ] Decorative icons are `aria-hidden` and not focusable.
+- [ ] Meaningful standalone icons get `title` (→ `role="img"` + `<title>`) or `aria-label`.
+- [ ] Inside a button, the button carries the name (`Button iconOnly aria-label`), the icon stays decorative.
+- [ ] `currentColor` keeps contrast tied to the text color (already AA).
+
+---
+
 # Input — @sukunagg/ui
 
 > A single-line text input.
@@ -2942,6 +3001,7 @@ export interface TableProps extends ComponentPropsWithoutRef<'table'> {
   density?: 'comfortable' | 'compact'   // default 'comfortable'
   striped?: boolean                     // even body rows get a line-soft background
   hoverable?: boolean                   // every body row highlights on hover
+  scroll?: boolean                      // charts & stats wave 3: keyboard-scrollable while it overflows
 }
 export const Table: ForwardRefExoticComponent<TableProps> & {
   Header, Body, Row, HeaderCell, Cell   // thin styled wrappers over thead/tbody/tr/th/td
@@ -2981,11 +3041,18 @@ context (and a descendant rule beats a cell's own `h-11` on specificity):
 
 Static. Rows highlight on hover when the table is `hoverable`, or per row with `data-interactive`.
 
+**`scroll` (wave 3, Q32/Q33):** the wrapper always scrolls sideways; with `scroll` it also becomes a
+keyboard tab stop **only while the table overflows** (arrow keys then scroll it), with a focus ring,
+and it is a `role="region"` named by the table's own `aria-label` / `aria-labelledby`. When nothing
+overflows it stays out of the tab order. Replaces sukuna-gg-web's `Scrollable`.
+
 ## Accessibility
 
 - [ ] Real `<table>`/`<thead>`/`<th>` semantics (use `Table.HeaderCell` for headers).
 - [ ] Add `scope="col"`/`scope="row"` on header cells where appropriate (native prop passthrough).
 - [ ] The wrapper scrolls horizontally so the table never breaks the page layout.
+- [ ] With `scroll`, keyboard users can reach and scroll an overflowing table (WCAG 2.1.1); the
+      region has the table's name and a visible focus ring; no extra tab stop when it fits.
 
 ---
 

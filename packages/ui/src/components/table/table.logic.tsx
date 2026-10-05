@@ -1,4 +1,5 @@
 import { type ComponentPropsWithoutRef, forwardRef } from 'react'
+import { TableScroll } from './table.scroll'
 import { type TableStyleProps, tableStyles } from './table.styles'
 
 // Sub-parts vary by nothing, so they share one static slot map.
@@ -24,6 +25,13 @@ export interface TableProps
    * @default false
    */
   hoverable?: boolean
+  /**
+   * Make the sideways-scrolling wrapper a keyboard tab stop while the table overflows (arrow
+   * keys then scroll it), as a region named by the table's `aria-label` / `aria-labelledby`.
+   * Loads a small client file; without it Table ships no JS.
+   * @default false
+   */
+  scroll?: boolean
 }
 
 /**
@@ -32,16 +40,25 @@ export interface TableProps
  * points at the `<table>`.
  */
 const TableRoot = forwardRef<HTMLTableElement, TableProps>(function Table(
-  { density, striped, hoverable, className, children, ...rest },
+  { density, striped, hoverable, scroll = false, className, children, ...rest },
   ref,
 ) {
   const root = tableStyles({ density, striped, hoverable })
-  return (
-    <div className={root.wrapper()}>
-      <table ref={ref} className={root.table({ className })} {...rest}>
-        {children}
-      </table>
-    </div>
+  const table = (
+    <table ref={ref} className={root.table({ className })} {...rest}>
+      {children}
+    </table>
+  )
+  return scroll ? (
+    <TableScroll
+      className={root.wrapper()}
+      label={rest['aria-label']}
+      labelledBy={rest['aria-labelledby']}
+    >
+      {table}
+    </TableScroll>
+  ) : (
+    <div className={root.wrapper()}>{table}</div>
   )
 })
 
@@ -102,7 +119,8 @@ function ActionsCell({ className, ...rest }: ComponentPropsWithoutRef<'td'>) {
  * - Accessibility: real `<table>`/`<thead>`/`<tbody>`/`<tr>`/`<th>`/`<td>` semantics — use
  *   `Table.HeaderCell` (never a styled `Table.Cell`) for headers and give it `scope`. Add a
  *   `<caption>` child or `aria-label` on `Table` to name it. The wrapper scrolls horizontally so a
- *   wide table never breaks the page layout.
+ *   wide table never breaks the page layout; add `scroll` so keyboard users can reach and scroll
+ *   it while it overflows (a region named like the table — the only part that loads client JS).
  * - Variants (on the root only; applied to the `<table>` via descendant selectors so sub-parts
  *   need no context):
  *   - `density`: 'comfortable' (default — 40px header / 44px cells) | 'compact' (32px / 36px,

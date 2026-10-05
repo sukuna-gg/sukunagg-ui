@@ -15,7 +15,7 @@
 
 **SSR-safe, accessible React components for dark-first products — and for the AI agents that build them.**
 
-<!-- count -->52<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
+<!-- count -->53<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
 contrast in both themes, `prefers-reduced-motion` honored, zero runtime styling, React Server
 Components-ready, React 18 and 19. Dark is the identity; light is a mode.
 
@@ -144,6 +144,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `Field` | Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you. | [docs/llms/field.md](docs/llms/field.md) |
 | `GradientText` | Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases. | [docs/llms/gradient-text.md](docs/llms/gradient-text.md) |
 | `HoverCard` | Preview richer context for a link without a click — a user card, a repo summary, a footnote. | [docs/llms/hover-card.md](docs/llms/hover-card.md) |
+| `AlertIcon`, `ChartIcon`, `CheckIcon`, `ChevronDownIcon`, `ChevronLeftIcon`, `ChevronRightIcon`, `ChevronUpIcon`, `ClockIcon`, `CloseIcon`, `ExternalIcon`, `InfoIcon`, `LockIcon`, `MoonIcon`, `RefreshIcon`, `SearchIcon`, `SunIcon`, `UserIcon` | A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links. | [docs/llms/icon.md](docs/llms/icon.md) |
 | `Input` | A single-line text input. | [docs/llms/input.md](docs/llms/input.md) |
 | `AreaChart`, `LineChart` · @sukunagg/charts | Shows change across an ordered axis: rating over the last 30 matches, damage per round by role per week, placement per game, gold difference per minute. | [docs/llms/line-chart.md](docs/llms/line-chart.md) |
 | `Menu` | A dropdown menu of actions triggered by a button. | [docs/llms/menu.md](docs/llms/menu.md) |

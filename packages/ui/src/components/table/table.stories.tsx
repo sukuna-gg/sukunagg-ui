@@ -150,3 +150,38 @@ export const WithActions: Story = {
     </Table>
   ),
 }
+
+/** `scroll` in a narrow box: Tab reaches the table because it overflows; arrow keys scroll it. */
+export const KeyboardScroll: Story = {
+  render: () => (
+    <div style={{ maxWidth: 360 }}>
+      <Table scroll aria-label="Stats by champion">
+        <Table.Header>
+          <Table.Row>
+            {['Champion', 'Games', 'Win rate', 'KDA', 'CS / min', 'Dmg / min', 'Vision / min'].map(
+              (h) => (
+                <Table.HeaderCell key={h} scope="col">
+                  {h}
+                </Table.HeaderCell>
+              ),
+            )}
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {[
+            ['Ahri', '24', '62.5%', '4.12', '7.9', '812', '0.91'],
+            ['Jinx', '17', '52.9%', '3.30', '8.6', '944', '0.62'],
+            ['Lulu', '9', '44.4%', '2.71', '1.4', '301', '2.10'],
+          ].map((r) => (
+            <Table.Row key={r[0]}>
+              {r.map((c, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: cells are positional
+                <Table.Cell key={i}>{c}</Table.Cell>
+              ))}
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table>
+    </div>
+  ),
+}

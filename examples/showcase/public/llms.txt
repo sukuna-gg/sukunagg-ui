@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt).
 
-@sukunagg/ui is a React 18/19 component library: 52 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 53 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -40,6 +40,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - [Field](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/field.md): Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you.
 - [GradientText](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/gradient-text.md): Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases.
 - [HoverCard](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/hover-card.md): Preview richer context for a link without a click — a user card, a repo summary, a footnote.
+- [Icon](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/icon.md): A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links.
 - [Input](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/input.md): A single-line text input.
 - [Menu](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/menu.md): A dropdown menu of actions triggered by a button.
 - [Meter](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/docs/llms/meter.md): Show a scalar measurement within a known range: storage used, quota, password strength, a score.
