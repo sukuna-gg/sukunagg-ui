@@ -15,7 +15,7 @@
 
 **SSR-safe, accessible React components for dark-first products — and for the AI agents that build them.**
 
-<!-- count -->53<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
+<!-- count -->56<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
 contrast in both themes, `prefers-reduced-motion` honored, zero runtime styling, React Server
 Components-ready, React 18 and 19. Dark is the identity; light is a mode.
 
@@ -139,10 +139,12 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `DataBar` · @sukunagg/charts | A number with a small bar under it, for comparing rows of a table at a glance: damage to champions in a scoreboard, pick rate in a meta table. | [docs/llms/data-bar.md](docs/llms/data-bar.md) |
 | `Dialog` | A modal dialog. | [docs/llms/dialog.md](docs/llms/dialog.md) |
 | `Divider` | A thin rule that separates content, horizontally or vertically. | [docs/llms/divider.md](docs/llms/divider.md) |
+| `DonutChart` · @sukunagg/charts | Shows a part-to-whole split with few parts: time played by role, games by queue, plans by share. | [docs/llms/donut-chart.md](docs/llms/donut-chart.md) |
 | `Drawer` | A panel that slides in from an edge (nav, filters, details). | [docs/llms/drawer.md](docs/llms/drawer.md) |
 | `EmptyState` | Takes the place of content that isn't there: no results, nothing yet this season, a player not found, a service not answering. | [docs/llms/empty-state.md](docs/llms/empty-state.md) |
 | `Field` | Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you. | [docs/llms/field.md](docs/llms/field.md) |
 | `GradientText` | Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases. | [docs/llms/gradient-text.md](docs/llms/gradient-text.md) |
+| `Heatmap` · @sukunagg/charts | A calendar of activity: one square per day, weeks as columns, darker or brighter by how much happened — games played per day, commits, sessions. | [docs/llms/heatmap.md](docs/llms/heatmap.md) |
 | `HoverCard` | Preview richer context for a link without a click — a user card, a repo summary, a footnote. | [docs/llms/hover-card.md](docs/llms/hover-card.md) |
 | `AlertIcon`, `ChartIcon`, `CheckIcon`, `ChevronDownIcon`, `ChevronLeftIcon`, `ChevronRightIcon`, `ChevronUpIcon`, `ClockIcon`, `CloseIcon`, `ExternalIcon`, `InfoIcon`, `LockIcon`, `MoonIcon`, `RefreshIcon`, `SearchIcon`, `SunIcon`, `UserIcon` | A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links. | [docs/llms/icon.md](docs/llms/icon.md) |
 | `Input` | A single-line text input. | [docs/llms/input.md](docs/llms/input.md) |
@@ -153,6 +155,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `Pagination`, `paginationRange` | Navigate between pages of results, with first/last always shown and ellipses in between. | [docs/llms/pagination.md](docs/llms/pagination.md) |
 | `Popover` | Show a small, interactive panel next to the element that opened it — filters, quick settings, a share box, a date picker later. | [docs/llms/popover.md](docs/llms/popover.md) |
 | `Progress` | A horizontal progress bar, determinate or indeterminate. | [docs/llms/progress.md](docs/llms/progress.md) |
+| `RadialGauge` · @sukunagg/charts | One value against a range, drawn as a 270° arc with the number in the middle: LP to the next division, plan usage, a score out of 100. | [docs/llms/radial-gauge.md](docs/llms/radial-gauge.md) |
 | `RadioGroup` | Choose one option from a small set. | [docs/llms/radio-group.md](docs/llms/radio-group.md) |
 | `RowActions` | Every data table eventually needs a per-row "Edit / Duplicate / Delete" menu. | [docs/llms/row-actions.md](docs/llms/row-actions.md) |
 | `ScrollArea` | Give a bounded region (a list, a code block, a sidebar) an overlay scrollbar that looks the same in every browser and matches the Sukuna surface, instead of the OS default. | [docs/llms/scroll-area.md](docs/llms/scroll-area.md) |

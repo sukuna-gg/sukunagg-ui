@@ -81,21 +81,6 @@ export const ChartFrame = forwardRef<HTMLElement, ChartFrameProps>(function Char
   ref,
 ) {
   const showY = status === 'data' ? yLabels : []
-  const tableBody = table.rows.map((r) => (
-    <tr key={r.join('|')}>
-      {r.map((c, i) =>
-        i === 0 ? (
-          <th key={`h${c}`} scope="row">
-            {c}
-          </th>
-        ) : (
-          // biome-ignore lint/suspicious/noArrayIndexKey: cells are positional (one per series)
-          <td key={`${i}-${c}`}>{c}</td>
-        ),
-      )}
-    </tr>
-  ))
-
   return (
     <figure
       ref={ref}
@@ -218,10 +203,38 @@ export const ChartFrame = forwardRef<HTMLElement, ChartFrameProps>(function Char
         ) : null}
       </div>
 
+      <ChartTail id={id} summary={summary} table={table} />
+    </figure>
+  )
+})
+
+/** The data as a table: sr-only, behind a native "Show as a table", or left out. */
+export interface ChartTableData {
+  mode: 'sr-only' | 'details' | 'none'
+  head: readonly string[]
+  rows: readonly (readonly string[])[]
+}
+
+/**
+ * The parts every chart ends with: the screen-reader summary the figure points at
+ * (`aria-describedby={`${id}-summary`}`) and the table view. Shared by the axis charts (via
+ * ChartFrame) and DonutChart / Heatmap.
+ * @internal
+ */
+export function ChartTail({
+  id,
+  summary,
+  table,
+}: {
+  id: string
+  summary: string
+  table: ChartTableData
+}) {
+  return (
+    <>
       <p id={`${id}-summary`} className="sr-only">
         {summary}
       </p>
-
       {table.mode === 'sr-only' ? (
         <table className="sr-only">
           <thead>
@@ -233,7 +246,22 @@ export const ChartFrame = forwardRef<HTMLElement, ChartFrameProps>(function Char
               ))}
             </tr>
           </thead>
-          <tbody>{tableBody}</tbody>
+          <tbody>
+            {table.rows.map((r) => (
+              <tr key={r.join('|')}>
+                {r.map((c, i) =>
+                  i === 0 ? (
+                    <th key={`h${c}`} scope="row">
+                      {c}
+                    </th>
+                  ) : (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: cells are positional (one per series)
+                    <td key={`${i}-${c}`}>{c}</td>
+                  ),
+                )}
+              </tr>
+            ))}
+          </tbody>
         </table>
       ) : null}
       {table.mode === 'details' ? (
@@ -266,6 +294,6 @@ export const ChartFrame = forwardRef<HTMLElement, ChartFrameProps>(function Char
           </div>
         </details>
       ) : null}
-    </figure>
+    </>
   )
-})
+}

@@ -12,8 +12,16 @@ describe('public API', () => {
     expect(dirs.filter((name) => !indexSrc.includes(`/components/${name}'`))).toEqual([])
   })
 
-  it('exports the four charts', () => {
-    expect(Object.keys(api).sort()).toEqual(['AreaChart', 'BarChart', 'DataBar', 'LineChart'])
+  it('exports the seven charts', () => {
+    expect(Object.keys(api).sort()).toEqual([
+      'AreaChart',
+      'BarChart',
+      'DataBar',
+      'DonutChart',
+      'Heatmap',
+      'LineChart',
+      'RadialGauge',
+    ])
   })
 })
 

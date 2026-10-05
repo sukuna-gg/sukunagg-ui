@@ -10,8 +10,14 @@ export type { BarChartProps } from './components/bar-chart'
 export { BarChart } from './components/bar-chart'
 export type { DataBarProps } from './components/data-bar'
 export { DataBar } from './components/data-bar'
+export type { DonutChartProps } from './components/donut-chart'
+export { DonutChart } from './components/donut-chart'
+export type { HeatmapProps } from './components/heatmap'
+export { Heatmap } from './components/heatmap'
 export type { AreaChartProps, LineChartOwnProps, LineChartProps } from './components/line-chart'
 export { AreaChart, LineChart } from './components/line-chart'
+export type { RadialGaugeProps } from './components/radial-gauge'
+export { RadialGauge } from './components/radial-gauge'
 export type {
   ChartBaseProps,
   ChartEmpty,

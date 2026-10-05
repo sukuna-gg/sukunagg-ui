@@ -323,10 +323,13 @@ in Storybook, still pending for every row.
 | Icon set (17 icons from the main entry, per-icon tree-shaking — spec §11 explains no subpath) | [x] component-icon.md | [x] 11 tests, 100% cov, one icon 481 B |
 | Table `scroll` (sideways scroll, focusable only while overflowing) | [x] component-table.md | [x] client file `table.scroll.tsx`, +2 tests, 100% cov; Table 949 B |
 
-### Later — when a page needs them
+### Later trio — built on request (Q33 "build the rest non-stop")
 
-DonutChart (3 colors + Other), RadialGauge, Heatmap (tracked vs untracked days). Designed in the
-mockup; no spec until a consumer needs one.
+| Item | Doc | Code |
+|---|---|---|
+| DonutChart (3 colors + Other, native `<title>` tooltips, no JS) | [x] component-donut-chart.md | [x] 7 tests, 100% cov, 3.02 kB |
+| RadialGauge (270° meter; `null` is a described image, never a meter at 0) | [x] component-radial-gauge.md | [x] 6 tests, 100% cov, 1.23 kB |
+| Heatmap (UTC calendar, "not tracked" ≠ 0, month labels skip crowded partial months) | [x] component-heatmap.md | [x] 7 tests, 100% cov, 3.19 kB |
 
 ---
 
@@ -418,3 +421,4 @@ Agents append one line per meaningful status change: `YYYY-MM-DD · <what flippe
 - 2026-10-05 · Q33 — wave 2 specs written: `charts-and-stats.md` §5 (package, server-rendered CSS-sized model, shared props/states, client island, d3 bundling + d3-scale size gate), `component-bar-chart.md`, `component-line-chart.md` (Line + Area), `component-data-bar.md`; roadmap header corrected (0.10.0 is published, Q29) · (feat/charts-wave2-specs)
 - 2026-10-05 · Q33 "build the rest non-stop" — wave 2 built: new `@sukunagg/charts` package (BarChart, LineChart, AreaChart, DataBar; server-rendered, CSS-sized; ~1.2 kB client island), no runtime deps (in-house d3-equivalent math, D37); 65 unit tests (~100% cov), 4 Playwright tests; docs generator, README, showcase snippets and Storybook/showcase aliases updated (old `@sukuna-ui/video` alias fixed); changeset → `@sukunagg/charts` 0.1.0 · (feat/charts-wave2-specs)
 - 2026-10-05 · Q33 — wave 3 built: 17 icons (server components, `/* @__PURE__ */` factory calls so one icon is 481 B, not all 17) and Table `scroll` (a named `<section>` that is a tab stop only while overflowing; client file like Input `reveal`); specs in component-icon.md / component-table.md; changeset @sukunagg/ui minor · (feat/charts-wave2-specs)
+- 2026-10-05 · Q33 — later trio built in @sukunagg/charts: DonutChart, RadialGauge, Heatmap (server components, no client JS); shared summary/table extracted to `ChartTail`; axe caught a meter without a value → a null gauge is now a described `role="img"`; 85 charts tests (~100% cov) · (feat/charts-wave2-specs)

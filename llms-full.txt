@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt). This file concatenates every component page plus the design-token reference; the index is at https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt.
 
-@sukunagg/ui is a React 18/19 component library: 53 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 56 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -32,10 +32,12 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - DataBar (@sukunagg/charts): A number with a small bar under it, for comparing rows of a table at a glance: damage to champions in a scoreboard, pick rate in a meta table.
 - Dialog: A modal dialog.
 - Divider: A thin rule that separates content, horizontally or vertically.
+- DonutChart (@sukunagg/charts): Shows a part-to-whole split with few parts: time played by role, games by queue, plans by share.
 - Drawer: A panel that slides in from an edge (nav, filters, details).
 - EmptyState: Takes the place of content that isn't there: no results, nothing yet this season, a player not found, a service not answering.
 - Field: Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you.
 - GradientText: Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases.
+- Heatmap (@sukunagg/charts): A calendar of activity: one square per day, weeks as columns, darker or brighter by how much happened — games played per day, commits, sessions.
 - HoverCard: Preview richer context for a link without a click — a user card, a repo summary, a footnote.
 - Icon: A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links.
 - Input: A single-line text input.
@@ -46,6 +48,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - Pagination: Navigate between pages of results, with first/last always shown and ellipses in between.
 - Popover: Show a small, interactive panel next to the element that opened it — filters, quick settings, a share box, a date picker later.
 - Progress: A horizontal progress bar, determinate or indeterminate.
+- RadialGauge (@sukunagg/charts): One value against a range, drawn as a 270° arc with the number in the middle: LP to the next division, plan usage, a score out of 100.
 - RadioGroup: Choose one option from a small set.
 - RowActions: Every data table eventually needs a per-row "Edit / Duplicate / Delete" menu.
 - ScrollArea: Give a bounded region (a list, a code block, a sidebar) an overlay scrollbar that looks the same in every browser and matches the Sukuna surface, instead of the OS default.
@@ -1264,6 +1267,76 @@ Static; no interactive states.
 
 ---
 
+# DonutChart — @sukunagg/charts
+
+> Shows a part-to-whole split with few parts: time played by role, games by queue, plans by share.
+
+- **Package:** `@sukunagg/charts` — `bun add @sukunagg/charts @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton)
+- **Import:** `import { DonutChart } from '@sukunagg/charts'`
+- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/charts/src/components/donut-chart · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-donut-chart.md
+
+## Purpose
+
+Shows a part-to-whole split with few parts: time played by role, games by queue, plans by share.
+The total sits in the middle and a legend lists each part with its share. More than three parts
+fold into "Other" — a donut is for "mostly this, some that", not for comparing many values
+(use a horizontal `BarChart`).
+
+## API
+
+```ts
+export type DonutChartProps<Row> = {
+  data: readonly Row[]
+  /** Key of each part's name. */
+  x: keyof Row & string
+  /** Key of each part's amount (null / non-numbers = missing, left out and noted). */
+  y: keyof Row & string
+  /** Colored parts before the rest fold into "Other". Default 3 (palette rule, tokens.md). */
+  maxSegments?: number
+  /** Per-part color (any CSS color). Default --sk-chart-1…3, Other = --sk-chart-other. */
+  color?: (row: Row, index: number) => string
+  /** Middle text. Default: the formatted total. */
+  centerValue?: ReactNode
+  /** Small text under it, e.g. "hours". */
+  centerCaption?: ReactNode
+  size?: number            // px, default 160
+  thickness?: number       // ring width px, default 22
+  valueFormat?: Intl.NumberFormatOptions | ((v: number) => string)
+  locale?: string          // default 'en-US'
+  legend?: boolean         // default true: name + share per part
+  empty?: ChartEmpty; loading?: boolean; table?: 'sr-only' | 'details' | 'none'
+  summary?: string; id?: string; className?: string
+} & ChartLabelProps         // aria-label or aria-labelledby, required
+```
+
+## Variants & tokens
+
+Ring segments in `--sk-chart-1…3` (or `color`), Other in `--sk-chart-other`, separated by a 2px
+gap (the gap is parallel: computed per radius). Empty ring `--sk-surface-2`. Center value
+`text-2xl font-semibold text-text tabular-nums`, caption `text-xs text-text-faint`. Legend rows:
+swatch + name (`text-text-dim`) + share (`font-semibold text-text tabular-nums`).
+
+## States
+
+| State | Behavior |
+|---|---|
+| data | ring + center total + legend |
+| some parts missing | they are left out; a note says "N parts not reported" |
+| one part | full ring, no gap |
+| empty (no positive amounts) | grey ring, "—" in the middle, `EmptyState size="sm"` beside it |
+| loading | skeleton ring, `aria-busy` |
+
+Hover: each segment carries an SVG `<title>` ("Duelist: 97 h, 46%") — native tooltip, no JS.
+
+## Accessibility
+
+- [ ] `<figure>` named (type-enforced) and described by a summary ("Duelist 97, Initiator 61 …").
+- [ ] Ring is `role="img"`-free decoration (`aria-hidden`); the legend and table carry the data.
+- [ ] Shares are text, never color alone; Other is labelled.
+
+---
+
 # Drawer — @sukunagg/ui
 
 > A panel that slides in from an edge (nav, filters, details).
@@ -1529,6 +1602,71 @@ text.
       text** (≥ 24px / bold, so the 3:1 large-text floor applies) and ensure the gradient's lightest
       stop clears 3:1 on the surface. Do not use it for body copy — documented in TSDoc `@remarks`.
 - [ ] `-webkit-background-clip: text` prefix included for WebKit/Blink.
+
+---
+
+# Heatmap — @sukunagg/charts
+
+> A calendar of activity: one square per day, weeks as columns, darker or brighter by how much happened — games played per day, commits, sessions.
+
+- **Package:** `@sukunagg/charts` — `bun add @sukunagg/charts @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton)
+- **Import:** `import { Heatmap } from '@sukunagg/charts'`
+- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/charts/src/components/heatmap · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-heatmap.md
+
+## Purpose
+
+A calendar of activity: one square per day, weeks as columns, darker or brighter by how much
+happened — games played per day, commits, sessions. It shows rhythm (weekends, streaks, breaks)
+at a glance, and tells "nothing happened" apart from "we weren't tracking yet".
+
+## API
+
+```ts
+export type HeatmapProps<Row> = {
+  data: readonly Row[]
+  /** Key of the day, as 'YYYY-MM-DD' (read as a calendar date, no time zone). */
+  date: keyof Row & string
+  /** Key of the amount. A day with no row, or a null amount, is "not tracked" — never 0. */
+  value: keyof Row & string
+  /** Last day shown, 'YYYY-MM-DD'. Default: the latest date in `data`. */
+  end?: string
+  weeks?: number           // default 20
+  /** Upper bounds of levels 1–3 (level 4 is above). Default: quarters of the max. */
+  levels?: readonly [number, number, number]
+  /** Unit in tooltips/summary, e.g. 'games'. Default 'events'. */
+  unit?: string
+  valueFormat?: Intl.NumberFormatOptions | ((v: number) => string)
+  locale?: string          // default 'en-US' (month/day names)
+  empty?: ChartEmpty; loading?: boolean; table?: 'sr-only' | 'details' | 'none'
+  summary?: string; id?: string; className?: string
+} & ChartLabelProps
+```
+
+## Variants & tokens
+
+Level 0 (a tracked day with 0) `--sk-surface-2`; levels 1–4 `--sk-heat-1…4`; not tracked =
+transparent with a 1px `--sk-line` outline. Cells are squares that shrink with the container
+(CSS grid, max 14px, 3px gaps). Month labels over the first week of each month, Mon/Wed/Fri
+labels, a Less → More legend (+ "Not tracked" when any day is untracked).
+
+## States
+
+| State | Behavior |
+|---|---|
+| data | colored cells, labels, legend |
+| untracked days | outlined, legend says "Not tracked"; summary counts tracked days only |
+| every tracked day 0 | the grid stays (level 0 / outlined), plus `EmptyState size="sm"` over it |
+| no rows and no `end` | nothing to place on a calendar: just the `EmptyState` (pass `end` to keep the grid) |
+| loading | skeleton cells, `aria-busy` |
+
+Each cell has a native `title` ("Tue, Aug 12: 4 games" / "Tue, Aug 12: not tracked").
+
+## Accessibility
+
+- [ ] `<figure>` named (type-enforced) with a summary ("142 games over 20 weeks, 61 active days").
+- [ ] Cells are `aria-hidden`; the table view lists week × day values ("Not tracked" for gaps).
+- [ ] Levels are explained by the legend; untracked is a shape (outline), not only a color.
 
 ---
 
@@ -2205,6 +2343,69 @@ determinate (width = value) · indeterminate (pulsing partial bar).
 - [ ] `role="progressbar"` with `aria-valuenow/min/max` (determinate) from Base UI.
 - [ ] Accessible name via `aria-label` or a visible `label`.
 - [ ] Indeterminate omits `aria-valuenow`.
+
+---
+
+# RadialGauge — @sukunagg/charts
+
+> One value against a range, drawn as a 270° arc with the number in the middle: LP to the next division, plan usage, a score out of 100.
+
+- **Package:** `@sukunagg/charts` — `bun add @sukunagg/charts @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton)
+- **Import:** `import { RadialGauge } from '@sukunagg/charts'`
+- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/charts/src/components/radial-gauge · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-radial-gauge.md
+
+## Purpose
+
+One value against a range, drawn as a 270° arc with the number in the middle: LP to the next
+division, plan usage, a score out of 100. Use it where a single figure is the point and the
+"how full" shape helps; inside a table or a form use `Meter` (a bar) instead.
+
+## API
+
+```ts
+export interface RadialGaugeProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
+  /** null = not reported: track only, "—", announced as not reported. */
+  value: number | null
+  min?: number             // default 0
+  max?: number             // default 100
+  /** Visible name under the gauge (also names the meter). Or pass aria-label. */
+  label?: ReactNode
+  /** Middle text. Default: the formatted value. */
+  valueLabel?: ReactNode
+  /** Small text under the middle value, e.g. "of 100 LP". */
+  caption?: ReactNode
+  /** Line under the label, e.g. "Diamond II → I". */
+  description?: ReactNode
+  color?: string           // fill, any CSS color; default --sk-chart-1
+  size?: number            // px, default 150
+  thickness?: number       // arc width px, default 12
+  format?: Intl.NumberFormatOptions
+  locale?: string          // default 'en-US'
+  missingLabel?: string    // default 'Not reported'
+  'aria-valuetext'?: string
+}
+```
+
+## Variants & tokens
+
+Track = the fill color at 16% over `--sk-surface` (`color-mix`); fill = `color`; round caps.
+Value `text-[26px] font-semibold text-text tabular-nums`; caption `text-xs text-text-faint`;
+label `text-sm font-semibold text-text`; description `text-xs text-text-dim`.
+
+## States
+
+| State | Behavior |
+|---|---|
+| value | fill from the start to `(value − min) / (max − min)`, clamped |
+| at min | track only (no zero-length cap blob) |
+| `null` | track only, "—" in `text-text-faint`; not a meter (see §6) |
+
+## Accessibility
+
+- [ ] `role="meter"` with min/max/now and a text value; named.
+- [ ] Missing value: `role="img"` described as `missingLabel` — never a meter at 0.
+- [ ] The number is text in the middle; the arc is decorative.
 
 ---
 
