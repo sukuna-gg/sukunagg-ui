@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { StatTile } from './index'
 
 const meta = {
-  title: 'Components/StatTile',
+  title: 'Charts/StatTile',
   component: StatTile,
   tags: ['autodocs'],
   args: { label: 'Win rate', value: '58.3%', caption: '35W 25L', tone: 'positive' },

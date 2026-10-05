@@ -8,6 +8,7 @@ import {
   components,
   renderStory,
   type StoryEntry,
+  sections,
   storySnippet,
 } from './stories'
 
@@ -109,18 +110,28 @@ function Sidebar({ active }: { active: string }) {
       <a href={`#${OVERVIEW}`} className={itemClass(active === OVERVIEW)}>
         Overview
       </a>
-      <p className="mt-5 mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-text-faint">
-        Components · {COUNT}
-      </p>
-      <ul className="list-none p-0">
-        {components.map((c) => (
-          <li key={c.slug}>
-            <a href={`#${c.slug}`} className={itemClass(active === c.slug)}>
-              {c.name}
-            </a>
-          </li>
-        ))}
-      </ul>
+      {sections.map((s) => {
+        const headingId = `nav-${s.name.toLowerCase()}`
+        return (
+          <div key={s.name}>
+            <p
+              id={headingId}
+              className="mt-5 mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-text-faint"
+            >
+              {s.name} · {s.components.length}
+            </p>
+            <ul aria-labelledby={headingId} className="list-none p-0">
+              {s.components.map((c) => (
+                <li key={c.slug}>
+                  <a href={`#${c.slug}`} className={itemClass(active === c.slug)}>
+                    {c.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      })}
     </nav>
   )
 }
@@ -140,10 +151,14 @@ function MobileNav({ active }: { active: string }) {
         className="h-10 w-full rounded-md border border-line bg-surface-2 px-3 text-text"
       >
         <option value={OVERVIEW}>Overview</option>
-        {components.map((c) => (
-          <option key={c.slug} value={c.slug}>
-            {c.name}
-          </option>
+        {sections.map((s) => (
+          <optgroup key={s.name} label={s.name}>
+            {s.components.map((c) => (
+              <option key={c.slug} value={c.slug}>
+                {c.name}
+              </option>
+            ))}
+          </optgroup>
         ))}
       </select>
     </div>
@@ -192,22 +207,36 @@ function Overview() {
         </Card>
       </div>
 
-      <div className="mt-8 flex flex-wrap gap-2">
-        {components.map((c) => (
-          <a
-            key={c.slug}
-            href={`#${c.slug}`}
-            className="group rounded-full no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+      {sections.map((s) => (
+        <section key={s.name} aria-label={s.name} className="mt-8">
+          <Text
+            as="h2"
+            size="xs"
+            weight="semibold"
+            tone="faint"
+            tracking="eyebrow"
+            className="mb-3"
           >
-            <Badge
-              tone="neutral"
-              className="cursor-pointer transition-[color,background-color,border-color,transform] duration-fast ease-sukuna group-hover:-translate-y-0.5 group-hover:border-accent group-hover:bg-surface-2 group-hover:text-text"
-            >
-              {c.name}
-            </Badge>
-          </a>
-        ))}
-      </div>
+            {s.name} · {s.components.length}
+          </Text>
+          <div className="flex flex-wrap gap-2">
+            {s.components.map((c) => (
+              <a
+                key={c.slug}
+                href={`#${c.slug}`}
+                className="group rounded-full no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+              >
+                <Badge
+                  tone="neutral"
+                  className="cursor-pointer transition-[color,background-color,border-color,transform] duration-fast ease-sukuna group-hover:-translate-y-0.5 group-hover:border-accent group-hover:bg-surface-2 group-hover:text-text"
+                >
+                  {c.name}
+                </Badge>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   )
 }

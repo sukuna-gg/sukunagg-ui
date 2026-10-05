@@ -60,7 +60,7 @@ const StoryButton = ({
 )
 
 const meta = {
-  title: 'Components/VideoPlayer',
+  title: 'Video/VideoPlayer',
   component: Player,
   tags: ['autodocs'],
   args: {

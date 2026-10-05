@@ -46,8 +46,21 @@ export interface ComponentEntry {
   name: string
   /** URL hash slug, e.g. `button`. */
   slug: string
+  /** Sidebar section from `meta.title`'s first segment (`Charts/StatTile` → `Charts`). */
+  section: string
   meta: Meta
   stories: StoryEntry[]
+}
+
+/**
+ * Sidebar sections in display order — the same order as Storybook's `storySort`. A title prefix
+ * not listed here still shows, after these.
+ */
+const SECTIONS = ['Components', 'Charts', 'Video']
+
+const sectionRank = (s: string) => {
+  const i = SECTIONS.indexOf(s)
+  return i === -1 ? SECTIONS.length : i
 }
 
 const modules = import.meta.glob('../../../packages/*/src/components/*/*.stories.tsx', {
@@ -389,10 +402,21 @@ export const components: ComponentEntry[] = Object.entries(modules)
           hooks: hooksOf(code),
         }
       })
-    return { name, slug: slugify(name), meta, stories }
+    const section = meta.title?.includes('/') ? (meta.title.split('/')[0]?.trim() ?? '') : ''
+    return { name, slug: slugify(name), section: section || 'Components', meta, stories }
   })
   .filter((c) => c.stories.length > 0)
-  .sort((a, b) => a.name.localeCompare(b.name))
+  .sort(
+    (a, b) =>
+      sectionRank(a.section) - sectionRank(b.section) ||
+      a.section.localeCompare(b.section) ||
+      a.name.localeCompare(b.name),
+  )
+
+/** Components grouped by section, in sidebar order. */
+export const sections: { name: string; components: ComponentEntry[] }[] = [
+  ...new Set(components.map((c) => c.section)),
+].map((name) => ({ name, components: components.filter((c) => c.section === name) }))
 
 /** Render one story the way Storybook would: merge meta+story args, prefer an explicit `render`. */
 export function renderStory(entry: ComponentEntry, item: StoryEntry): ReactNode {

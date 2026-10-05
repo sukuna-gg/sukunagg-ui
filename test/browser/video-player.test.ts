@@ -7,7 +7,7 @@ const currentTime = (page: import('@playwright/test').Page) =>
   page.locator('video').evaluate((v: HTMLVideoElement) => v.currentTime)
 
 test('plays from the big button and shows the first caption', async ({ page }) => {
-  await page.goto(story('components-videoplayer--playground'))
+  await page.goto(story('video-videoplayer--playground'))
   await page.getByRole('button', { name: 'Play Last Train, Shibuya' }).click()
   await expect(page.getByText('Shibuya, 11:40 p.m.')).toBeVisible()
   await expect.poll(() => currentTime(page)).toBeGreaterThan(0.5)
@@ -15,7 +15,7 @@ test('plays from the big button and shows the first caption', async ({ page }) =
 })
 
 test('seeks with the keyboard and jumps chapters with Shift+Arrow', async ({ page }) => {
-  await page.goto(story('components-videoplayer--playground'))
+  await page.goto(story('video-videoplayer--playground'))
   await expect(page.getByRole('button', { name: 'Chapters: Cold open' })).toBeVisible()
   const seek = page.getByRole('slider', { name: 'Seek' })
   await seek.focus()
@@ -27,7 +27,7 @@ test('seeks with the keyboard and jumps chapters with Shift+Arrow', async ({ pag
 })
 
 test('hovering the bar previews the sprite thumbnail and chapter', async ({ page }) => {
-  await page.goto(story('components-videoplayer--playground'))
+  await page.goto(story('video-videoplayer--playground'))
   const seek = page.getByRole('slider', { name: 'Seek' })
   await expect(page.getByRole('button', { name: 'Chapters: Cold open' })).toBeVisible()
   const box = await seek.boundingBox()
@@ -38,7 +38,7 @@ test('hovering the bar previews the sprite thumbnail and chapter', async ({ page
 })
 
 test('changes speed and quality from the settings menu', async ({ page }) => {
-  await page.goto(story('components-videoplayer--playground'))
+  await page.goto(story('video-videoplayer--playground'))
   await page.getByRole('button', { name: 'Settings' }).click()
   await page.getByRole('menuitem', { name: /Speed/ }).click()
   await page.getByRole('menuitemradio', { name: '1.5×' }).click()
@@ -58,13 +58,13 @@ test('changes speed and quality from the settings menu', async ({ page }) => {
 })
 
 test('the error state offers Retry', async ({ page }) => {
-  await page.goto(story('components-videoplayer--error-state'))
+  await page.goto(story('video-videoplayer--error-state'))
   await expect(page.getByRole('alert')).toContainText("This video couldn't be loaded.")
   await expect(page.getByRole('button', { name: 'Retry' })).toBeVisible()
 })
 
 test('the side panel lists chapters and seeks on click', async ({ page }) => {
-  await page.goto(story('components-videoplayer--chapters-panel'))
+  await page.goto(story('video-videoplayer--chapters-panel'))
   const panel = page.getByRole('complementary', { name: 'Chapters and playlist' })
   await expect(panel.getByRole('tab', { name: 'Chapters' })).toHaveAttribute(
     'aria-selected',
@@ -82,7 +82,7 @@ test('the side panel lists chapters and seeks on click', async ({ page }) => {
 })
 
 test('playlist: next swaps the media and the panel follows', async ({ page }) => {
-  await page.goto(story('components-videoplayer--playlist'))
+  await page.goto(story('video-videoplayer--playlist'))
   await expect(page.locator('video')).toHaveAttribute('src', /night-360\.webm$/)
   await page.getByRole('button', { name: 'Next video' }).click()
   await expect(page.getByRole('region', { name: 'Morning Market, Tsukiji' })).toBeVisible()
@@ -90,7 +90,7 @@ test('playlist: next swaps the media and the panel follows', async ({ page }) =>
 })
 
 test('the end screen offers replay and share', async ({ page }) => {
-  await page.goto(story('components-videoplayer--end-screen'))
+  await page.goto(story('video-videoplayer--end-screen'))
   await page.locator('video').evaluate(async (v: HTMLVideoElement) => {
     v.muted = true
     v.currentTime = 29.5
@@ -106,7 +106,7 @@ test('the end screen offers replay and share', async ({ page }) => {
 })
 
 test('picture settings zoom and mirror the video', async ({ page }) => {
-  await page.goto(story('components-videoplayer--all-settings'))
+  await page.goto(story('video-videoplayer--all-settings'))
   await page.getByRole('button', { name: 'Settings' }).click()
   await page.getByRole('menuitem', { name: /Picture/ }).click()
   await page.getByRole('menuitemradio', { name: 'Zoom: 150%' }).click()
@@ -115,7 +115,7 @@ test('picture settings zoom and mirror the video', async ({ page }) => {
 })
 
 test('watch limit covers the frame at the limit', async ({ page }) => {
-  await page.goto(story('components-videoplayer--watch-limit'))
+  await page.goto(story('video-videoplayer--watch-limit'))
   await page.locator('video').evaluate((v: HTMLVideoElement) => {
     v.currentTime = 10
   })
@@ -123,7 +123,7 @@ test('watch limit covers the frame at the limit', async ({ page }) => {
 })
 
 test('live: the pill turns grey behind the edge and jumps back', async ({ page }) => {
-  await page.goto(story('components-videoplayer--live'))
+  await page.goto(story('video-videoplayer--live'))
   const video = page.locator('video')
   await video.evaluate(async (v: HTMLVideoElement) => {
     v.muted = true
@@ -140,7 +140,7 @@ test('live: the pill turns grey behind the edge and jumps back', async ({ page }
 })
 
 test('overlay card appears in its window and closes', async ({ page }) => {
-  await page.goto(story('components-videoplayer--overlays'))
+  await page.goto(story('video-videoplayer--overlays'))
   await page.locator('video').evaluate((v: HTMLVideoElement) => {
     v.currentTime = 5
   })
@@ -151,7 +151,7 @@ test('overlay card appears in its window and closes', async ({ page }) => {
 })
 
 test('HLS via hlsEngine: plays through MSE and lists manifest levels', async ({ page }) => {
-  await page.goto(story('components-videoplayer--hls-stream'))
+  await page.goto(story('video-videoplayer--hls-stream'))
   const video = page.locator('video')
   await video.evaluate(async (v: HTMLVideoElement) => {
     v.muted = true
@@ -170,7 +170,7 @@ test('HLS via hlsEngine: plays through MSE and lists manifest levels', async ({ 
 })
 
 test('±10s keeps the controls up, then they hide after inactivity', async ({ page }) => {
-  await page.goto(story('components-videoplayer--playground'))
+  await page.goto(story('video-videoplayer--playground'))
   const player = page.getByRole('region', { name: 'Last Train, Shibuya' })
   await page.locator('video').evaluate(async (v: HTMLVideoElement) => {
     v.muted = true
