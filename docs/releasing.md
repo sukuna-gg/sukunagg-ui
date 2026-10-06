@@ -64,8 +64,14 @@ Publishing is automated with the **Changesets GitHub Action**, and stays owner-g
 ### One-time setup (owner)
 
 - Create the `@sukuna` npm scope/org and grant publish rights.
-- Add repo secret **`NPM_TOKEN`** — an npm **Automation** token with publish access to the `@sukunagg` scope (`@sukunagg/ui`, `@sukunagg/video`).
+- Add repo secret **`NPM_TOKEN`** — an npm **Automation** token with publish access to the `@sukunagg` scope (`@sukunagg/ui`, `@sukunagg/video`, `@sukunagg/charts`). A granular token limited to named packages can't publish a *new* package (`@sukunagg/charts` 0.1.0) — scope it to the org or add the package.
 - The workflow has `id-token: write` for npm provenance; the repo must be public for provenance.
+- **Allow GitHub Actions to create and approve pull requests** — org (`sukuna-gg`) → Settings →
+  Actions → General → Workflow permissions, then the same box on the repo. It is off by default;
+  without it the Release run fails with "GitHub Actions is not permitted to create or approve pull
+  requests" and no Version Packages PR appears (Q35).
+- Every `package.json` `repository.url` must name the real repo (`sukuna-gg/sukunagg-ui`): npm
+  provenance rejects a publish built from a different repo. Update them on any rename (Q35).
 
 ### First release (0.1.0)
 

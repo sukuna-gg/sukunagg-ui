@@ -5,9 +5,9 @@
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { useVideoPlayer, VideoPlayer, VideoPlayerAudio, VideoPlayerEndScreen, VideoPlayerOverlay, VideoPlayerPanel, VideoPlayerPlaylist, VideoPlayerShare, VideoPlayerSkip, VideoPlayerUpNext } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Standalone:** `bun add @sukunagg/video` — `import { useVideoPlayer, VideoPlayer, VideoPlayerAudio, VideoPlayerEndScreen, VideoPlayerOverlay, VideoPlayerPanel, VideoPlayerPlaylist, VideoPlayerShare, VideoPlayerSkip, VideoPlayerUpNext } from '@sukunagg/video'` + `import '@sukunagg/video/video.css'` (no Tailwind or sukuna-ui needed; themed by `--vp-*` variables — see https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/video#readme)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/video/src/components/video-player · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-video-player.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Standalone:** `bun add @sukunagg/video` — `import { useVideoPlayer, VideoPlayer, VideoPlayerAudio, VideoPlayerEndScreen, VideoPlayerOverlay, VideoPlayerPanel, VideoPlayerPlaylist, VideoPlayerShare, VideoPlayerSkip, VideoPlayerUpNext } from '@sukunagg/video'` + `import '@sukunagg/video/video.css'` (no Tailwind or sukuna-ui needed; themed by `--vp-*` variables — see https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/video#readme)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/video/src/components/video-player · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-video-player.md
 
 ## Purpose
 

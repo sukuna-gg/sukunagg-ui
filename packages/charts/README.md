@@ -1,6 +1,6 @@
 # @sukunagg/charts
 
-Server-rendered, accessible React charts for [sukuna-ui](https://github.com/sukuna-gg/sukuna-ui):
+Server-rendered, accessible React charts for [sukuna-ui](https://github.com/sukuna-gg/sukunagg-ui):
 `BarChart`, `LineChart`, `AreaChart` and `DataBar`.
 
 - **Server components.** Charts render as SVG paths plus HTML bars, dots and labels, sized by CSS:
@@ -65,10 +65,10 @@ import { AreaChart, BarChart, DataBar, LineChart } from '@sukunagg/charts'
 <DataBar value={damage} max={topDamage} color="var(--l-blue)" />
 ```
 
-Full API per component: [BarChart](https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/llms/bar-chart.md) ·
-[LineChart / AreaChart](https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/llms/line-chart.md) ·
-[DataBar](https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/llms/data-bar.md). Design notes:
-[docs/charts-and-stats.md](https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/charts-and-stats.md).
+Full API per component: [BarChart](https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/llms/bar-chart.md) ·
+[LineChart / AreaChart](https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/llms/line-chart.md) ·
+[DataBar](https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/llms/data-bar.md). Design notes:
+[docs/charts-and-stats.md](https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/charts-and-stats.md).
 
 ## License
 

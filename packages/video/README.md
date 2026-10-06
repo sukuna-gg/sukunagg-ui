@@ -2,7 +2,7 @@
 
 A branded, accessible React video player you can drop into **any** React app — no Tailwind, no
 `@sukunagg/ui`, no other UI library. It's the `VideoPlayer` from
-[sukuna-ui](https://github.com/sukuna-gg/sukuna-ui), published on its own.
+[sukuna-ui](https://github.com/sukuna-gg/sukunagg-ui), published on its own.
 
 - Chapters on the seek bar, sprite thumbnails, captions with style settings, quality and speed menus
 - Playlists, a side panel (chapters / transcript / playlist), up next, end screen, share, skip intro,

@@ -1,6 +1,6 @@
 # @sukunagg/ui — full documentation
 
-> SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt). This file concatenates every component page plus the design-token reference; the index is at https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt.
+> SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt). This file concatenates every component page plus the design-token reference; the index is at https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt.
 
 @sukunagg/ui is a React 18/19 component library: 56 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
@@ -78,8 +78,8 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Accordion } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/accordion · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-accordion.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/accordion · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-accordion.md
 
 ## Purpose
 
@@ -124,8 +124,8 @@ collapsed · expanded (chevron rotated) · focus-visible · disabled item.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Alert } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/alert · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-alert.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/alert · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-alert.md
 
 ## Purpose
 
@@ -172,8 +172,8 @@ Static; no interactive states. (No built-in dismiss in v1 — see Decisions.)
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { AlertDialog } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/alert-dialog · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-alert-dialog.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/alert-dialog · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-alert-dialog.md
 
 ## Purpose
 
@@ -241,8 +241,8 @@ focusable, and `Cancel` comes first in the footer. Reduced motion: transitions o
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Avatar } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/avatar · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-avatar.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/avatar · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-avatar.md
 
 ## Purpose
 
@@ -282,8 +282,8 @@ image loaded (image shown) · loading/error/no src (fallback shown).
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Badge } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/badge · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-badge.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/badge · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-badge.md
 
 ## Purpose
 
@@ -353,8 +353,8 @@ without `dot` does nothing (documented in the prop's TSDoc).
 
 - **Package:** `@sukunagg/charts` — `bun add @sukunagg/charts @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton)
 - **Import:** `import { BarChart } from '@sukunagg/charts'`
-- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/charts/src/components/bar-chart · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-bar-chart.md
+- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/charts/src/components/bar-chart · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-bar-chart.md
 
 ## Purpose
 
@@ -417,8 +417,8 @@ every series (stacked adds a Total row).
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Breadcrumbs } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/breadcrumbs · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-breadcrumbs.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/breadcrumbs · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-breadcrumbs.md
 
 ## Purpose
 
@@ -461,8 +461,8 @@ Static; links hover/focus.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Button } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/button · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-button.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/button · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-button.md
 
 ## Purpose
 
@@ -550,8 +550,8 @@ Font: `--sk-font-display`, weight `--sk-weight-bold`, `--sk-tracking-tight`.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Card } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/card · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-card.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/card · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-card.md
 
 ## Purpose
 
@@ -632,8 +632,8 @@ Extends `<div>`; adds only `elevation`, `padding`, `radius`, `tone`, `interactiv
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Carousel } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/carousel · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-carousel.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/carousel · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-carousel.md
 
 ## Purpose
 
@@ -722,8 +722,8 @@ No new tokens required.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Checkbox } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/checkbox · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-checkbox.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/checkbox · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-checkbox.md
 
 ## Purpose
 
@@ -791,8 +791,8 @@ default · hover · focus-visible (accent-glow ring) · checked (native, accent)
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Chip } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/chip · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-chip.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/chip · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-chip.md
 
 ## Purpose
 
@@ -844,8 +844,8 @@ opacity-70 hover:opacity-100 focus-visible:ring-2 focus-visible:ring-focus-ring`
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Collapsible } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/collapsible · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-collapsible.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/collapsible · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-collapsible.md
 
 ## Purpose
 
@@ -899,8 +899,8 @@ transition, no chevron rotation transition.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Combobox } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/combobox · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-combobox.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/combobox · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-combobox.md
 
 ## Purpose
 
@@ -960,8 +960,8 @@ closed · typing (filtered list) · item highlighted (keyboard) · empty (no mat
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { ContextMenu } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/context-menu · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-context-menu.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/context-menu · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-context-menu.md
 
 ## Purpose
 
@@ -1018,8 +1018,8 @@ closed · open at cursor (positioned popup) · item highlighted (pointer/keyboar
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Counter } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/counter · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-counter.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/counter · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-counter.md
 
 ## Purpose
 
@@ -1101,8 +1101,8 @@ No new color/spacing tokens required.
 
 - **Package:** `@sukunagg/charts` — `bun add @sukunagg/charts @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton)
 - **Import:** `import { DataBar } from '@sukunagg/charts'`
-- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/charts/src/components/data-bar · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-data-bar.md
+- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/charts/src/components/data-bar · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-data-bar.md
 
 ## Purpose
 
@@ -1169,8 +1169,8 @@ Not here: negative values, a target marker, labels inside the bar.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Dialog } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/dialog · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-dialog.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/dialog · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-dialog.md
 
 ## Purpose
 
@@ -1233,8 +1233,8 @@ closed (nothing) · open (backdrop + popup, focus trapped) · enter/leave transi
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Divider } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/divider · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-divider.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/divider · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-divider.md
 
 ## Purpose
 
@@ -1273,8 +1273,8 @@ Static; no interactive states.
 
 - **Package:** `@sukunagg/charts` — `bun add @sukunagg/charts @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton)
 - **Import:** `import { DonutChart } from '@sukunagg/charts'`
-- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/charts/src/components/donut-chart · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-donut-chart.md
+- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/charts/src/components/donut-chart · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-donut-chart.md
 
 ## Purpose
 
@@ -1343,8 +1343,8 @@ Hover: each segment carries an SVG `<title>` ("Duelist: 97 h, 46%") — native t
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Drawer } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/drawer · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-drawer.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/drawer · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-drawer.md
 
 ## Purpose
 
@@ -1384,8 +1384,8 @@ closed · open (slides in from `side`, focus trapped) · enter/leave transforms.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { EmptyState } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/empty-state · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-empty-state.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/empty-state · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-empty-state.md
 
 ## Purpose
 
@@ -1452,8 +1452,8 @@ Static. The component *is* a state; it has none of its own.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Field } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/field · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-field.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/field · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-field.md
 
 ## Purpose
 
@@ -1539,8 +1539,8 @@ the control.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { GradientText } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/gradient-text · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-gradient-text.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/gradient-text · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-gradient-text.md
 
 ## Purpose
 
@@ -1611,8 +1611,8 @@ text.
 
 - **Package:** `@sukunagg/charts` — `bun add @sukunagg/charts @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton)
 - **Import:** `import { Heatmap } from '@sukunagg/charts'`
-- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/charts/src/components/heatmap · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-heatmap.md
+- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/charts/src/components/heatmap · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-heatmap.md
 
 ## Purpose
 
@@ -1676,8 +1676,8 @@ Each cell has a native `title` ("Tue, Aug 12: 4 games" / "Tue, Aug 12: not track
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { HoverCard } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/hover-card · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-hover-card.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/hover-card · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-hover-card.md
 
 ## Purpose
 
@@ -1744,8 +1744,8 @@ motion: enter/exit transforms collapse to instant (`motion-reduce:*`).
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { AlertIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, InfoIcon, LockIcon, MoonIcon, RefreshIcon, SearchIcon, SunIcon, UserIcon } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/icon · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-icon.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/icon · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-icon.md
 
 ## Purpose
 
@@ -1802,8 +1802,8 @@ Static.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Input } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/input · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-input.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/input · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-input.md
 
 ## Purpose
 
@@ -1885,8 +1885,8 @@ Sukuna has one red (crimson), so the invalid border reuses `--sk-accent` (see `d
 
 - **Package:** `@sukunagg/charts` — `bun add @sukunagg/charts @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton)
 - **Import:** `import { AreaChart, LineChart } from '@sukunagg/charts'`
-- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/charts/src/components/line-chart · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-line-chart.md
+- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/charts/src/components/line-chart · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-line-chart.md
 
 ## Purpose
 
@@ -1981,8 +1981,8 @@ game-specific rules.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Menu } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/menu · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-menu.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/menu · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-menu.md
 
 ## Purpose
 
@@ -2037,8 +2037,8 @@ closed · open (positioned popup) · item highlighted (keyboard) · disabled ite
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Meter } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/meter · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-meter.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/meter · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-meter.md
 
 ## Purpose
 
@@ -2104,8 +2104,8 @@ Static — no hover/focus (not interactive). Indicator width transition on value
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { NumberField } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/number-field · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-number-field.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/number-field · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-number-field.md
 
 ## Purpose
 
@@ -2190,8 +2190,8 @@ No new tokens — reuses `--sk-surface-2`, `--sk-line`, `--sk-well`, `--sk-focus
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Pagination, paginationRange } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/pagination · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-pagination.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/pagination · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-pagination.md
 
 ## Purpose
 
@@ -2234,8 +2234,8 @@ page: default · hover · active (`aria-current="page"`). prev/next disabled at 
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Popover } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/popover · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-popover.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/popover · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-popover.md
 
 ## Purpose
 
@@ -2306,8 +2306,8 @@ and `Popover.Close` close it; focus returns to the trigger. Reduced motion: tran
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Progress } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/progress · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-progress.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/progress · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-progress.md
 
 ## Purpose
 
@@ -2352,8 +2352,8 @@ determinate (width = value) · indeterminate (pulsing partial bar).
 
 - **Package:** `@sukunagg/charts` — `bun add @sukunagg/charts @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton)
 - **Import:** `import { RadialGauge } from '@sukunagg/charts'`
-- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/charts/src/components/radial-gauge · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-radial-gauge.md
+- **Styles:** with Tailwind v4 add `@source "../node_modules/@sukunagg/charts/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/charts/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/charts/src/components/radial-gauge · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-radial-gauge.md
 
 ## Purpose
 
@@ -2415,8 +2415,8 @@ label `text-sm font-semibold text-text`; description `text-xs text-text-dim`.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { RadioGroup } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/radio-group · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-radio-group.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/radio-group · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-radio-group.md
 
 ## Purpose
 
@@ -2462,8 +2462,8 @@ unchecked · checked (accent border + dot) · focus-visible ring · disabled.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { RowActions } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/row-actions · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-row-actions.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/row-actions · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-row-actions.md
 
 ## Purpose
 
@@ -2551,8 +2551,8 @@ highlighted / disabled (Menu's). Reduced motion via Menu.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { ScrollArea } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/scroll-area · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-scroll-area.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/scroll-area · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-scroll-area.md
 
 ## Purpose
 
@@ -2610,8 +2610,8 @@ Vertical only / horizontal only / both (a corner square where they meet).
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Select } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/select · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-select.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/select · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-select.md
 
 ## Purpose
 
@@ -2676,8 +2676,8 @@ disabled trigger.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { ShinyText } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/shiny-text · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-shiny-text.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/shiny-text · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-shiny-text.md
 
 ## Purpose
 
@@ -2758,8 +2758,8 @@ No new **color** token needed — the band is built from `--sk-text-dim` (base) 
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Skeleton } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/skeleton · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-skeleton.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/skeleton · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-skeleton.md
 
 ## Purpose
 
@@ -2806,8 +2806,8 @@ Static; animating while mounted (pulse or shimmer), frozen under `prefers-reduce
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Slider } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/slider · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-slider.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/slider · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-slider.md
 
 ## Purpose
 
@@ -2853,8 +2853,8 @@ default · dragging · focus-visible ring on thumb · disabled.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Sparkline } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/sparkline · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-sparkline.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/sparkline · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-sparkline.md
 
 ## Purpose
 
@@ -2933,8 +2933,8 @@ No hover, no focus: it is a figure, not a control.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Spinner } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/spinner · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-spinner.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/spinner · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-spinner.md
 
 ## Purpose
 
@@ -2973,8 +2973,8 @@ Static; always spinning while mounted.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { StatTile } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/stat-tile · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-stat-tile.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/stat-tile · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-stat-tile.md
 
 ## Purpose
 
@@ -3079,8 +3079,8 @@ No hover/focus of its own — it is not interactive.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Stepper } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/stepper · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-stepper.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/stepper · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-stepper.md
 
 ## Purpose
 
@@ -3125,8 +3125,8 @@ upcoming (`> activeStep`).
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Switch } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/switch · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-switch.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/switch · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-switch.md
 
 ## Purpose
 
@@ -3187,8 +3187,8 @@ disabled (opacity .45, not-allowed).
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Table } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/table · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-table.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/table · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-table.md
 
 ## Purpose
 
@@ -3263,8 +3263,8 @@ overflows it stays out of the tab order. Replaces sukuna-gg-web's `Scrollable`.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Tabs } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/tabs · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-tabs.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/tabs · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-tabs.md
 
 ## Purpose
 
@@ -3341,8 +3341,8 @@ tab: default · hover · selected (accent underline) · focus-visible · disable
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Text } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/text · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-text.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/text · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-text.md
 
 ## Purpose
 
@@ -3411,8 +3411,8 @@ Static; no interactive states. It inherits nothing that changes on hover/focus.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Textarea } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/textarea · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-textarea.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/textarea · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-textarea.md
 
 ## Purpose
 
@@ -3470,8 +3470,8 @@ disabled · readOnly (native). Reduced motion: only a color transition, no motio
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { ToastProvider, useToast } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/toast · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-toast.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/toast · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-toast.md
 
 ## Purpose
 
@@ -3534,8 +3534,8 @@ enter (slide/fade in) · visible · auto-dismiss after `timeout` · close (butto
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Toggle, ToggleGroup } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/toggle-group · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-toggle-group.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/toggle-group · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-toggle-group.md
 
 ## Purpose
 
@@ -3623,8 +3623,8 @@ disabled (per item or whole group).
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { Tooltip } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/ui/src/components/tooltip · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-tooltip.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/tooltip · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-tooltip.md
 
 ## Purpose
 
@@ -3676,9 +3676,9 @@ closed (nothing rendered) · open (popup, positioned by Base UI) · enter/leave 
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
 - **Import:** `import { useVideoPlayer, VideoPlayer, VideoPlayerAudio, VideoPlayerEndScreen, VideoPlayerOverlay, VideoPlayerPanel, VideoPlayerPlaylist, VideoPlayerShare, VideoPlayerSkip, VideoPlayerUpNext } from '@sukunagg/ui'`
-- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukuna-ui/main/llms.txt)
-- **Standalone:** `bun add @sukunagg/video` — `import { useVideoPlayer, VideoPlayer, VideoPlayerAudio, VideoPlayerEndScreen, VideoPlayerOverlay, VideoPlayerPanel, VideoPlayerPlaylist, VideoPlayerShare, VideoPlayerSkip, VideoPlayerUpNext } from '@sukunagg/video'` + `import '@sukunagg/video/video.css'` (no Tailwind or sukuna-ui needed; themed by `--vp-*` variables — see https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/video#readme)
-- **Source:** https://github.com/sukuna-gg/sukuna-ui/tree/main/packages/video/src/components/video-player · **Spec:** https://github.com/sukuna-gg/sukuna-ui/blob/main/docs/component-video-player.md
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Standalone:** `bun add @sukunagg/video` — `import { useVideoPlayer, VideoPlayer, VideoPlayerAudio, VideoPlayerEndScreen, VideoPlayerOverlay, VideoPlayerPanel, VideoPlayerPlaylist, VideoPlayerShare, VideoPlayerSkip, VideoPlayerUpNext } from '@sukunagg/video'` + `import '@sukunagg/video/video.css'` (no Tailwind or sukuna-ui needed; themed by `--vp-*` variables — see https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/video#readme)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/video/src/components/video-player · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-video-player.md
 
 ## Purpose
 

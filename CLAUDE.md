@@ -41,7 +41,7 @@ bun run check && bun run test:coverage && bun run build && bun run check:pkg
 `bun run test:browser`, run against a built Storybook — not part of coverage.)
 
 **Repo layout (Bun workspaces, Q27):** publishable packages live in `packages/*` — `packages/ui`
-is `@sukunagg/ui`, `packages/video` is `@sukunagg/video` (repo `sukuna-gg/sukuna-ui`, Q29). Repo-level tooling stays at the root: `docs/`, `.storybook/`, `test/` (shared
+is `@sukunagg/ui`, `packages/video` is `@sukunagg/video` (repo `sukuna-gg/sukunagg-ui`, Q29/Q35). Repo-level tooling stays at the root: `docs/`, `.storybook/`, `test/` (shared
 unit helpers + `test/browser`), `scripts/` (shared build/docs scripts), `examples/`, `.changeset/`.
 
 Coverage floor is **90%** on lines, functions, and statements (enforced by each package's
