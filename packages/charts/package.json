@@ -1,6 +1,6 @@
 {
   "name": "@sukunagg/charts",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Server-rendered, accessible React charts for sukuna-ui — BarChart, LineChart, AreaChart, DataBar — sized by CSS (no client measuring), with hover and keyboard tooltips from a small client island.",
   "type": "module",
   "license": "MIT",
