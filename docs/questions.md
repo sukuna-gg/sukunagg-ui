@@ -601,6 +601,31 @@ requests** (org → Settings → Actions → General → Workflow permissions, t
 repo); the next push to `main` then opens the Version Packages PR. Added both to
 `docs/releasing.md` one-time setup.
 
+## Q36. "Thoughts on styling the scrollbar ?" → "Can you add variants? - Add a crimsom variant - run storybook with them"
+
+**Answer.** Two layers. (1) Native scrollbars: nothing in `packages/ui/src/styles` sets
+`color-scheme`, so on Windows Chrome/Edge every native scrollbar under the dark theme (Select/Combobox
+popups, Table `scroll`, chart frames, the page) is the OS light-grey bar; `color-scheme: dark|light`
+per theme fixes it with zero JS, and an opt-in `@utility` using the standard `scrollbar-width` /
+`scrollbar-color` properties (not `::-webkit-scrollbar`) would theme them further. The page
+scrollbar stays the app's call. (2) `ScrollArea` stays the opt-in custom scrollbar; its idle
+neutral thumb (`bg-line`) is ≈1.3:1 on `surface`, below its own ≥3:1 checklist item. Then built
+the crimson variant as ScrollArea `tone="accent"` with `Accent` and `Tones` stories.
+
+**Decision.** ScrollArea gets `tone: 'neutral' | 'accent'` (default `neutral`, unchanged look).
+Named `accent`, not `crimson`, to match Badge/Chip `tone` — the library calls its one red `accent`
+in every color prop. `color-scheme` + the scrollbar utility and the neutral-thumb contrast are
+proposed, not built (see waiting table).
+
+## Q37. "i like it... ship it"
+
+**Answer.** Read as the owner's sign-off on ScrollArea `tone="accent"` as built (name included) and
+on pushing, as in Q34. Pushed `feat/scroll-area-tone` and opened its PR; merging, the Version
+Packages PR and publishing stay with the owner (CLAUDE.md non-negotiable 2). The Q36 proposals
+(`color-scheme`, the native-scrollbar utility, the neutral-thumb contrast) stay open.
+
+**Decision.** ScrollArea `tone: 'neutral' | 'accent'` approved as built.
+
 ---
 
 ## Decisions recorded so far
@@ -641,3 +666,4 @@ repo); the next push to `main` then opens the Version Packages PR. Added both to
 | Q25 | `sk-ticker` keyframe + `animate-ticker` utility for the VideoPlayer news-ticker overlay? | Proposed; blocks only the ticker variant. |
 | Q26 | Next VideoPlayer SDK adapter (dash.js, IMA/VAST ads, Cast, three.js VR) — each a separate optional peer? | Waiting; hls.js shipped. |
 | Q28 | Approve the `--vp-*` variable set (names + Sukuna-dark defaults) for `@sukuna-ui/video`? | Shipped as built with the first `@sukunagg/video` publish (Q29); renaming now = breaking release. |
+| Q36 | Ship `color-scheme` per theme + an opt-in themed native-scrollbar `@utility`? Raise ScrollArea's neutral idle thumb (≈1.3:1) to ≥3:1 or relax that checklist item? | Proposed; `tone="accent"` built. Neutral-thumb change is visual (patch on `0.x`). |
