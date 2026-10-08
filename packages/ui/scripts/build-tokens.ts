@@ -31,6 +31,7 @@ import {
   tracking,
   zIndex,
 } from '../src/tokens'
+import { showpieceCss } from './motion'
 
 const PREFIX = '--sk-'
 
@@ -240,7 +241,7 @@ ${videoPlayerBridge}
 @utility animate-indeterminate {
   animation: sk-indeterminate 1.4s var(--sk-ease) infinite;
 }
-`
+${showpieceCss ? `\n/* Showpieces (Q39): one block per component, from scripts/motion/*.ts. */\n${showpieceCss}\n` : ''}`
 
 await Bun.write(new URL('../src/styles/tokens.css', import.meta.url), tokensCss)
 await Bun.write(new URL('../src/styles/theme.css', import.meta.url), themeCss)
