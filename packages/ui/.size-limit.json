@@ -311,6 +311,9 @@
     "name": "LootReveal (static, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ LootReveal }",
+    "name": "MatchFound (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ MatchFound }",
     "limit": "3.5 kB",
     "ignore": [
       "react",
