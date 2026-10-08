@@ -1,5 +1,69 @@
 # @sukunagg/ui (formerly `sukuna-ui`)
 
+## 0.11.0
+
+### Minor Changes
+
+- 01d2456: Add `variant: 'soft' | 'solid' | 'outline'` to `Badge` and `Chip` (one shared tone × variant map),
+  plus `selected` on `Chip` for filter lists (accent border + text via `data-selected`; visual only —
+  the toggle lives on a wrapping Button/Link, or use `ToggleGroup`). `variant` has no public
+  default: unset keeps each tone's original look (`accent` solid, the rest soft), so nothing changes
+  without opting in. Solid fills label with the page-background token so they stay legible in both
+  themes. Adds variants = minor.
+- 3903386: Add two additive variants to `Card`. `tone: 'premium'` is the bone/gold surface treatment
+  (`--sk-premium-dim` border + a 6% premium tint mixed into the surface — the "premium is a surface
+  treatment" ruling made concrete). `glow` adds the crimson `--sk-accent-glow` halo on hover and pairs
+  with the existing `interactive` affordance. Motion respects `prefers-reduced-motion`; defaults are
+  unchanged. Adds variants = minor.
+- fcf09de: Charts & stats wave 1. New components: `StatTile` (label, value, caption, threshold `tone` or any
+  `valueColor`, optional ▲▼ `delta` and `trend`; `null` shows "—", never 0), `Sparkline` (`line`,
+  `area`, `bar`, `winloss`; server-rendered, stretches to its container with no client JS, `null`
+  breaks the line) and `EmptyState` (title, icon, body, actions; `size="sm"` for inside charts).
+  New props: `Input` `reveal` + `revealLabels` (Show/Hide toggle on password fields; only these load
+  client JS) and `Badge` `pulse` (animated live dot, still under reduced motion). New tokens:
+  `--sk-danger`, `--sk-chart-1…6`, `--sk-chart-other`, `--sk-heat-1…4` (+ Tailwind utilities such as
+  `bg-chart-1`, `text-danger`). Adds components, props and tokens = minor.
+- d953f4f: Add a shared `variant: 'filled' | 'outline' | 'ghost'` to the form controls — `Input`, `Select`,
+  `Combobox` and `NumberField` — using one map so the form layer reads as one. `filled` (default)
+  is the original `surface-2` fill + `line` border, so nothing changes without opting in; `outline`
+  is transparent with the line border; `ghost` is borderless and transparent until hover/focus (the
+  inline-edit field), and `invalid` still wins with the crimson border. `Combobox` also gains the
+  shared `size: 'sm' | 'md' | 'lg'` scale (default `md`, the previous fixed height). Adds variants =
+  minor.
+- 881abc1: Add 17 line icons (`AlertIcon`, `ChartIcon`, `CheckIcon`, `ChevronDownIcon`/`Left`/`Right`/`Up`, `ClockIcon`,
+  `CloseIcon`, `ExternalIcon`, `InfoIcon`, `LockIcon`, `MoonIcon`, `RefreshIcon`, `SearchIcon`, `SunIcon`,
+  `UserIcon`): server components on one 24px / 2px grid in `currentColor`, decorative unless given a
+  `title`, tree-shaken per icon. Add `Table` `scroll`: the sideways-scrolling wrapper becomes a keyboard
+  tab stop while the table overflows (a region named like the table); a plain Table still ships no
+  JS. Adds components and a prop = minor.
+- 9860fb3: Standardize the `size` scale to `sm | md | lg` across controls: add `lg` to `Checkbox` (24px box),
+  `Switch` (28×52px), `Progress` (12px track), `Select` (48px trigger) and `RadioGroup` (24px circle).
+  Button, Input, NumberField and ToggleGroup already had `lg`, so mixed forms no longer hit a missing
+  size. Defaults are unchanged (`md`). Adds a variant = minor.
+- b6efb6e: `Skeleton` gains `animation: 'pulse' | 'shimmer'` — `shimmer` is a light band sweeping across the
+  block, reusing the `sk-shine` keyframe shipped with ShinyText; `pulse` stays the default. `Table`
+  gains root options `density: 'comfortable' | 'compact'`, `striped` and `hoverable`, applied through
+  descendant selectors so the sub-parts stay context-free; `comfortable` is the unchanged default.
+  Adds variants = minor.
+- b330c10: Add style variants to `Tabs` alongside `orientation`. `variant: 'underline' | 'pill'` —
+  `underline` (default) is the existing crimson sliding underline; `pill` is a segmented control on a
+  `well` track whose selected segment is a lighter `surface` pill with crimson text (lighter than its
+  track in both themes). `size: 'sm' | 'md' | 'lg'` (32/40/48px, default `md`) joins the shared
+  control scale, and `fitted` makes tabs share the list width equally. `pill` and `fitted` are
+  horizontal treatments; vertical tabs stay underline-style at their 36px row height. Defaults
+  reproduce the previous styling exactly. Adds variants = minor.
+- 3903386: Add `tone` to `Toast` (`ToastOptions.tone: 'info' | 'success' | 'warning' | 'danger'`), mirroring
+  `Alert`'s tone map exactly (same tokens, same left accent border) so a notification and an inline
+  alert for the same event read the same. No default — untoned toasts are unchanged. `tone` is sent
+  to Base UI as the toast `type`, so a free-form `type` naming a tone is styled too. Exports
+  `ToastTone`. Adds a variant = minor.
+
+### Patch Changes
+
+- ce6cef1: Docs: the README component table and the agent docs (`llms.txt`, `llms-full.txt`) list `VideoPlayer`
+  again (46 components). The 0.10.0 package rename left the re-exported player out of the generated
+  docs; the generator now fails if a re-exported package component goes missing.
+
 ## 0.10.0
 
 ### Minor Changes
