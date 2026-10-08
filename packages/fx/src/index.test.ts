@@ -21,6 +21,7 @@ const EXPORTS: Record<string, string[]> = {
   // flow-field
   'flow-field': ['FlowField'],
   // holo-card
+  'holo-card': ['HoloCard'],
   // lightning
   // particle-field
 }
@@ -39,6 +40,7 @@ const CLIENT_FILES = [
   // flow-field
   './components/flow-field/flow-field.canvas.tsx',
   // holo-card
+  './components/holo-card/holo-card.tilt.tsx',
   // lightning
   // particle-field
 ]

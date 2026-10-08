@@ -25,6 +25,7 @@ const animateKeys: string[] = [
   'bracket-beam-shock',
   // flow-field
   // holo-card
+  'holo-card-drift',
   // lightning
   // particle-field
 ]
