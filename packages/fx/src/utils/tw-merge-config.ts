@@ -28,6 +28,7 @@ const animateKeys: string[] = [
   'holo-card-drift',
   // lightning
   // particle-field
+  'particle-field-haze',
 ]
 
 // Use the default class-group ids (which include `font-size`) so this config is assignable to

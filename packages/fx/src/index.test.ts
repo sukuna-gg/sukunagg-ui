@@ -25,6 +25,7 @@ const EXPORTS: Record<string, string[]> = {
   // lightning
   lightning: ['Lightning'],
   // particle-field
+  'particle-field': ['ParticleField'],
 }
 
 /**
@@ -45,6 +46,7 @@ const CLIENT_FILES = [
   // lightning
   './components/lightning/lightning.webgl.tsx',
   // particle-field
+  './components/particle-field/particle-field.canvas.tsx',
 ]
 
 describe('public API', () => {
