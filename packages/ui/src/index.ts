@@ -134,6 +134,8 @@ export {
 } from './components/icon'
 export type { InputProps } from './components/input'
 export { Input } from './components/input'
+export type { LootRarity, LootRevealItem, LootRevealProps } from './components/loot-reveal'
+export { LootReveal } from './components/loot-reveal'
 export type { MenuItemOption, MenuProps } from './components/menu'
 export { Menu } from './components/menu'
 export type { MeterProps } from './components/meter'
