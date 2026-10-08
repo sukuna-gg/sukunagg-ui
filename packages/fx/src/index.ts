@@ -25,6 +25,8 @@ export type {
 } from './components/bracket-beam'
 export { BracketBeam } from './components/bracket-beam'
 // flow-field
+export type { FlowFieldProps } from './components/flow-field'
+export { FlowField } from './components/flow-field'
 // holo-card
 // lightning
 // particle-field

@@ -19,6 +19,7 @@ const EXPORTS: Record<string, string[]> = {
   // bracket-beam
   'bracket-beam': ['BracketBeam'],
   // flow-field
+  'flow-field': ['FlowField'],
   // holo-card
   // lightning
   // particle-field
@@ -36,6 +37,7 @@ const CLIENT_FILES = [
   // bracket-beam
   './components/bracket-beam/bracket-beam.measure.tsx',
   // flow-field
+  './components/flow-field/flow-field.canvas.tsx',
   // holo-card
   // lightning
   // particle-field
