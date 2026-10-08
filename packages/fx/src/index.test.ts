@@ -23,6 +23,7 @@ const EXPORTS: Record<string, string[]> = {
   // holo-card
   'holo-card': ['HoloCard'],
   // lightning
+  lightning: ['Lightning'],
   // particle-field
 }
 
@@ -42,6 +43,7 @@ const CLIENT_FILES = [
   // holo-card
   './components/holo-card/holo-card.tilt.tsx',
   // lightning
+  './components/lightning/lightning.webgl.tsx',
   // particle-field
 ]
 

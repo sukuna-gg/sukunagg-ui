@@ -31,6 +31,8 @@ export { FlowField } from './components/flow-field'
 export type { HoloCardProps } from './components/holo-card'
 export { HoloCard } from './components/holo-card'
 // lightning
+export type { LightningProps } from './components/lightning'
+export { Lightning } from './components/lightning'
 // particle-field
 
 export type { FxState } from './internal/loop'

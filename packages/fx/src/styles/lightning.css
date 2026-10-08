@@ -18,3 +18,12 @@
  * never nest @keyframes inside @utility; never name a utility bg-*; at most 8 keyframes; register
  * every animate-* key in src/utils/tw-merge-config.ts under your comment.
  */
+
+/* The poster's sky: a crimson glow at the top of the bolt (shader `top` term, frozen). */
+@utility lightning-glow {
+  background-image: radial-gradient(
+    42% 70% at calc(var(--sk-lightning-x, 0.66) * 100% + 3%) 0%,
+    color-mix(in srgb, var(--sk-accent-deep) 34%, transparent),
+    transparent 72%
+  );
+}
