@@ -626,6 +626,45 @@ Packages PR and publishing stay with the owner (CLAUDE.md non-negotiable 2). The
 
 **Decision.** ScrollArea `tone: 'neutral' | 'accent'` approved as built.
 
+## Q38. "What other impressive components can we add? can you scout more component libraries? not basic stuff but really cool thing with animations / particles, etc... idk"
+
+**Answer (scouting, 2026-10-07).** Scouted Magic UI, Aceternity, Motion Primitives, Cult UI, Skiper UI,
+React Bits (re-scout), Animata, Eldora UI, Fancy Components, Hover.dev, tsParticles, plus modern
+CSS (`@property`, `offset-path`, `@starting-style`, scroll-driven, View Transitions, anchor
+positioning, trig/`sibling-index()`) and game-client/esports patterns. Findings:
+
+- **Licenses.** Adaptable with attribution (MIT): Magic UI, Motion Primitives, Cult UI, Animata,
+  Eldora, Fancy. **Ideas only, clean-room rewrite:** React Bits (MIT + Commons Clause — bans
+  redistributing the components in a package), Aceternity (no redistribution "regardless of
+  modifications"), Hover.dev and Skiper (proprietary), pokemon-cards-css (GPL-3.0); Shadertoy-sourced
+  shaders are often CC BY-NC-SA.
+- **Industry gap.** Almost none of them honor `prefers-reduced-motion`, pause offscreen, or free
+  their WebGL context; several break hydration (`Math.random` in render) or hide text from AT.
+  Magic UI's Floating 3D Particles and Retro Grid are the only good lifecycle templates.
+- **CSS-only reach.** Component-scale wow (border beam, rank reveal, loot reveal, ready-check ring,
+  XP burst, glitch, avatar frame, retro grid) fits today's `docs/motion.md` rules. Ambient particle
+  fields (hundreds of particles), shader backgrounds and pointer-driven holo tilt do not.
+- **Engines.** A hand-rolled Canvas2D field (~2–4 kB, no deps) beats tsParticles v4 (15–30 kB, its
+  reduced-motion plugin isn't in `slim`/`basic`). Skip three.js/postprocessing (~300 kB) and matter-js.
+
+**Proposal.** Two tiers: CSS-only showpieces in `@sukunagg/ui` under the current motion rules, and a
+new opt-in **`@sukunagg/fx`** package (precedent: `@sukunagg/video`, Q27) for canvas/WebGL client
+islands, all on one shared loop hook (reduced motion → static frame, IntersectionObserver +
+`visibilitychange` pause, DPR cap, context loss, SSR CSS poster). Waiting on the owner (table below).
+
+## Q39. "Show me mock ups" → "show me whats done" → "holy shit, let's build the components"
+
+**Answer.** Built 14 live prototypes (the "Sukuna FX Lab" artifact: every candidate in both themes,
+with a reduced-motion toggle), each written from scratch and reviewed in Chromium, Firefox and
+WebKit. The owner's reaction is read as approval of the set and of the Q38 two-tier plan.
+
+**Decision.** Build all 14. **Q38(a) approved:** new opt-in package `@sukunagg/fx` for ParticleField,
+HoloCard, FlowField, Lightning and BracketBeam; `@sukunagg/ui` stays CSS-only and gains RetroGrid,
+BorderBeam, RankReveal, MatchFound, LootReveal, XpLevelUp, AvatarFrame, ScrambleText and GlitchText.
+**Q38(b):** all 14, shipped as two PRs (ui showpieces; fx package). **Q38(c) still open:** LootReveal
+maps rarities onto existing tokens (`text-faint`, `chart-2`, `chart-5`, `premium`) as a
+`DECISION(open)` default — no new tokens until the owner approves rarity colors.
+
 ---
 
 ## Decisions recorded so far
@@ -653,6 +692,7 @@ Packages PR and publishing stay with the owner (CLAUDE.md non-negotiable 2). The
 | VideoPlayer | Native `<video>`, always-dark chrome, Nuevo parity in three tiers, parts as named exports, SDKs as optional peers (hls.js first), four waves (Q21-Q23) |
 | Light palette | Approved as proposed in `tokens.md` (Q10) |
 | Charts & stats | `@sukunagg/charts` (peers on `@sukunagg/ui`; server-rendered SVG/HTML sized by CSS, in-house scale/path math (D37), client tooltip island); StatTile, Sparkline, EmptyState in `@sukunagg/ui`; chart/heat/danger tokens **approved**; app colors passed as props; StatTile display face by default; waves in roadmap §D8 (Q31, Q32) |
+| Showpieces & FX | Nine CSS-only showpieces join `@sukunagg/ui`; canvas/WebGL/pointer effects live in a new opt-in `@sukunagg/fx` (one shared loop: reduced-motion still frame, offscreen/hidden pause, DPR cap, SSR CSS poster, no runtime deps). Ideas from React Bits/Aceternity/Hover.dev/Skiper/pokemon-cards-css are reimplemented from scratch, never copied (Q38, Q39) |
 | Status tracking | `docs/roadmap.md` living board; agents update it in the same commit as the work (rule 9) |
 | Versioning enforcement | CLAUDE.md + CI classifiers (API diff, visual, token, peer) + human-only merge/publish (Q7) |
 
@@ -667,3 +707,4 @@ Packages PR and publishing stay with the owner (CLAUDE.md non-negotiable 2). The
 | Q26 | Next VideoPlayer SDK adapter (dash.js, IMA/VAST ads, Cast, three.js VR) — each a separate optional peer? | Waiting; hls.js shipped. |
 | Q28 | Approve the `--vp-*` variable set (names + Sukuna-dark defaults) for `@sukuna-ui/video`? | Shipped as built with the first `@sukunagg/video` publish (Q29); renaming now = breaking release. |
 | Q36 | Ship `color-scheme` per theme + an opt-in themed native-scrollbar `@utility`? Raise ScrollArea's neutral idle thumb (≈1.3:1) to ≥3:1 or relax that checklist item? | Proposed; `tone="accent"` built. Neutral-thumb change is visual (patch on `0.x`). |
+| Q38 | (a) Approve an opt-in `@sukunagg/fx` package for canvas/WebGL effects (`@sukunagg/ui` stays CSS-only)? (b) Which showpieces first? (c) Rarity-tier tokens for Loot/Rank reveals? | (a) and (b) answered in Q39 (fx approved; build all 14). (c) open: rarity tokens — LootReveal uses existing tokens meanwhile. |
