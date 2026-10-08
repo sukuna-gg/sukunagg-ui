@@ -406,6 +406,20 @@
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
+    "name": "ScrambleText (static + glyph island, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ ScrambleText }",
+    "limit": "2 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "ScrollArea + deps",
     "path": "dist/index.js",
     "import": "{ ScrollArea }",

@@ -1769,4 +1769,14 @@
 
 @utility animate-retro-grid-emit {
   animation: sk-retro-grid-emit 6s ease-out 1s infinite;
+/* ScrambleText (Q39): the afterglow a glyph keeps for a beat after it locks to its real character. */
+@keyframes sk-scramble-text-settle {
+  from {
+    color: var(--sk-accent);
+    text-shadow: 0 0 0.5em var(--sk-accent-glow), 0 0 0.1em var(--sk-accent-glow);
+  }
+}
+
+@utility animate-scramble-text-settle {
+  animation: sk-scramble-text-settle 600ms var(--sk-ease);
 }
