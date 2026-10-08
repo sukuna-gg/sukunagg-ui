@@ -60,6 +60,8 @@ export type {
 export { AvatarFrame } from './components/avatar-frame'
 export type { BadgeProps } from './components/badge'
 export { Badge } from './components/badge'
+export type { BorderBeamElement, BorderBeamProps } from './components/border-beam'
+export { BorderBeam } from './components/border-beam'
 export type { BreadcrumbItem, BreadcrumbsProps } from './components/breadcrumbs'
 export { Breadcrumbs } from './components/breadcrumbs'
 export type { ButtonProps } from './components/button'

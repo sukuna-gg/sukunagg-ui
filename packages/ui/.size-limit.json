@@ -63,6 +63,20 @@
     ]
   },
   {
+    "name": "BorderBeam (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ BorderBeam }",
+    "limit": "2 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "Breadcrumbs (static, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ Breadcrumbs }",
