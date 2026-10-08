@@ -381,6 +381,20 @@
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
+    "name": "RankReveal (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ RankReveal }",
+    "limit": "3 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "RowActions + deps",
     "path": "dist/index.js",
     "import": "{ RowActions }",
