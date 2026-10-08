@@ -522,6 +522,8 @@
     transparent calc(100% - 0.5px),
     black 100%
   );
+}
+
 /* BorderBeam (docs/component-border-beam.md): a light that orbits the border. */
 @property --sk-border-beam-angle {
   syntax: '<angle>';
@@ -644,6 +646,8 @@
   );
   -webkit-mask: radial-gradient(farthest-side, transparent 45%, black);
   mask: radial-gradient(farthest-side, transparent 45%, black);
+}
+
 /* GlitchText (docs/component-glitch-text.md): RGB-split bursts on real text, one per 3.5s. */
 @property --sk-glitch-text-y0 {
   syntax: '<percentage>';
@@ -876,129 +880,6 @@
   right: -8%;
   height: min(max(1px, 0.04em), calc((var(--sk-glitch-text-y1) - var(--sk-glitch-text-y0)) * 99));
   opacity: 0.75;
-/* RetroGrid (docs/component-retro-grid.md): a perspective floor scrolling toward the viewer. */
-@utility retro-grid-stage {
-  /* Component-private palette, mixed from tokens. Dark scheme is the default. */
-  --sk-retro-grid-horizon: 62%;
-  --sk-retro-grid-line: color-mix(in srgb, var(--sk-accent) 54%, transparent);
-  --sk-retro-grid-sub: color-mix(in srgb, var(--sk-accent) 13%, transparent);
-  --sk-retro-grid-ground: color-mix(in oklab, var(--sk-well) 65%, var(--sk-bg));
-  --sk-retro-grid-soft: color-mix(in srgb, var(--sk-accent) 36%, transparent);
-  --sk-retro-grid-halo: color-mix(in srgb, var(--sk-accent) 20%, transparent);
-  --sk-retro-grid-beam: color-mix(in srgb, var(--sk-accent) 20%, transparent);
-  --sk-retro-grid-sky: color-mix(in oklab, var(--sk-accent-deep) 38%, var(--sk-bg));
-  --sk-retro-grid-core: color-mix(in oklab, var(--sk-accent) 35%, var(--sk-text));
-  --sk-retro-grid-vignette: var(--sk-well);
-  /* Light scheme: a pale dawn sky, crimson ink on a bone floor (not an inversion). Applies under a
-     light ancestor (or on a light root) unless a dark region sits between them. */
-  :where([data-theme='light'])
-    &:not(
-      :where(
-        [data-theme='light'] [data-theme='dark'],
-        [data-theme='light'] [data-theme='dark'] *
-      )
-    ),
-  &:where([data-theme='light']) {
-    --sk-retro-grid-soft: color-mix(in srgb, var(--sk-accent) 28%, transparent);
-    --sk-retro-grid-halo: color-mix(in srgb, var(--sk-accent) 11%, transparent);
-    --sk-retro-grid-beam: color-mix(in srgb, var(--sk-accent) 8%, transparent);
-    --sk-retro-grid-sky: color-mix(in oklab, var(--sk-accent) 15%, var(--sk-bg));
-    --sk-retro-grid-core: var(--sk-accent);
-    --sk-retro-grid-vignette: var(--sk-bg);
-  }
-  background-image: linear-gradient(
-    to bottom,
-    var(--sk-bg) 28%,
-    var(--sk-retro-grid-sky) var(--sk-retro-grid-horizon),
-    var(--sk-retro-grid-ground) var(--sk-retro-grid-horizon)
-  );
-}
-
-/* Sky: an arena spotlight rising from the horizon (rotated about its foot). */
-@utility retro-grid-beam {
-  background-image: conic-gradient(
-    from -12deg at 50% 100%,
-    transparent,
-    var(--sk-retro-grid-beam) 9deg 15deg,
-    transparent 24deg
-  );
-  -webkit-mask-image: linear-gradient(to top, black 15%, transparent 95%);
-  mask-image: linear-gradient(to top, black 15%, transparent 95%);
-}
-
-/* Floor: tilted planes in a perspective box. perspective-origin.y = 150px * tan(15deg) puts the
-   vanishing line exactly on the box's top edge, i.e. the horizon. Mask stops are alpha only. */
-@utility retro-grid-floor {
-  perspective: 150px;
-  perspective-origin: 50% 40.2px;
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent 11%,
-    rgb(0 0 0 / 22%) 30%,
-    rgb(0 0 0 / 65%) 50%,
-    black 78%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 11%,
-    rgb(0 0 0 / 22%) 30%,
-    rgb(0 0 0 / 65%) 50%,
-    black 78%
-  );
-}
-
-/* The near-floor box: same projection, a screen-space mask that keeps the crisp plane close. */
-@utility retro-grid-near {
-  perspective: 150px;
-  perspective-origin: 50% 40.2px;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 26%, black 82%);
-  mask-image: linear-gradient(to bottom, transparent 26%, black 82%);
-}
-
-/* The shared resting tilt of every floor layer (the scroll keyframes keep it). */
-@utility retro-grid-tilt {
-  transform-origin: 50% 100%;
-  transform: rotateX(75deg);
-}
-
-/* 3D layers get no mipmaps, so the long far plane carries only soft, wide line profiles (they
-   survive heavy minification near the horizon). */
-@utility retro-grid-plane {
-  background-image:
-    linear-gradient(90deg, transparent calc(50% - 7px), var(--sk-retro-grid-soft), transparent calc(50% + 7px)),
-    linear-gradient(0deg, transparent calc(50% - 12px), var(--sk-retro-grid-soft), transparent calc(50% + 12px));
-  background-size: var(--sk-retro-grid-cell) var(--sk-retro-grid-cell);
-  background-position: 50% 100%;
-}
-
-/* Crisp line cores plus a faint mid-cell depth grid, on the masked near plane. */
-@utility retro-grid-plane-near {
-  background-image:
-    linear-gradient(90deg, transparent calc(50% - 1px), var(--sk-retro-grid-line) 0 calc(50% + 1px), transparent 0),
-    linear-gradient(0deg, transparent calc(50% - 1.5px), var(--sk-retro-grid-line) 0 calc(50% + 1.5px), transparent 0),
-    linear-gradient(90deg, var(--sk-retro-grid-sub) 2px, transparent 2px),
-    linear-gradient(0deg, var(--sk-retro-grid-sub) 3px, transparent 3px);
-  background-size: var(--sk-retro-grid-cell) var(--sk-retro-grid-cell);
-  background-position: 50% 100%;
-}
-
-/* The light wave the horizon emits, rolling toward the viewer. */
-@utility retro-grid-sweep {
-  background-image: linear-gradient(
-    to top,
-    transparent,
-    var(--sk-retro-grid-core) 1.5%,
-    var(--sk-retro-grid-line) 4%,
-    var(--sk-retro-grid-halo) 30%,
-    transparent
-  );
-}
-
-@utility retro-grid-glow {
-  background-image: radial-gradient(closest-side, var(--sk-accent-glow), transparent);
-}
-
-@utility retro-grid-line {
   background-image: linear-gradient(
     90deg,
     transparent,
@@ -1015,6 +896,8 @@
     transparent 0 2px,
     color-mix(in oklab, var(--sk-bg) 30%, transparent) 2px 3px
   );
+}
+
 /* LootReveal (docs/component-loot-reveal.md \u00A74): 6 keyframes; the base classes are the reveal. */
 @keyframes sk-loot-reveal-flip {
   from {
@@ -1266,10 +1149,10 @@
 @utility animate-loot-reveal-spark {
   animation: sk-loot-reveal-spark calc(700ms + 600ms * var(--sk-loot-reveal-q)) linear
     calc(var(--sk-loot-reveal-at, 0ms) + 100ms + 90ms * var(--sk-loot-reveal-r)) both;
+}
+
 /* MatchFound (docs/component-match-found.md): seconds left, drawn with counter(). */
 @property --sk-match-found-n {
-/* XpLevelUp (Q39, docs/component-xp-level-up.md): fill \u2192 flash \u2192 burst \u2192 count \u2192 settle. */
-@property --sk-xp-level-up-step {
   syntax: '<integer>';
   inherits: false;
   initial-value: 0;
@@ -1510,6 +1393,8 @@
 /* The existing sk-shine sweep, slowed so the band crosses about once every 5 s. */
 @utility animate-match-found-sheen {
   animation: sk-shine 4.8s linear 1.4s infinite;
+}
+
 /* RankReveal (Q39): plays once on mount, replay = remount (key). docs/component-rank-reveal.md */
 @keyframes sk-rank-reveal-enter {
   from {
@@ -1536,34 +1421,6 @@
   0% {
     opacity: 0;
     transform: var(--sk-rank-reveal-t0, none);
-    var(--sk-retro-grid-core) 50%,
-    var(--sk-accent) 78%,
-    transparent
-  );
-  box-shadow: 0 0 16px 1px var(--sk-accent-glow);
-}
-
-@utility retro-grid-vignette {
-  background-image: radial-gradient(
-    ellipse 80% 95% at 50% 58%,
-    transparent 55%,
-    color-mix(in srgb, var(--sk-retro-grid-vignette) 70%, transparent)
-  );
-}
-
-@keyframes sk-retro-grid-scroll {
-  from {
-    transform: rotateX(75deg) translate3d(0, 0, 0);
-  }
-  to {
-    transform: rotateX(75deg) translate3d(0, var(--sk-retro-grid-cell), 0);
-  }
-}
-
-@keyframes sk-retro-grid-sweep {
-  0% {
-    transform: rotateX(75deg) translate3d(0, -1300px, 0);
-    opacity: 0;
   }
   12% {
     opacity: 1;
@@ -1721,6 +1578,167 @@
 
 @utility rank-reveal-flame {
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='36 28 48 72'%3E%3Cpath fill-rule='evenodd' d='M60 28l10 28 10-12 4 28c0 16-10 28-24 28S36 88 36 72l4-28 10 12zM60 60l7 20c0 8-3 12-7 13-4-1-7-5-7-13z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+
+/* RetroGrid (docs/component-retro-grid.md): a perspective floor scrolling toward the viewer. */
+@utility retro-grid-stage {
+  /* Component-private palette, mixed from tokens. Dark scheme is the default. */
+  --sk-retro-grid-horizon: 62%;
+  --sk-retro-grid-line: color-mix(in srgb, var(--sk-accent) 54%, transparent);
+  --sk-retro-grid-sub: color-mix(in srgb, var(--sk-accent) 13%, transparent);
+  --sk-retro-grid-ground: color-mix(in oklab, var(--sk-well) 65%, var(--sk-bg));
+  --sk-retro-grid-soft: color-mix(in srgb, var(--sk-accent) 36%, transparent);
+  --sk-retro-grid-halo: color-mix(in srgb, var(--sk-accent) 20%, transparent);
+  --sk-retro-grid-beam: color-mix(in srgb, var(--sk-accent) 20%, transparent);
+  --sk-retro-grid-sky: color-mix(in oklab, var(--sk-accent-deep) 38%, var(--sk-bg));
+  --sk-retro-grid-core: color-mix(in oklab, var(--sk-accent) 35%, var(--sk-text));
+  --sk-retro-grid-vignette: var(--sk-well);
+  /* Light scheme: a pale dawn sky, crimson ink on a bone floor (not an inversion). Applies under a
+     light ancestor (or on a light root) unless a dark region sits between them. */
+  :where([data-theme='light'])
+    &:not(
+      :where(
+        [data-theme='light'] [data-theme='dark'],
+        [data-theme='light'] [data-theme='dark'] *
+      )
+    ),
+  &:where([data-theme='light']) {
+    --sk-retro-grid-soft: color-mix(in srgb, var(--sk-accent) 28%, transparent);
+    --sk-retro-grid-halo: color-mix(in srgb, var(--sk-accent) 11%, transparent);
+    --sk-retro-grid-beam: color-mix(in srgb, var(--sk-accent) 8%, transparent);
+    --sk-retro-grid-sky: color-mix(in oklab, var(--sk-accent) 15%, var(--sk-bg));
+    --sk-retro-grid-core: var(--sk-accent);
+    --sk-retro-grid-vignette: var(--sk-bg);
+  }
+  background-image: linear-gradient(
+    to bottom,
+    var(--sk-bg) 28%,
+    var(--sk-retro-grid-sky) var(--sk-retro-grid-horizon),
+    var(--sk-retro-grid-ground) var(--sk-retro-grid-horizon)
+  );
+}
+
+/* Sky: an arena spotlight rising from the horizon (rotated about its foot). */
+@utility retro-grid-beam {
+  background-image: conic-gradient(
+    from -12deg at 50% 100%,
+    transparent,
+    var(--sk-retro-grid-beam) 9deg 15deg,
+    transparent 24deg
+  );
+  -webkit-mask-image: linear-gradient(to top, black 15%, transparent 95%);
+  mask-image: linear-gradient(to top, black 15%, transparent 95%);
+}
+
+/* Floor: tilted planes in a perspective box. perspective-origin.y = 150px * tan(15deg) puts the
+   vanishing line exactly on the box's top edge, i.e. the horizon. Mask stops are alpha only. */
+@utility retro-grid-floor {
+  perspective: 150px;
+  perspective-origin: 50% 40.2px;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 11%,
+    rgb(0 0 0 / 22%) 30%,
+    rgb(0 0 0 / 65%) 50%,
+    black 78%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 11%,
+    rgb(0 0 0 / 22%) 30%,
+    rgb(0 0 0 / 65%) 50%,
+    black 78%
+  );
+}
+
+/* The near-floor box: same projection, a screen-space mask that keeps the crisp plane close. */
+@utility retro-grid-near {
+  perspective: 150px;
+  perspective-origin: 50% 40.2px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 26%, black 82%);
+  mask-image: linear-gradient(to bottom, transparent 26%, black 82%);
+}
+
+/* The shared resting tilt of every floor layer (the scroll keyframes keep it). */
+@utility retro-grid-tilt {
+  transform-origin: 50% 100%;
+  transform: rotateX(75deg);
+}
+
+/* 3D layers get no mipmaps, so the long far plane carries only soft, wide line profiles (they
+   survive heavy minification near the horizon). */
+@utility retro-grid-plane {
+  background-image:
+    linear-gradient(90deg, transparent calc(50% - 7px), var(--sk-retro-grid-soft), transparent calc(50% + 7px)),
+    linear-gradient(0deg, transparent calc(50% - 12px), var(--sk-retro-grid-soft), transparent calc(50% + 12px));
+  background-size: var(--sk-retro-grid-cell) var(--sk-retro-grid-cell);
+  background-position: 50% 100%;
+}
+
+/* Crisp line cores plus a faint mid-cell depth grid, on the masked near plane. */
+@utility retro-grid-plane-near {
+  background-image:
+    linear-gradient(90deg, transparent calc(50% - 1px), var(--sk-retro-grid-line) 0 calc(50% + 1px), transparent 0),
+    linear-gradient(0deg, transparent calc(50% - 1.5px), var(--sk-retro-grid-line) 0 calc(50% + 1.5px), transparent 0),
+    linear-gradient(90deg, var(--sk-retro-grid-sub) 2px, transparent 2px),
+    linear-gradient(0deg, var(--sk-retro-grid-sub) 3px, transparent 3px);
+  background-size: var(--sk-retro-grid-cell) var(--sk-retro-grid-cell);
+  background-position: 50% 100%;
+}
+
+/* The light wave the horizon emits, rolling toward the viewer. */
+@utility retro-grid-sweep {
+  background-image: linear-gradient(
+    to top,
+    transparent,
+    var(--sk-retro-grid-core) 1.5%,
+    var(--sk-retro-grid-line) 4%,
+    var(--sk-retro-grid-halo) 30%,
+    transparent
+  );
+}
+
+@utility retro-grid-glow {
+  background-image: radial-gradient(closest-side, var(--sk-accent-glow), transparent);
+}
+
+@utility retro-grid-line {
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    var(--sk-accent) 22%,
+    var(--sk-retro-grid-core) 50%,
+    var(--sk-accent) 78%,
+    transparent
+  );
+  box-shadow: 0 0 16px 1px var(--sk-accent-glow);
+}
+
+@utility retro-grid-vignette {
+  background-image: radial-gradient(
+    ellipse 80% 95% at 50% 58%,
+    transparent 55%,
+    color-mix(in srgb, var(--sk-retro-grid-vignette) 70%, transparent)
+  );
+}
+
+@keyframes sk-retro-grid-scroll {
+  from {
+    transform: rotateX(75deg) translate3d(0, 0, 0);
+  }
+  to {
+    transform: rotateX(75deg) translate3d(0, var(--sk-retro-grid-cell), 0);
+  }
+}
+
+@keyframes sk-retro-grid-sweep {
+  0% {
+    transform: rotateX(75deg) translate3d(0, -1300px, 0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
   58% {
     transform: rotateX(75deg) translate3d(0, 40px, 0);
     opacity: 1;
@@ -1771,6 +1789,8 @@
 
 @utility animate-retro-grid-emit {
   animation: sk-retro-grid-emit 6s ease-out 1s infinite;
+}
+
 /* ScrambleText (Q39): the afterglow a glyph keeps for a beat after it locks to its real character. */
 @keyframes sk-scramble-text-settle {
   from {
@@ -1781,6 +1801,15 @@
 
 @utility animate-scramble-text-settle {
   animation: sk-scramble-text-settle 600ms var(--sk-ease);
+}
+
+/* XpLevelUp (Q39, docs/component-xp-level-up.md): fill \u2192 flash \u2192 burst \u2192 count \u2192 settle. */
+@property --sk-xp-level-up-step {
+  syntax: '<integer>';
+  inherits: false;
+  initial-value: 0;
+}
+
 @property --sk-xp-level-up-t {
   syntax: '<integer>';
   inherits: false;
