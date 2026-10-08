@@ -245,6 +245,20 @@
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
+    "name": "GlitchText (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ GlitchText }",
+    "limit": "2 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "GradientText (static, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ GradientText }",

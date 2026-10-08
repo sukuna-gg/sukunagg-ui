@@ -102,6 +102,8 @@ export type {
   FieldProps,
 } from './components/field'
 export { Field } from './components/field'
+export type { GlitchTextElement, GlitchTextProps } from './components/glitch-text'
+export { GlitchText } from './components/glitch-text'
 export type { GradientTextElement, GradientTextProps } from './components/gradient-text'
 export { GradientText } from './components/gradient-text'
 export type {
