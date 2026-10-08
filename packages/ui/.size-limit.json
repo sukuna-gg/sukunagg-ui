@@ -311,6 +311,17 @@
     "name": "LootReveal (static, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ LootReveal }",
+    "limit": "3.5 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "MatchFound (static, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ MatchFound }",
@@ -385,6 +396,16 @@
     "path": "dist/index.js",
     "import": "{ RankReveal }",
     "limit": "3 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "RetroGrid (static, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ RetroGrid }",
