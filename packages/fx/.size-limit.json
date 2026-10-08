@@ -16,5 +16,80 @@
     "path": "dist/theme.css",
     "limit": "4 kB",
     "rolldown": false
+  },
+  {
+    "name": "BracketBeam (our code + shared loop; react, @sukunagg/ui excluded)",
+    "path": "dist/index.js",
+    "import": "{ BracketBeam }",
+    "limit": "8 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@sukunagg/ui",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "FlowField (our code + shared loop; react, @sukunagg/ui excluded)",
+    "path": "dist/index.js",
+    "import": "{ FlowField }",
+    "limit": "4.5 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@sukunagg/ui",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "HoloCard (our code + shared loop; react, @sukunagg/ui excluded)",
+    "path": "dist/index.js",
+    "import": "{ HoloCard }",
+    "limit": "2.75 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@sukunagg/ui",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "Lightning (our code + shared loop; react, @sukunagg/ui excluded)",
+    "path": "dist/index.js",
+    "import": "{ Lightning }",
+    "limit": "5.5 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@sukunagg/ui",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "ParticleField (our code + shared loop; react, @sukunagg/ui excluded)",
+    "path": "dist/index.js",
+    "import": "{ ParticleField }",
+    "limit": "4.75 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@sukunagg/ui",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
   }
 ]
