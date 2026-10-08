@@ -16,6 +16,14 @@
 //   export type { NameProps } from './components/<dir>'
 //   export { Name } from './components/<dir>'
 // bracket-beam
+export type {
+  BracketBeamProps,
+  BracketMatch,
+  BracketRound,
+  BracketTeam,
+  BracketTeamInfo,
+} from './components/bracket-beam'
+export { BracketBeam } from './components/bracket-beam'
 // flow-field
 // holo-card
 // lightning

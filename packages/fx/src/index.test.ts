@@ -17,6 +17,7 @@ const componentDirs = readdirSync(here('./components/'), { withFileTypes: true }
  */
 const EXPORTS: Record<string, string[]> = {
   // bracket-beam
+  'bracket-beam': ['BracketBeam'],
   // flow-field
   // holo-card
   // lightning
@@ -33,6 +34,7 @@ const CLIENT_FILES = [
   './internal/use-fx-canvas.ts',
   './internal/use-fx-loop.ts',
   // bracket-beam
+  './components/bracket-beam/bracket-beam.measure.tsx',
   // flow-field
   // holo-card
   // lightning

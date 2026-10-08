@@ -21,6 +21,8 @@ const fontSizeKeys = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl']
 // YOUR comment (e.g. 'particle-field-haze',) and never edit another effect's lines.
 const animateKeys: string[] = [
   // bracket-beam
+  'bracket-beam-breathe',
+  'bracket-beam-shock',
   // flow-field
   // holo-card
   // lightning
