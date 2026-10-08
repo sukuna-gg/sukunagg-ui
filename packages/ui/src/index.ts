@@ -194,3 +194,5 @@ export type { ToggleGroupProps, ToggleOption, ToggleProps } from './components/t
 export { Toggle, ToggleGroup } from './components/toggle-group'
 export type { TooltipProps } from './components/tooltip'
 export { Tooltip } from './components/tooltip'
+export type { XpLevelUpLabels, XpLevelUpProps } from './components/xp-level-up'
+export { XpLevelUp } from './components/xp-level-up'

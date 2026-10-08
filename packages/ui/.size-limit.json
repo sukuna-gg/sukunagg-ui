@@ -609,6 +609,20 @@
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
+    "name": "XpLevelUp (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ XpLevelUp }",
+    "limit": "3 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "Button + deps (must NOT pull Base UI ~tens of kB)",
     "path": "dist/index.js",
     "import": "{ Button }",
