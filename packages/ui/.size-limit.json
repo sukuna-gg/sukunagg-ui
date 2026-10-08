@@ -385,6 +385,10 @@
     "path": "dist/index.js",
     "import": "{ RankReveal }",
     "limit": "3 kB",
+    "name": "RetroGrid (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ RetroGrid }",
+    "limit": "2 kB",
     "ignore": [
       "react",
       "react-dom",
