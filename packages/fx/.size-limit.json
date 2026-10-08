@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Shared loop + useFxCanvas (the runtime under every canvas island; react excluded)",
+    "path": "dist/internal/use-fx-canvas.js",
+    "limit": "2 kB",
+    "ignore": ["react", "react-dom", "react/jsx-runtime"]
+  },
+  {
+    "name": "Shared loop + useFxLoop (the runtime under every DOM/SVG island; react excluded)",
+    "path": "dist/internal/use-fx-loop.js",
+    "limit": "1.5 kB",
+    "ignore": ["react", "react-dom", "react/jsx-runtime"]
+  },
+  {
+    "name": "theme.css (every effect's @property/@keyframes/@utility; ships to every Tailwind consumer)",
+    "path": "dist/theme.css",
+    "limit": "4 kB",
+    "rolldown": false
+  }
+]

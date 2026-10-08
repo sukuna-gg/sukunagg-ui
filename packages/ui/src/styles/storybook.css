@@ -5,6 +5,10 @@
  */
 @import "tailwindcss";
 @import "./theme.css";
+/* @sukunagg/fx effects' @property/@keyframes/@utility (one module per effect, from source). */
+@import "../../../fx/src/styles/theme.css";
 @source "../components";
 /* @sukunagg/charts components and stories (Charts/* in the sidebar). */
 @source "../../../charts/src";
+/* @sukunagg/fx components and stories (FX/* in the sidebar). */
+@source "../../../fx/src";

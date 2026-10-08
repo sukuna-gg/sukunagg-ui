@@ -1,0 +1,20 @@
+/*
+ * HoloCard motion CSS (@sukunagg/fx, Q39).
+ * Owned by the HoloCard builder: no other effect edits this
+ * file, and theme.css already imports it. This header is authoring notes: the build drops it
+ * from dist/theme.css. Guide: packages/fx/BUILDERS.md § 4.
+ *
+ * Top-level, in this order (names: build brief §4):
+ *   @property --sk-holo-card-<thing> { syntax: '<number>'; inherits: false; initial-value: 0; }
+ *   @keyframes sk-holo-card-<phase> { from { <hidden/initial state> } }
+ *   @utility animate-holo-card-<phase> {
+ *     animation: sk-holo-card-<phase> 9s var(--sk-ease) infinite;
+ *     @media (prefers-reduced-motion: reduce) { animation: none; }
+ *   }
+ *   @utility holo-card-<foil|…> { <a gradient or other style no utility can express> }
+ *
+ * Rules: colors only via var(--sk-*); the base style is the final/rest frame (keyframes hold the
+ * initial state in `from`); decorative loops stop under reduced motion, information keeps going;
+ * never nest @keyframes inside @utility; never name a utility bg-*; at most 8 keyframes; register
+ * every animate-* key in src/utils/tw-merge-config.ts under your comment.
+ */

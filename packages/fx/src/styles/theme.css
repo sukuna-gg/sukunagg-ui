@@ -1,0 +1,19 @@
+/*
+ * @sukunagg/fx theme: every effect's @property / @keyframes / @utility, one module per component
+ * (Q39), so parallel builders never edit the same file. Keep this list alphabetical; a new effect
+ * adds exactly one line here.
+ *
+ * - Tailwind apps: `@import "@sukunagg/fx/theme.css";` after `@sukunagg/ui/theme.css`. `@source`
+ *   alone scans class names but brings no @utility definitions, so this import is required.
+ * - Published as dist/theme.css by scripts/build-css.ts, which inlines these imports (one flat
+ *   file); dist/styles.css (src/styles/fallback.css) compiles the same CSS for non-Tailwind apps.
+ * - Storybook (packages/ui/src/styles/storybook.css) and the showcase import this file from source.
+ *
+ * Names (build brief §4): `--sk-<component>-<thing>`, `sk-<component>-<phase>`,
+ * `animate-<component>-<phase>`. Colors only via var(--sk-*), the tokens of @sukunagg/ui/theme.css.
+ */
+@import "./bracket-beam.css";
+@import "./flow-field.css";
+@import "./holo-card.css";
+@import "./lightning.css";
+@import "./particle-field.css";

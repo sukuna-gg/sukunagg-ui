@@ -1,0 +1,14 @@
+/*
+ * Precompiled effect utilities for NON-Tailwind apps (`@sukunagg/fx/styles.css`), compiled by
+ * `bun run css:build`. Import it after `@sukunagg/ui/styles.css`, which brings the base reset and
+ * the `--sk-*` tokens. Utilities, @property and @keyframes only — no second reset. Tailwind apps
+ * skip this: they `@import "@sukunagg/fx/theme.css"` and add
+ * `@source "../node_modules/@sukunagg/fx/dist"` instead.
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "../../../ui/src/styles/theme.css";
+@import "./theme.css";
+@source "../components";
+@source "../internal";

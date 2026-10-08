@@ -37,6 +37,11 @@ const config: StorybookConfig = {
         find: /^@sukunagg\/ui$/,
         replacement: fileURLToPath(new URL('../packages/ui/src/index.ts', import.meta.url)),
       },
+      // `@sukunagg/fx` by name (docs, examples) resolves to source too, like the tsconfig paths.
+      {
+        find: /^@sukunagg\/fx$/,
+        replacement: fileURLToPath(new URL('../packages/fx/src/index.ts', import.meta.url)),
+      },
     ]
     return cfg
   },

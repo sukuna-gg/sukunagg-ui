@@ -56,7 +56,7 @@ export interface ComponentEntry {
  * Sidebar sections in display order — the same order as Storybook's `storySort`. A title prefix
  * not listed here still shows, after these.
  */
-const SECTIONS = ['Components', 'Charts', 'Video']
+const SECTIONS = ['Components', 'Charts', 'FX', 'Video']
 
 const sectionRank = (s: string) => {
   const i = SECTIONS.indexOf(s)
@@ -74,13 +74,26 @@ const sources = import.meta.glob('../../../packages/*/src/components/*/*.stories
 }) as Record<string, string>
 
 const indexSources = import.meta.glob(
-  ['../../../packages/ui/src/index.ts', '../../../packages/charts/src/index.ts'],
+  [
+    '../../../packages/ui/src/index.ts',
+    '../../../packages/charts/src/index.ts',
+    '../../../packages/fx/src/index.ts',
+  ],
   { eager: true, query: '?raw', import: 'default' },
 ) as Record<string, string>
 
+/** The npm package an index.ts belongs to, from its `packages/<dir>/` path. */
+const packageOf = (path: string): string =>
+  path.includes('/charts/')
+    ? '@sukunagg/charts'
+    : path.includes('/fx/')
+      ? '@sukunagg/fx'
+      : '@sukunagg/ui'
+
 /**
  * Every value export → the package it comes from: the `export { A, B } from …` lines in each
- * package's src/index.ts (`@sukunagg/ui`, and `@sukunagg/charts` for the Charts section).
+ * package's src/index.ts (`@sukunagg/ui`, `@sukunagg/charts` for the Charts section and
+ * `@sukunagg/fx` for the FX section).
  */
 const EXPORT_PKG = new Map<string, string>(
   Object.entries(indexSources).flatMap(([path, src]) =>
@@ -89,10 +102,7 @@ const EXPORT_PKG = new Map<string, string>(
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean)
-        .map((name): [string, string] => [
-          name,
-          path.includes('/charts/') ? '@sukunagg/charts' : '@sukunagg/ui',
-        ]),
+        .map((name): [string, string] => [name, packageOf(path)]),
     ),
   ),
 )
@@ -445,7 +455,7 @@ export function renderStory(entry: ComponentEntry, item: StoryEntry): ReactNode 
 
 /** The full snippet shown in the explorer: import line(s) + usage. */
 export function storySnippet(item: StoryEntry): string {
-  // One import line per package, `@sukunagg/charts` before `@sukunagg/ui` (alphabetical).
+  // One import line per package, alphabetical (`@sukunagg/charts`, `@sukunagg/fx`, `@sukunagg/ui`).
   const byPkg = new Map<string, string[]>()
   for (const name of item.imports) {
     const from = EXPORT_PKG.get(name) ?? '@sukunagg/ui'

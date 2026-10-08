@@ -1,0 +1,91 @@
+{
+  "name": "@sukunagg/fx",
+  "version": "0.0.0",
+  "description": "Canvas, WebGL and SVG effects for sukuna-ui: client islands over a server-rendered CSS poster, on one shared frame loop that pauses off-screen and holds a still frame under reduced motion.",
+  "type": "module",
+  "license": "MIT",
+  "author": "arielplas (https://github.com/arielplas)",
+  "keywords": [
+    "react",
+    "particles",
+    "canvas",
+    "webgl",
+    "effects",
+    "animation",
+    "ssr",
+    "rsc",
+    "react-server-components",
+    "reduced-motion",
+    "accessible",
+    "tailwind-v4",
+    "sukuna-ui"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sukuna-gg/sukunagg-ui.git",
+    "directory": "packages/fx"
+  },
+  "homepage": "https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/fx#readme",
+  "bugs": {
+    "url": "https://github.com/sukuna-gg/sukunagg-ui/issues"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./theme.css": "./dist/theme.css",
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "NODE_OPTIONS=\"--max-old-space-size=8192\" tsup && bun run ../../scripts/fix-directives.ts && bun run css:build",
+    "css:build": "bun run scripts/build-css.ts",
+    "test": "bun test src",
+    "test:coverage": "bun test src --coverage",
+    "test:watch": "bun test src --watch",
+    "check:pkg": "publint --strict && attw --pack . --exclude-entrypoints theme.css styles.css",
+    "size": "size-limit"
+  },
+  "peerDependencies": {
+    "@sukunagg/ui": ">=0.11.0",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "tailwindcss": ">=4"
+  },
+  "peerDependenciesMeta": {
+    "tailwindcss": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.7.0",
+    "tailwind-variants": "^3.3.1"
+  },
+  "devDependencies": {
+    "@sukunagg/ui": "workspace:*"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

@@ -6,6 +6,8 @@ name: npm token check
 # publish when the token can't bypass 2FA. (Don't add + remove a temporary tag: granular tokens can
 # add dist-tags but get a 403 removing them, which leaves the tag behind.)
 # Run it from the Actions tab (or `gh workflow run npm-token-check.yml`) after rotating the token.
+# The loops below list published packages only: add a package (@sukunagg/charts, @sukunagg/fx) once
+# it exists on npm, since `npm view` fails on an unpublished name (docs/releasing.md, one-time setup).
 on:
   workflow_dispatch:
   push:

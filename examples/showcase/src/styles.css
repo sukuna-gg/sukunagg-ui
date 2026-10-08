@@ -9,8 +9,11 @@
  */
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/theme.css";
+/* @sukunagg/fx effects' @property/@keyframes/@utility (one module per effect, from source). */
+@import "../../../packages/fx/src/styles/theme.css";
 @source "../../../packages/ui/src/components";
 @source "../../../packages/charts/src";
+@source "../../../packages/fx/src";
 @source ".";
 
 /*

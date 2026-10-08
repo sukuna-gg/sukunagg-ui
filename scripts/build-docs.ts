@@ -79,6 +79,14 @@ const ADDON_PACKAGES: Record<
     plain: 'import "@sukunagg/charts/styles.css"',
     note: 'peers on `@sukunagg/ui` for its `theme.css` tokens, EmptyState and Skeleton',
   },
+  // Effects ship @keyframes/@property/@utility, so Tailwind apps import the fx theme as well as
+  // scanning dist/ (`@source` alone brings no @utility definitions).
+  '@sukunagg/fx': {
+    dir: 'packages/fx',
+    tailwind: '@import "@sukunagg/fx/theme.css"; @source "../node_modules/@sukunagg/fx/dist"',
+    plain: 'import "@sukunagg/fx/styles.css"',
+    note: 'peers on `@sukunagg/ui` for its `theme.css` tokens; client islands over a server-rendered CSS poster',
+  },
 }
 
 /** Which add-on package a component directory belongs to, if any. */

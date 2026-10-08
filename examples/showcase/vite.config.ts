@@ -61,6 +61,8 @@ export default defineConfig({
       },
       // Chart stories import `@sukunagg/ui` through `@sukunagg/charts`: same source, one copy.
       { find: /^@sukunagg\/ui$/, replacement: resolve(repoRoot, 'packages/ui/src/index.ts') },
+      // `@sukunagg/fx` by name resolves to source too (Storybook and tsconfig paths agree).
+      { find: /^@sukunagg\/fx$/, replacement: resolve(repoRoot, 'packages/fx/src/index.ts') },
     ],
   },
   server: {

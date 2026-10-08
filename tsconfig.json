@@ -24,7 +24,8 @@
     "paths": {
       "@sukunagg/video": ["./packages/video/src/index.ts"],
       "@sukunagg/video/hls": ["./packages/video/src/hls.ts"],
-      "@sukunagg/ui": ["./packages/ui/src/index.ts"]
+      "@sukunagg/ui": ["./packages/ui/src/index.ts"],
+      "@sukunagg/fx": ["./packages/fx/src/index.ts"]
     }
   },
   "include": [
