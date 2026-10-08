@@ -52,6 +52,12 @@ export type { AlertDialogButtonProps, AlertDialogProps } from './components/aler
 export { AlertDialog } from './components/alert-dialog'
 export type { AvatarProps } from './components/avatar'
 export { Avatar } from './components/avatar'
+export type {
+  AvatarFrameProps,
+  AvatarFrameStatus,
+  AvatarFrameTone,
+} from './components/avatar-frame'
+export { AvatarFrame } from './components/avatar-frame'
 export type { BadgeProps } from './components/badge'
 export { Badge } from './components/badge'
 export type { BreadcrumbItem, BreadcrumbsProps } from './components/breadcrumbs'

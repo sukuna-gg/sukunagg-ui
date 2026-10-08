@@ -35,6 +35,20 @@
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
+    "name": "AvatarFrame (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ AvatarFrame }",
+    "limit": "2 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "Badge (static, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ Badge }",
