@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt). This file concatenates every component page plus the design-token reference; the index is at https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt.
 
-@sukunagg/ui is a React 18/19 component library: 65 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 70 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -21,6 +21,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - Badge: A small, pill-shaped label for status and metadata — "LIVE", counts, tags.
 - BarChart (@sukunagg/charts): Compares amounts across categories: games per placement, kills per weapon by season, revenue per plan per month, pick rate per agent.
 - BorderBeam: Sends a short light around the border of a card, a featured match, a season pass or a plan tile, to mark the one thing on a screen that deserves attention.
+- BracketBeam (@sukunagg/fx): Shows a single-elimination tournament bracket and sends a beam of light along the champion's path, round by round, until the trophy card ignites.
 - Breadcrumbs: Show the path to the current page and let users jump back up it.
 - Button: Triggers an action.
 - Card: A surface container that groups related content on an elevation.
@@ -38,12 +39,15 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - Drawer: A panel that slides in from an edge (nav, filters, details).
 - EmptyState: Takes the place of content that isn't there: no results, nothing yet this season, a player not found, a service not answering.
 - Field: Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you.
+- FlowField (@sukunagg/fx): A matchmaking-screen backdrop where crimson particles stream along a drifting noise field and swirl around the content you centre on it.
 - GlitchText: Hits real text with short RGB-split glitch bursts, for elimination banners, match results and error or offline headings.
 - GradientText: Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases.
 - Heatmap (@sukunagg/charts): A calendar of activity: one square per day, weeks as columns, darker or brighter by how much happened — games played per day, commits, sessions.
+- HoloCard (@sukunagg/fx): A holographic foil card that wraps your card art and tilts toward the pointer or the arrow keys.
 - HoverCard: Preview richer context for a link without a click — a user card, a repo summary, a footnote.
 - Icon: A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links.
 - Input: A single-line text input.
+- Lightning (@sukunagg/fx): A crackling crimson lightning bolt behind a hero banner, drawn by one WebGL shader over a server-rendered SVG poster.
 - LineChart (@sukunagg/charts): Shows change across an ordered axis: rating over the last 30 matches, damage per round by role per week, placement per game, gold difference per minute.
 - LootReveal: Flips a row of face-down item cards to reveal what a player won, one after another, with a rarity glow per card and a spark burst for legendaries.
 - MatchFound: The ready-check prompt a game client shows when the queue pops: a draining countdown ring, who on the team has accepted, and the Accept / Decline actions.
@@ -51,6 +55,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - Meter: Show a scalar measurement within a known range: storage used, quota, password strength, a score.
 - NumberField: Enter a number precisely.
 - Pagination: Navigate between pages of results, with first/last always shown and ellipses in between.
+- ParticleField (@sukunagg/fx): An always-dark hero stage where crimson embers rise out of a glowing haze behind your overlay content, for season launches, event banners, landing heroes and "play now" panels.
 - Popover: Show a small, interactive panel next to the element that opened it — filters, quick settings, a share box, a date picker later.
 - Progress: A horizontal progress bar, determinate or indeterminate.
 - RadialGauge (@sukunagg/charts): One value against a range, drawn as a 270° arc with the number in the middle: LP to the next division, plan usage, a score out of 100.
@@ -759,6 +764,181 @@ No new **color** token: every color is `--sk-accent`, `--sk-accent-glow`, `--sk-
       contrast is unchanged in both themes (axe, both themes).
 - [ ] The beam is not a focus indicator; interactive children keep their own focus rings
       (hover / focus-within only brighten the glow).
+
+---
+
+# BracketBeam — @sukunagg/fx
+
+> Shows a single-elimination tournament bracket and sends a beam of light along the champion's path, round by round, until the trophy card ignites.
+
+- **Package:** `@sukunagg/fx` — `bun add @sukunagg/fx @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens; client islands over a server-rendered CSS poster)
+- **Import:** `import { BracketBeam } from '@sukunagg/fx'`
+- **Styles:** with Tailwind v4 add `@import "@sukunagg/fx/theme.css"; @source "../node_modules/@sukunagg/fx/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/fx/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/fx/src/components/bracket-beam · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-bracket-beam.md
+
+## Purpose
+
+Shows a single-elimination tournament bracket and sends a beam of light along the champion's path,
+round by round, until the trophy card ignites. Use it for a playoffs page, an event recap or a
+season finale; for a plain results table use `Table`.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+
+/** A team: its name, or its name plus a seed. */
+export type BracketTeam = string | BracketTeamInfo
+export interface BracketTeamInfo {
+  name: string // also how the champion is followed from round to round
+  seed?: number | string // shown before the name
+}
+
+export interface BracketMatch {
+  teams: readonly [BracketTeam, BracketTeam] // top row first
+  scores?: readonly [number | string, number | string] // omit while unplayed
+  winner?: 0 | 1 // omit while undecided
+}
+
+export interface BracketRound {
+  name: string // column heading + the round list's accessible name, e.g. 'Quarter-finals'
+  meta?: string // right of the heading, e.g. 'Bo3'
+  matches: readonly BracketMatch[] // match i feeds match ⌊i/2⌋ of the next round
+}
+
+interface BracketBeamOwnProps {
+  rounds: readonly BracketRound[]
+  champion?: string // the winning team's name: lights its path + renders the trophy card
+  championMeta?: ReactNode // line under the champion's name, e.g. <><b>3–1</b> grand final</>
+  championLabel?: string // card eyebrow. Default 'Champion'
+  trophyLabel?: string // trophy column heading. Default 'Trophy'
+  trophyMeta?: string // right of the trophy heading, e.g. 'S04'
+  winnerLabel?: string // screen-reader suffix on winning rows. Default 'winner'
+  seedLabel?: string // screen-reader word before each seed ("seed 1"). Default 'seed'
+  scoreLabel?: string // screen-reader word before each score ("score 2"). Default 'score'
+  paused?: boolean // hold the current frame. Default false
+}
+
+export type BracketBeamProps = BracketBeamOwnProps &
+  Omit<ComponentPropsWithoutRef<'div'>, 'children'>
+```
+
+- `aria-label` / `aria-labelledby` name the scrolling region (default `aria-label` is
+  `'Tournament bracket'`); every other native prop lands on the root `<div>`.
+- **Data rules.** Match `i` of a round feeds match `⌊i/2⌋` of the next one. A connector lands on
+  the row of the next match that holds the same team name, else on the top row for even `i` and
+  the bottom row for odd `i`. The champion's path is found by name: the last-round match
+  `champion` won, then, round by round backwards, the feeder match they won.
+- **Replay** by changing `key`; the beam loops while on screen anyway.
+- Without `champion` the bracket is static: connectors, winners in bold, no beams, no trophy card.
+
+Deliberately **not** in v1: double elimination, byes drawn as gaps, team logos, click handlers
+on matches, a play-once mode, custom row renderers.
+
+## Variants & tokens
+
+No new color token. Everything resolves through `--sk-*` tokens (`@sukunagg/ui/theme.css`).
+
+| Part | Tokens |
+|---|---|
+| Match box | bg `--sk-surface-2`, border `--sk-line`, divider `--sk-line-soft`, radius `--sk-radius-sm` |
+| Row text | name `--sk-font-display` 13px, `--sk-text-dim` (winner `--sk-text`, bold); seed and score `--sk-text-faint`, `font-sans tabular-nums` |
+| Lit row (champion's path) | `bracket-beam-glow` wash (`--sk-accent` 28% → 6% → 10%), 2px `--sk-accent` bar, score in `--sk-bracket-beam-ink`, seed `--sk-text` at 70% |
+| Heading | 10px uppercase, `--sk-tracking-eyebrow`, `--sk-text-faint` (meta `--sk-text-dim`), rule `--sk-line-soft` |
+| Wires | `--sk-line` 1.5px; lit path `--sk-accent` (SVG 2px through a blur glow filter; CSS poster 1.5px with `drop-shadow` in `--sk-accent` / `--sk-accent-glow`) |
+| Beam | trail `--sk-accent`, comet and flow dashes `--sk-bracket-beam-hot`, ripple + sparks `--sk-accent` |
+| Champion card | bg `--sk-surface-2`, radius `--sk-radius-md`; lit: border `--sk-accent`, glow `--sk-accent-glow`, eyebrow `--sk-bracket-beam-ink`; pending: dashed `--sk-line`, placeholders `--sk-line-soft` |
+
+Component-scoped colors, set on the root from tokens (no new token):
+
+- `--sk-bracket-beam-ink: color-mix(in oklab, var(--sk-accent) 80%, var(--sk-text))`: the accent
+  pushed toward the text color, so small lit text (scores, the eyebrow) reaches AA in both
+  themes. Measured in Chromium on the lit wash: score 5.7:1 dark / 5.1:1 light (plain accent:
+  4.5 / 3.7); eyebrow on the card 6.2 / 5.8. On the wash the seed uses `--sk-text` at 70%
+  (6.2 / 5.3; the faint token would be 3.4 / 3.1).
+- `--sk-bracket-beam-hot: color-mix(in oklab, var(--sk-accent) 62%, var(--sk-text))`: the beam's
+  bright core, paler than the accent on dark themes and deeper on light ones.
+- `--sk-bracket-beam-gap: clamp(36px, 6cqi, 64px)` (36px under 640px): the column gap, shared by
+  the grid and the poster wires.
+
+Layout: `grid-template-columns: repeat(<rounds>, minmax(min-content, 1fr)) minmax(min-content, 1.15fr)`
+(`--sk-bracket-beam-rounds` inline) with `min-width: min-content`, so the bracket fills its
+container, its columns shrink to their floor first, and only then does it scroll sideways. A round
+column's floor is 146px or its heading, whichever is wider; the trophy column's is 184px or the
+champion's name. Team names never widen a column (`contain: inline-size`): they truncate. Padding 14px 24px 16px 18px: the inline end is
+wider than the shock ring's 22px outset, so the ring never widens the scroller (no scrollbar flash
+on classic-scrollbar desktops). Under a 640px container (`@container bracket-beam`) the columns
+are fixed (146px, trophy 176px) and the padding tightens (12px, start 14px; the end stays 24px).
+
+CSS module `packages/fx/src/styles/bracket-beam.css` (two keyframes):
+
+```css
+@keyframes sk-bracket-beam-breathe {
+  to { opacity: 0.55; scale: 0.92; }
+}
+@keyframes sk-bracket-beam-shock {
+  from { opacity: 1; }
+  to { opacity: 0; inset: -22px; border-radius: 32px; }
+}
+@utility animate-bracket-beam-breathe {
+  animation: sk-bracket-beam-breathe 2.4s ease-in-out 0.6s infinite alternate;
+  @media (prefers-reduced-motion: reduce) { animation: none; }
+}
+@utility animate-bracket-beam-shock {
+  animation: sk-bracket-beam-shock 0.9s var(--sk-ease);
+  @media (prefers-reduced-motion: reduce) { animation: none; }
+}
+@utility bracket-beam-glow { /* lit row wash */
+  background-image: linear-gradient(90deg,
+    color-mix(in oklab, var(--sk-accent) 28%, transparent),
+    color-mix(in oklab, var(--sk-accent) 6%, transparent) 72%,
+    color-mix(in oklab, var(--sk-accent) 10%, transparent));
+}
+@utility bracket-beam-bloom { /* the trophy card's breathing halo */
+  background-image: radial-gradient(closest-side,
+    color-mix(in oklab, var(--sk-accent) 30%, transparent), transparent);
+}
+```
+
+Timeline (ms, one loop; `N` = segments on the champion's path, 3 for 8 teams): beam `i` leaves
+at `420 + 900·i` and travels 560 ms (ease-in head, the tail drains into the box); each row on the
+path lights as its beam lands (the first at 100); the trophy ignites when the last beam lands
+(`IGN`), with a shock ring, a perimeter burst of sparks and rising embers; flow dashes march
+along the lit path; everything fades at `IGN + 2520` and the loop restarts 700 ms later (6 s for
+8 teams).
+
+## States
+
+| State | Behavior |
+|---|---|
+| server / no-JS (poster) | Boxes, CSS connectors, the champion's rows lit, trophy card lit. The final frame. |
+| `data-state="paused"` | Island mounted, off-screen or hidden tab or `paused`: holds its frame. First paint after hydration is the lit frame (the poster's twin). |
+| `data-state="running"` | SVG replaces the CSS connectors (crossfade). Lit path fades, then beams travel round by round; the scroller follows the beam when the bracket overflows, until the viewer scrolls it. |
+| `data-state="still"` (`prefers-reduced-motion: reduce`) | One still frame: the lit path, the trophy lit, no beams, sparks, ripples or flow; the breathe and shock loops stop. An overflowing bracket scrolls to the trophy once. |
+| no `champion` | Static: connectors only, the loop settles and requests no frames. |
+| overflowing (narrow container) | Scrolls sideways; the region becomes a tab stop (`tabindex="0"`, focus ring) only while it overflows. |
+
+`data-state` lives on the island's scroller (`[data-sk-fx="bracket-beam"] > [data-state]`), the
+element `useFxLoop` observes; the root carries `data-sk-fx="bracket-beam"`.
+
+## Accessibility
+
+- [ ] The bracket is a named region (`aria-label`, default 'Tournament bracket'); each round is an
+      `<ol>` named by the round; headings are visual duplicates and `aria-hidden`.
+- [ ] Every team name, seed and score is real text, and a row reads as a sentence, not bare
+      numbers: "seed 1 Crimson Vow score 2, winner" (`sr-only` words from `seedLabel`,
+      `scoreLabel`, `winnerLabel`); the champion card reads "Champion, <name>, <meta>".
+- [ ] Wires, beams, sparks, the bloom and the placeholders are `aria-hidden`; the SVG lives in an
+      `aria-hidden` wrapper.
+- [ ] The scroller is a keyboard tab stop with a visible focus ring only while it overflows
+      (WCAG 2.1.1), like `Table scroll`.
+- [ ] Small lit text keeps AA on the lit wash in both themes: scores and the eyebrow in
+      `--sk-bracket-beam-ink`, seeds in `--sk-text` at 70% (measured, § 4).
+- [ ] Reduced motion: still frame, no loops; the final state is fully shown.
+- [ ] No flashing (WCAG 2.3.1): the trophy ignites once per 6 s loop; nothing flashes more than
+      3 times a second.
+- [ ] The beam's auto-scroll never moves the page, only the bracket's own scroller, and stops for
+      good once the viewer scrolls it.
 
 ---
 
@@ -1884,6 +2064,174 @@ the control.
 
 ---
 
+# FlowField — @sukunagg/fx
+
+> A matchmaking-screen backdrop where crimson particles stream along a drifting noise field and swirl around the content you centre on it.
+
+- **Package:** `@sukunagg/fx` — `bun add @sukunagg/fx @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens; client islands over a server-rendered CSS poster)
+- **Import:** `import { FlowField } from '@sukunagg/fx'`
+- **Styles:** with Tailwind v4 add `@import "@sukunagg/fx/theme.css"; @source "../node_modules/@sukunagg/fx/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/fx/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/fx/src/components/flow-field · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-flow-field.md
+
+## Purpose
+
+A matchmaking-screen backdrop where crimson particles stream along a drifting noise field and swirl
+around the content you centre on it. It is the "Searching for match…" screen, a queue or lobby
+hero, a loading state that should feel alive. The queue UI itself (title, timer, Cancel button,
+HUD) is yours: FlowField is the stage plus a `children` slot.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef } from 'react'
+
+export interface FlowFieldProps extends ComponentPropsWithoutRef<'div'> {
+  /**
+   * How many particles ride the field, scaled by the stage's area: 'medium' is 600 on the
+   * approved 540 × 320 stage. Changing it never remounts the canvas.
+   * @default 'medium'
+   */
+  density?: 'low' | 'medium' | 'high'
+  /**
+   * Calm the field to a slow, dim drift (the player is not queued). Toggling eases between the two
+   * looks over about a second; under reduced motion the still frame is redrawn.
+   * @default false
+   */
+  calm?: boolean
+  /**
+   * Hold the current frame, on top of the automatic pause off-screen and in hidden tabs.
+   * @default false
+   */
+  paused?: boolean
+}
+// children: your overlay (queue UI, hero copy). Laid out as a centred flex column over the field.
+```
+
+- **Replay/restart**: there is nothing to replay; the field is continuous. Remount with `key` to
+  restart it from its seeded opening.
+- The root receives `data-state` from the loop (`running | paused | still | off`); it is absent
+  in the server HTML. Style on it if you need to (`data-[state=still]:…`).
+- **Layout**: the root is a centred flex column with a 320px floor (`min-h-80`). Size it with
+  `className`: `h-dvh` for a full-screen queue, `aspect-video min-h-0` for a hero. Any stage
+  shorter than 320px needs `min-h-0` too (`h-56 min-h-0`), or the floor wins silently.
+
+Deliberately **not** in v1: a `seed` prop (the seeded opening is tuned: other seeds can open in a
+flat phase), color props (the palette is the Sukuna crimson set, read from tokens), pointer
+interaction, a public `onState` callback (the loop already mirrors it on `data-state`).
+
+## Variants & tokens
+
+| `density` | Particles on a 540 × 320 stage | Clamp (any size) |
+|---|---|---|
+| low | 300 | 80 – 900 |
+| medium (default) | 600 | 160 – 1800 |
+| high | 960 | 240 – 3000 |
+
+The count scales with the stage's area and is clamped, so a full-screen stage stays affordable.
+
+| Layer | Token | Use |
+|---|---|---|
+| Stage / trail fade | `--sk-well` | `bg-well`; the canvas fades its trails toward it every frame |
+| Deep streams (32%) | `--sk-accent-deep` | additive strokes, 1.5 px |
+| Mid streams (33%) | mix of `--sk-accent` and `--sk-accent-deep` | 1.25 px |
+| Bright streams (30%) | `--sk-accent` | 1.05 px |
+| Sparks (5%) | `--sk-premium` | 1.3 px |
+| Children | `--sk-text`, `--sk-text-dim` | readable on the dark stage |
+
+Each stream group is drawn at four alpha levels (0.2 / 0.42 / 0.68 / 0.92) by particle life and
+distance from the centre (particles dim inside the centre ellipse, where the content sits). A
+second canvas at one third resolution, blurred 6 px with `mix-blend-mode: screen`, is the glow.
+Colors are read from the root's computed style (`cssColor`), so the canvas never holds a hex value;
+the stage is pinned dark, so it reads the dark palette in both themes. **No new color token.**
+
+CSS module (`packages/fx/src/styles/flow-field.css`), no keyframes, no `@property`:
+
+```css
+/* The server-rendered still (no-JS, first paint, no 2D context): long crimson arcs sweep in from
+   two far-off centres, broken into streak bundles by spot masks, on a deep-crimson glow. */
+@utility flow-field-poster {
+  background:
+    radial-gradient(ellipse 62% 74% at 24% 34%,
+      color-mix(in oklab, var(--sk-accent-deep) 30%, transparent), transparent 72%),
+    radial-gradient(ellipse 56% 70% at 80% 64%,
+      color-mix(in oklab, var(--sk-accent-deep) 22%, transparent), transparent 72%),
+    var(--sk-well);
+  &::before, &::after { content: ""; position: absolute; inset: 0; }
+  &::before {
+    background: repeating-radial-gradient(circle at -6% 118%, transparent 0 5px,
+      var(--sk-accent) 6px, transparent 7.5px 10px, var(--sk-accent-deep) 11px,
+      transparent 12.5px 15px);
+    opacity: 0.55;
+    mask: /* three soft spots (top-left swirl), alpha only */ radial-gradient(…), …;
+  }
+  &::after { /* the mirror sweep from 112% -24%, deep first, opacity 0.5, bottom-right spots */ }
+}
+/* Darkens the centre behind the content, the bottom edge and the corners (the approved scrim). */
+@utility flow-field-scrim {
+  background:
+    radial-gradient(ellipse 36% 34% at 50% 50%,
+      color-mix(in oklab, var(--sk-well) 66%, transparent), transparent),
+    linear-gradient(to top, color-mix(in oklab, var(--sk-well) 85%, transparent), transparent 24%),
+    radial-gradient(ellipse 78% 90% at 50% 50%, transparent 52%,
+      color-mix(in oklab, var(--sk-well) 85%, transparent));
+}
+```
+
+The arcs use plain token stops dimmed by `opacity`, never `color-mix()`: Firefox renders
+`color-mix()` stops inside *repeating* gradients as speckles. Masks read alpha only, so the opaque
+`--sk-well` stands for "show". About 450 B of `dist/theme.css` (brotli).
+
+The exact values live in the CSS module; this block is the spec. The poster and canvas crossfade
+with the shared `group-data-[state=…]/fx:` strings from `packages/fx/BUILDERS.md` § 3.
+
+## States
+
+| State | Behavior |
+|---|---|
+| server / no-JS | `flow-field-poster` (sweeping crimson arcs) under the scrim; children rendered; no `data-state` |
+| `running` | canvas fades in over the poster (`duration-slow`); trails stream at the display rate |
+| `calm` | energy eases to 0.22 (time constant ≈ 0.67 s): slower streams, longer fade, dimmer strokes |
+| `paused` | off-screen, hidden tab or `paused`: the last frame holds, no frames are requested |
+| `still` (`prefers-reduced-motion: reduce`) | one frame pre-advanced 120 frames (2 s) from the seeded opening, repainted only after a resize, new token colors, or a `calm`/`density` change; no loop. Asked for the same still frame again (an OS light/dark flip, which leaves this always-dark stage's tokens alone, or a visibility re-check), it does nothing |
+| `off` | no 2D context: the poster stays; nothing throws |
+| resize, running or paused | particles rescale to the new box and the painted trails are scaled onto the new store: no re-simulation, no jump forward in time |
+| resize, `still` | the old still frame is scaled at once; the still frame is rebuilt at the new size 150 ms after the last resize |
+
+**Cost.** Each frame fades the whole trails store and strokes it additively, so the frame cost
+follows the store's pixels: the trails keep a 1x store on any display (`maxDpr: 1`). The
+synchronous rebuilds (the warm-up on first paint, a still frame) are capped at the approved
+stage's work, 600 particles × 60 or 120 steps: a bigger field covers the same time in fewer,
+longer steps (`rebuildSteps`). A resize rescales the painted trails (no simulation), and a still
+frame is rebuilt once, 150 ms after the last resize.
+
+Measured in headless Chromium on a GPU (RX 9070 XT, D3D11), before → after this design:
+
+| Case | Before (2x store, re-simulated) | After |
+|---|---|---|
+| Frame rate, 1872 × 1032 at DPR 2, uncapped: 'medium' / 'high' | 188 / 93 fps | 265 / 215 fps (as at DPR 1) |
+| Still frame at mount, 1920 × 1080 'high' (3000 particles) | 69–93 ms | about 20 ms |
+| Warm-up at mount, same stage | 49–68 ms | about 10 ms |
+| Each step of a resize drag, reduced motion | 71–94 ms | nothing; one 18–26 ms rebuild after it settles |
+| Each step of a resize drag, running | a 60-step warm-up | nothing over 8 ms (a scaled copy) |
+| Live switch to reduced motion | 118 ms | one 21 ms rebuild, then 0 frames |
+
+Under software raster (SwiftShader, 1280 × 720 'high'), resize steps cost nothing either way, and
+the one still rebuild (at mount, after a resize settles, on a live switch) takes 115–190 ms. On a
+phone CPU, expect a single rebuild of that order when reduced motion is on.
+
+## Accessibility
+
+- [ ] The effect layers sit in one `aria-hidden` wrapper (not on the `<canvas>`, which Biome
+      counts as focusable); `children` stay readable and focusable.
+- [ ] Centred text stays legible: particles dim inside the centre ellipse and the scrim darkens it.
+- [ ] `prefers-reduced-motion: reduce` draws one still frame and requests no frames; the poster
+      covers no-JS. Information the app renders (a queue timer) is not affected.
+- [ ] No flashing: strokes fade in and out over a particle's life (WCAG 2.3.1).
+- [ ] Always dark: `--sk-text` on `--sk-well` passes 4.5:1 in both app themes.
+- [ ] Announcements (match found, queue cancelled) are the app's job: its own `aria-live` region.
+
+---
+
 # GlitchText — @sukunagg/ui
 
 > Hits real text with short RGB-split glitch bursts, for elimination banners, match results and error or offline headings.
@@ -2201,6 +2549,192 @@ Each cell has a native `title` ("Tue, Aug 12: 4 games" / "Tue, Aug 12: not track
 
 ---
 
+# HoloCard — @sukunagg/fx
+
+> A holographic foil card that wraps your card art and tilts toward the pointer or the arrow keys.
+
+- **Package:** `@sukunagg/fx` — `bun add @sukunagg/fx @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens; client islands over a server-rendered CSS poster)
+- **Import:** `import { HoloCard } from '@sukunagg/fx'`
+- **Styles:** with Tailwind v4 add `@import "@sukunagg/fx/theme.css"; @source "../node_modules/@sukunagg/fx/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/fx/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/fx/src/components/holo-card · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-holo-card.md
+
+## Purpose
+
+A holographic foil card that wraps your card art and tilts toward the pointer or the arrow keys.
+A foil layer (a rainbow band plus a fine dot screen) and a glare layer follow the tilt on a spring,
+and drift slowly on their own while the card rests flat. Use it for the one collectible on a
+screen: a player card, a season reward, a profile highlight. It is decoration around real content:
+the card's name comes from your `aria-label`, and the art's text stays in the DOM.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+
+export interface HoloCardProps extends Omit<ComponentPropsWithoutRef<'div'>, 'aria-label'> {
+  /** Required: the card's accessible name, e.g. "ryomen, Duelist, rating 94, legendary card". */
+  'aria-label': string
+  /** How far it tilts and how bright the foil and glare get. Default 'normal'. */
+  intensity?: 'subtle' | 'normal'
+  /** Freeze the drift and any tilt, and ignore input (an app's pause control). Default false. */
+  paused?: boolean
+  /** The card art, painted on the card face under the foil and glare. */
+  children?: ReactNode
+}
+```
+
+- The root is a `<div>` with `role="group"`, `aria-roledescription="player card"` and
+  `tabIndex={0}`, so keyboard users can focus it and tilt it with the arrow keys. All three can be
+  overridden with your own native props (e.g. `aria-roledescription="reward card"`).
+- `ref` points at that root. `className` merges last (tailwind-merge), so `className="w-64"`
+  resizes the card; the default box is `w-50 aspect-[5/7]` (200 × 280 px).
+- **`paused`** is the hook for a WCAG 2.2.2 pause control: the light's drift stops where it is, a
+  tilt holds, and the pointer and arrow keys stop tilting (arrows scroll again). Toggling it never
+  remounts the card; resumed, the card springs to whatever the input then asks for. The card
+  already pauses on its own off-screen, in hidden tabs and under reduced motion. A root
+  `className` cannot stop the drift (`animate-none` would land on the root, not on the light
+  layers): use `paused`.
+- **`data-state`** (`running | paused | still | off`, written by the shared loop) lives on the
+  scene, the root's first child, not on the root: select it with
+  `[data-sk-fx="holo-card"] > [data-state]`. Never pass a `data-state` of your own.
+- The aura and floor shadow paint up to 80 px outside the box (`pointer-events: none`); leave room
+  around the card or clip it in your layout.
+- **Theme.** The card itself is a dark collectible in both themes (its face pins
+  `data-theme="dark"`, so the foil's `color-dodge` and the glare's `overlay` have a dark base to
+  work on, as in the approved light mockup). The accent hue, the aura, and the focus ring follow
+  the page theme. Art inside the card therefore resolves the **dark** `--sk-*` tokens.
+- **CSS custom properties your art can read** (set on the card's scene, inherited by the art):
+
+  | Property | Range | Meaning |
+  |---|---|---|
+  | `--sk-holo-card-x`, `--sk-holo-card-y` | −1 … 1 | Spring-smoothed tilt (pointer or keys); 0 at rest (the card doesn't sway). Use for parallax: `translate: calc(var(--sk-holo-card-x) * 8px) 0`. |
+  | `--sk-holo-card-a` | 0 … 1 | How "active" the card is (1 while hovered or key-tilted). |
+  | `--sk-holo-card-hue`, `--sk-holo-card-deep` | color | The page-theme accent and accent-deep. |
+  | `--sk-holo-card-ink`, `--sk-holo-card-base` | color | The card's bright ink and dark base. |
+
+Deliberately **not** in v1: the mockup's idle card sway (§11), gyroscope tilt
+(`deviceorientation` needs a permission prompt on iOS), rarity tiers or custom foil patterns
+(Q38(c) rarity tokens are still open), `as` polymorphism, naming by `aria-labelledby` alone, and a
+built-in frame, rating or name plate (that is art: see the stories).
+
+## Variants & tokens
+
+| `intensity` | Max tilt (Y / X) | Lift | Foil opacity (rest → active) | Glare opacity (rest → active) |
+|---|---|---|---|---|
+| normal (default) | 17° / 14° | 16 px | .20 → .48 | .40 → .90 |
+| subtle | 8.5° / 7° | 8 px | .12 → .29 | .24 → .54 |
+
+`intensity` sets two scale factors on the root as literal classes:
+`[--sk-holo-card-tilt:1] [--sk-holo-card-shine:1]` (normal) and
+`[--sk-holo-card-tilt:0.5] [--sk-holo-card-shine:0.6]` (subtle).
+
+| Layer | Tokens |
+|---|---|
+| Edge (the 1.5 px gradient rim) | `--sk-holo-card-ink` = dark `--sk-text` 82% + `--sk-chart-4`; `--sk-holo-card-hue` = page `--sk-accent`; `--sk-holo-card-base` = dark `--sk-bg` |
+| Card shadow | dark `--sk-well` at 90%, plus the page `--sk-accent-glow` |
+| Foil (`color-dodge`) | ink dots; a 118° band of hue, dark `--sk-text`, `--sk-chart-5`, `--sk-chart-2` |
+| Glare (`overlay`) | dark `--sk-text` at 85% → 22% → transparent |
+| Aura | page `--sk-accent-glow` |
+| Floor shadow | dark `--sk-well` at 55% |
+| Focus ring | page `--sk-focus-ring` (captured as `--sk-holo-card-ring`) |
+
+No new color token. Durations are literal (the drift's 14 s / 7 s periods, the spring constants in
+§6), like `sk-shine`; tunable as a patch pre-1.0.
+
+The CSS module `packages/fx/src/styles/holo-card.css` (two keyframes, seven utilities, no
+`@property`; colors only through `var(--sk-*)`):
+
+```css
+/* The light's drift: whole layers move, so nothing repaints. x and y use two properties
+   (`translate`, `transform`) so the two periods compose. Amplitudes come from each layer. */
+@keyframes sk-holo-card-drift-x {
+  from { translate: calc(var(--sk-holo-card-dx, 0px) * -1) 0; }
+  to { translate: var(--sk-holo-card-dx, 0px) 0; }
+}
+@keyframes sk-holo-card-drift-y {
+  from { transform: translateY(calc(var(--sk-holo-card-dy, 0px) * -1)); }
+  to { transform: translateY(var(--sk-holo-card-dy, 0px)); }
+}
+
+/* Sine-eased sweeps (7 s along x, 3.5 s along y, alternating: the mockup's 14 s figure-eight),
+   started mid-swing so the light is centred and moving at mount. Paused with the loop. */
+@utility animate-holo-card-drift {
+  animation:
+    sk-holo-card-drift-x 7s cubic-bezier(0.37, 0, 0.63, 1) -3.5s infinite alternate,
+    sk-holo-card-drift-y 3.5s cubic-bezier(0.37, 0, 0.63, 1) -1.75s infinite alternate;
+  animation-play-state: var(--sk-holo-card-play, running);
+  @media (prefers-reduced-motion: reduce) { animation: none; }
+}
+
+/* Tilt state, the light position and size, captured page-theme colors. */
+@utility holo-card-scene {
+  --sk-holo-card-x: 0;
+  --sk-holo-card-y: 0;
+  --sk-holo-card-a: 0;
+  --sk-holo-card-calm: calc(1 - var(--sk-holo-card-a)); /* the drift fades out while active */
+  --sk-holo-card-lx: var(--sk-holo-card-x);             /* the light sits at the tilt */
+  --sk-holo-card-ly: var(--sk-holo-card-y);
+  --sk-holo-card-spread: calc(1 + 0.37 * var(--sk-holo-card-calm)); /* the drift's average reach */
+  --sk-holo-card-hue: var(--sk-accent);
+  --sk-holo-card-deep: var(--sk-accent-deep);
+  --sk-holo-card-glow: var(--sk-accent-glow);
+  --sk-holo-card-ring: var(--sk-focus-ring);
+  perspective: 900px;
+  touch-action: pan-y;
+  @media (prefers-reduced-motion: reduce) {
+    --sk-holo-card-lx: -0.5; /* a fixed top-left light: the static sheen */
+    --sk-holo-card-ly: -0.55;
+    --sk-holo-card-spread: 1;
+  }
+}
+
+@utility holo-card-edge { /* rim radial-gradient at the light; box-shadow; transform:
+  translateZ(a·16px·tilt) rotateX(y·−14°·tilt) rotateY(x·17°·tilt); none under reduced motion */ }
+@utility holo-card-foil { /* color-dodge, opacity (.2 + .28a)·shine, masked around the light */ }
+@utility holo-card-band { /* the 118° rainbow band, oversized by its travel (±0.24 × ±0.16 card) */ }
+@utility holo-card-dots { /* the dot screen, oversized by its travel (±13.5 × ±9 px) */ }
+@utility holo-card-glare { /* overlay highlight at the light, in a square box that holds its
+  travel (±0.75 × ±0.5 half card); reduced motion: a fixed diagonal sheen */ }
+```
+
+The full bodies are in the CSS module; every value above is a `var(--sk-*)` or a number.
+
+## States
+
+| State | Behavior |
+|---|---|
+| server / no-JS | The card renders flat with its foil and glare; the drift still runs (pure CSS) and the focus ring still shows. No tilt. `data-state` is absent. |
+| default (rest) | A flat, still card. Its foil band, dot screen and glare drift (14 s figure-eight) as compositor-only transforms: no frames, no repaint. The loop is `running` but settled: no frames are requested. |
+| hover | The card springs toward the pointer (ω = 14 rad/s, critically damped), lifts 16 px, and the foil and glare follow the pointer and brighten. The drift fades out while active. |
+| focus-visible | A 2 px page-theme ring on the card (it tilts with the card); the root's own outline is suppressed. |
+| arrow keys | Each press nudges the card by 0.34 on that axis (clamped to ±1) from where it aims now, and lights it. `Escape` or `Home` (and blur) undo the key tilt; `Home` is only claimed (`preventDefault`) when there is one to undo. Arrows or `Home` with Alt/Ctrl/Meta/Shift are left to the browser. Only keys pressed on the card itself count; keys typed inside interactive art are ignored. |
+| pointer and keys together | The input used last wins. Letting go of one falls back to the other: a pointer leaving a key-tilted card returns to the key tilt, `Escape` under a hovering pointer returns to the pointer's aim. |
+| pointer leave / blur (nothing else holds it) | Springs back to flat (ω = 7.5 rad/s, softer) and settles; no frames once settled. |
+| `paused` prop | `data-state="paused"`: the drift and any tilt hold where they are, no frames, and the pointer and arrow keys are ignored (arrows scroll). Letting go (leave, blur, `Escape`) still counts, so the resumed card springs to the current input. |
+| off-screen / hidden tab | The loop reports `paused` and stops; the drift pauses too (`data-[state=paused]` sets `--sk-holo-card-play`). |
+| prefers-reduced-motion | `data-state="still"`: flat card, no drift, a fixed diagonal sheen instead of the moving glare. Pointer and arrow keys don't tilt, and the keys keep their defaults (arrows scroll, `Home` jumps). Follows the OS setting live, flattening a tilted card. |
+
+## Accessibility
+
+- [ ] Focusable (`tabIndex=0`), `role="group"` with `aria-roledescription="player card"` and a
+      required `aria-label`; the art's text stays in the DOM, in reading order.
+- [ ] Every decorative layer (aura, floor, foil, glare) is `aria-hidden="true"`; nothing decorative
+      is focusable.
+- [ ] Visible focus: a 2 px page-theme `--sk-focus-ring` ring on the card, ≥ 3:1 against the page
+      in both themes.
+- [ ] Keyboard parity with the pointer: arrow keys tilt, `Escape`/`Home` reset, blur resets. Tilt
+      is decorative, so no announcement is needed. Modified keys (Alt+← is Back) stay the
+      browser's, and `Home` is only claimed to undo a key tilt.
+- [ ] **WCAG 2.2.2 (pause, stop, hide):** the drift runs longer than 5 s, so it pauses off-screen
+      and in hidden tabs, stops under reduced motion, and apps can stop it with `paused` (bind a
+      Pause/Play control to it, as in the Lightning `WithPauseControl` story).
+- [ ] Reduced motion: no drift, no tilt, a static sheen; arrow keys fall back to page scrolling.
+- [ ] WCAG 2.3.1: no flashing. The glare brightens smoothly over a spring, far below 3 flashes/s.
+- [ ] Touch: `touch-action: pan-y`, so vertical scrolling over the card still scrolls the page.
+- [ ] axe: zero violations in both themes (unit) and in the stories (Storybook a11y addon).
+
+---
+
 # HoverCard — @sukunagg/ui
 
 > Preview richer context for a link without a click — a user card, a repo summary, a footnote.
@@ -2407,6 +2941,129 @@ Sukuna has one red (crimson), so the invalid border reuses `--sk-accent` (see `d
 - [ ] Reveal toggle is a native `<button type="button">` with `aria-controls` (the input id) and
       `aria-pressed`; its name is "Show password" / "Hide password" (visible text + sr-only suffix).
 - [ ] The toggle never submits the form and is reachable by Tab right after the field.
+
+---
+
+# Lightning — @sukunagg/fx
+
+> A crackling crimson lightning bolt behind a hero banner, drawn by one WebGL shader over a server-rendered SVG poster.
+
+- **Package:** `@sukunagg/fx` — `bun add @sukunagg/fx @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens; client islands over a server-rendered CSS poster)
+- **Import:** `import { Lightning } from '@sukunagg/fx'`
+- **Styles:** with Tailwind v4 add `@import "@sukunagg/fx/theme.css"; @source "../node_modules/@sukunagg/fx/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/fx/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/fx/src/components/lightning · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-lightning.md
+
+## Purpose
+
+A crackling crimson lightning bolt behind a hero banner, drawn by one WebGL shader over a
+server-rendered SVG poster. It is the backdrop for a live-match or Grand Final splash: the bolt
+strikes, flickers and re-routes on its own, while the banner content (`children`) stays real,
+readable DOM on top. No-JS users, the first paint and browsers without WebGL see the poster (the
+same bolt, frozen); reduced motion gets that frozen bolt from the shader as one still frame.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef } from 'react'
+
+interface LightningOwnProps {
+  intensity?: 'calm' | 'normal' | 'storm' // default 'normal' — strike cadence + brightness, live
+  position?: number                        // 0–1 across the width; default responsive (see below)
+  paused?: boolean                         // hold the current frame; default false, live
+}
+
+export type LightningProps = LightningOwnProps & ComponentPropsWithoutRef<'div'>
+// children = the overlay (banner copy, CTAs). They render above the effect, in normal flow, so
+// they also give the root its height (or size it with className, e.g. `h-96`).
+```
+
+- **`intensity`** applies live, without remounting the WebGL context: the resting brightness and
+  the flash/echo strength change at once (the storm reads the preset every frame); the gap to the
+  next strike and the branch odds change from the next strike (the strike already scheduled keeps
+  its time).
+- **`position`** is clamped to 0–1 and set as `--sk-lightning-x` on the stage. Omitted, the bolt sits
+  at **0.66**, moving to **0.8** when the effect is narrower than 720 px (a container query on the
+  root), as in the approved mockup. Changing it remounts the island (a fresh canvas), so the still
+  and paused frames pick it up too. That makes it a **layout setting, not something to animate**:
+  every new value restarts the effect (a new WebGL context and shader, a crossfade from the poster,
+  and a new storm whose first strike lands at once). Set it once per layout; never drive it from a
+  slider, scroll position or tween. (Reading it live needs a repaint hook from the shared loop.)
+- **Narrow cards:** below **400 px** of effect width the frozen bolt (the poster, the reduced-motion
+  still frame and the live bolt until its first re-route) draws without its fork, which would
+  otherwise reach into a phone card's title. Re-routed strikes keep their branches.
+- **`paused`** is the hook for a WCAG 2.2.2 pause control; reduced motion stops the loop on its own.
+- **`className`** merges onto the always-dark root, so its token utilities (shadows, borders,
+  rings) resolve in the **dark** palette on every page. Put page-themed chrome such as
+  `shadow-card` on a wrapper element, as the stories do.
+- Replay is not a concept here (the bolt loops); the root is a `@container`, so overlay chrome can
+  use `@max-[720px]:` variants against the effect's own width.
+
+Deliberately **not** in v1: measuring the overlay to keep the bolt clear of the title (the mockup's
+`tight` mode; `position` covers it), a color prop (always the crimson brand bolt, Q38), a seed prop
+(the scene is seeded and identical everywhere), a built-in scrim (legibility depends on where the
+copy sits, so it is consumer chrome; see the `GrandFinal` story), sound, and pointer interaction.
+
+## Variants & tokens
+
+| Prop | Value → behavior |
+|---|---|
+| intensity | `calm`: strikes 2.6–5.0 s apart, softer flash, fewer branches · `normal`: 1.2–2.7 s (the mockup) · `storm`: 1.0–1.7 s, brighter, more branches |
+| position | inline `--sk-lightning-x` on the stage; default class `[--sk-lightning-x:0.66] @max-[720px]:[--sk-lightning-x:0.8]` |
+
+Colors (always dark, `data-theme="dark"` pinned on the root, like VideoPlayer):
+
+| Layer | Token |
+|---|---|
+| stage (root background, shader `BG`) | `--sk-bg` (`bg-bg`) |
+| overlay text (inherited) | `--sk-text` (`text-text`) |
+| bolt glow, flash, haze (shader `C1`) | `--sk-accent` |
+| sky glow at the top, deep haze (shader `C2`, poster `lightning-glow`) | `--sk-accent-deep` |
+| white-hot core (shader `C0`, poster bolt) | `--sk-text` (poster: `color-mix(--sk-text 90%, --sk-accent)`) |
+
+The renderer reads the tokens from the root's computed style (`cssColor`), so a re-themed
+`--sk-accent` re-colors the shader too. One utility in `packages/fx/src/styles/lightning.css`, no
+keyframes, no `@property`:
+
+```css
+@utility lightning-glow {
+  background-image: radial-gradient(42% 70% at calc(var(--sk-lightning-x, 0.66) * 100% + 3%) 0%,
+    color-mix(in srgb, var(--sk-accent-deep) 34%, transparent), transparent 72%);
+}
+```
+
+No new color token. The canvas crossfade uses the BUILDERS strings (`duration-slow`, `ease-sukuna`).
+
+## States
+
+The loop owns `data-state` on the root (absent on the server).
+
+| State | Rendering |
+|---|---|
+| server / no-JS | The SVG poster: a radial crimson sky glow plus the bolt traced from the shader's frozen route (glow layer + hot core; the fork is hidden below 400 px). `children` on top. |
+| `running` | The canvas has faded in over the poster (opaque, same route on its first frame). Strikes: a hard flash then a 150 ms echo; the route crawls and re-routes on every later strike; a branch forks off on most strikes. |
+| `paused` | Off-screen, hidden tab or `paused`: the last frame holds, no rAF. |
+| `still` (`prefers-reduced-motion: reduce`) | One still frame of the frozen route (lit branch, none below 400 px; no flash), repainted only on resize. Follows the OS setting live. |
+| `lost` | WebGL context lost: the canvas fades out, the poster shows; `webglcontextrestored` rebuilds the program and resumes. |
+| `off` | No WebGL (or the shader failed to link): the poster stays. Never throws. |
+
+## Accessibility
+
+- [ ] The stage (poster SVGs + canvas wrapper) is `aria-hidden`; `pointer-events: none`; nothing
+      focusable. `children` stay real DOM text, read in order.
+- [ ] **WCAG 2.3.1 (three flashes):** every strike is one hard flash plus one echo 150 ms later, and
+      strikes are scheduled at least 1.0 s apart (`storm`; 1.2 s `normal`, 2.6 s `calm`), so no
+      one-second window holds more than three flashes. The flicker between strikes is a ±5 %
+      luminance wobble, under the flash threshold. Asserted by simulation in `lightning.storm.test.ts`.
+- [ ] **Reduced motion:** one still frame, no rAF (asserted in unit and browser tests); the poster
+      is the same frozen bolt for no-JS/no-WebGL.
+- [ ] **WCAG 2.2.2 (pause):** the loop pauses off-screen and in hidden tabs; `paused` lets the app
+      offer a pause control when the banner sits beside content people read. The control is app
+      chrome: the `WithPauseControl` story is the reference (a Pause/Play button whose label says
+      what a press will do, bound to `paused`).
+- [ ] Contrast: the stage is always dark (`data-theme="dark"`); overlay copy inherits `text-text`
+      (#F4F1EC on #0A0A0B, 17:1). Keep copy off the bolt (`position`) or add a scrim, as the
+      `GrandFinal` story does.
+- [ ] axe: zero violations (unit test, both page themes).
 
 ---
 
@@ -3162,6 +3819,144 @@ page: default · hover · active (`aria-current="page"`). prev/next disabled at 
 - [ ] `<nav aria-label="Pagination">`; current page `aria-current="page"`.
 - [ ] Prev/Next have labels and are `disabled` at the ends.
 - [ ] Ellipses are inert text, not buttons.
+
+---
+
+# ParticleField — @sukunagg/fx
+
+> An always-dark hero stage where crimson embers rise out of a glowing haze behind your overlay content, for season launches, event banners, landing heroes and "play now" panels.
+
+- **Package:** `@sukunagg/fx` — `bun add @sukunagg/fx @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens; client islands over a server-rendered CSS poster)
+- **Import:** `import { ParticleField } from '@sukunagg/fx'`
+- **Styles:** with Tailwind v4 add `@import "@sukunagg/fx/theme.css"; @source "../node_modules/@sukunagg/fx/dist"` next to the @sukunagg/ui setup; without Tailwind `import "@sukunagg/fx/styles.css"` after `@sukunagg/ui/styles.css` — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/fx/src/components/particle-field · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-particle-field.md
+
+## Purpose
+
+An always-dark hero stage where crimson embers rise out of a glowing haze behind your overlay
+content, for season launches, event banners, landing heroes and "play now" panels. The server
+renders a CSS poster (the haze and a few still embers), so the first paint, no-JS visitors and
+reduced-motion users get the finished look; on the client a Canvas 2D island lifts a few hundred
+embers on the shared fx loop. The effect is pure decoration: it is hidden from assistive tech, and
+your copy and calls to action stay ordinary DOM above it.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+
+interface ParticleFieldOwnProps {
+  /** How many embers rise: 'low' ≈ ½, 'high' ≈ 1.6× the default count. Default 'medium'. */
+  density?: 'low' | 'medium' | 'high'
+  /** Ember palette: 'accent' = crimson embers, bone-white cores (default); 'premium' = amber/bone. */
+  tone?: 'accent' | 'premium'
+  /** Hold the current frame (e.g. while a dialog covers the hero). Default false. */
+  paused?: boolean
+  /** Overlay content (hero copy, calls to action), rendered above the effect. */
+  children?: ReactNode
+}
+
+export type ParticleFieldProps = ParticleFieldOwnProps &
+  Omit<ComponentPropsWithoutRef<'div'>, 'children'>
+```
+
+- The root is a `<div>` that pins `data-theme="dark"` (the stage is always dark, like the
+  VideoPlayer chrome), so `text-text`, `text-text-dim` and every `--sk-*` token inside resolve to
+  their dark values in both themes. The ref points at it; `className` merges last (give it a
+  height and a radius: `className="h-96 rounded-lg"`); native props pass through.
+- The shared loop owns `data-state` on the root (`running | paused | still | off`). Never pass one.
+- Composition: the plume rises on the **end** side (right in LTR, left under `dir="rtl"`) and a
+  scrim darkens the **start** side, so start-aligned overlay copy stays legible.
+- The canvas reads the text direction once, at mount; the CSS layers (haze, poster, scrim) follow
+  `dir` live. An app that flips `dir` at runtime without remounting (a language switch) should key
+  the stage on it, `<ParticleField key={dir} …>`, or the embers keep rising on the old side.
+- Changing `tone` or `density` restarts the scene (the island is keyed on them); `paused` applies
+  live.
+
+Deliberately **not** in v1: a centred composition (plume position, scrim side), custom colors
+(`tone` only; app colors are not passed in), a `seed` prop (every instance renders the same seeded
+scene), a speed control, the mockup's 2% film-grain overlay, touch parallax.
+
+## Variants & tokens
+
+| Part | Spec |
+|---|---|
+| stage (root) | `bg-well text-text`, `data-theme="dark"`, `isolate overflow-hidden` |
+| haze (poster, always shown) | three radial gradients rising from the bottom edge: `--sk-particle-field-hot` 15% / 44% under the plume, `--sk-particle-field-deep` 62% across the floor; breathes (opacity .72 → 1, 90% → 100% tall) over 9 s, alternate |
+| embers (poster) | eight still embers: bone cores (`--sk-premium` 35% into `--sk-text`) with `--sk-particle-field-hot` halos; fades out once the canvas has drawn |
+| canvas | fades in over 1.6 s once the loop reports `running`, `paused` or `still` |
+| scrim | vignette (`--sk-well` 80% at the edges) + start-side shade (`--sk-well` 78% → 34% → clear at 62%; 70% → 30% → clear below 500 px) + a 1 px horizon line in `--sk-particle-field-hot` with a `--sk-particle-field-glow` bloom |
+| content | `relative h-full`, above every layer |
+
+| `tone` | `--sk-particle-field-hot` | `--sk-particle-field-deep` | `--sk-particle-field-glow` | canvas ramp (burn-out → just lit → spark) |
+|---|---|---|---|---|
+| accent (default) | `--sk-accent` | `--sk-accent-deep` | `--sk-accent-glow` | `--sk-accent-deep` → `--sk-accent` → bone (`--sk-premium` lifted to white); sparks bone with a `--sk-premium`/`--sk-chart-4` halo |
+| premium | `--sk-premium` 55% into `--sk-chart-4` (warm gold) | `--sk-chart-4` 55% into `--sk-well` | `--sk-premium` 45% | dark `--sk-chart-4` → `--sk-chart-4` → bone; sparks white with a `--sk-chart-4` halo |
+
+Canvas colors are read from the root's computed style (`cssColor`) and turned into seven
+pre-rendered glow sprites; nothing is hard-coded except the dark-token fallbacks `cssColor` needs.
+No new color token. The plume side is `--sk-particle-field-s` (`1`, or `-1` under `rtl:`).
+
+Embers: `density` scales an area-based count — 140 below 500 px wide, else
+`140 + (w·h − 140 000) / 2333` clamped to 140–260 — by 0.5 / 1 / 1.6. About 8% are fast sparks
+and 4% slow, swelling flares; the nearest are drawn large and out of focus. Each ember rises,
+cools (bone → crimson → deep), dims and burns out at its own ceiling; 40% die low in the haze so
+the plume visibly rises out of it. Pointer moves (mouse/pen) shift near embers up to 28 px for
+parallax.
+
+CSS (`packages/fx/src/styles/particle-field.css`, shipped in `@sukunagg/fx/theme.css`):
+
+```css
+@keyframes sk-particle-field-haze {
+  from { opacity: 0.72; translate: 0 5%; scale: 1 0.9; }
+}
+@utility animate-particle-field-haze {
+  animation: sk-particle-field-haze 9s ease-in-out infinite alternate;
+  @media (prefers-reduced-motion: reduce) { animation: none; }
+}
+@utility particle-field-fade {
+  transition: opacity 1.6s var(--sk-ease);
+  @media (prefers-reduced-motion: reduce) { transition: none; }
+}
+@utility particle-field-haze { background: radial-gradient(…), radial-gradient(…), radial-gradient(…); }
+@utility particle-field-embers { background: radial-gradient(circle 11px at …) /* ×8 */; }
+@utility particle-field-scrim {
+  container-type: inline-size;
+  &::before { /* vignette + start-side shade; @container (max-width: 499px) widens it */ }
+  &::after { /* 1px horizon line + glow */ }
+}
+```
+
+One keyframe and five utilities. `animate-particle-field-haze` is registered with tailwind-merge
+(`src/utils/tw-merge-config.ts`, key `particle-field-haze`), so it dedupes against other
+`animate-*` classes like the built-in ones do.
+
+## States
+
+| State | Behavior |
+|---|---|
+| server / no-JS / first paint | the CSS poster: haze (breathing) + eight still embers; empty transparent canvas; no `data-state` |
+| `running` | canvas faded in, poster embers faded out; the loop draws every frame; the haze breathes |
+| `paused` | off-screen, hidden tab, or `paused` prop: the last frame holds, no frames are requested, the haze animation pauses too |
+| `still` (`prefers-reduced-motion: reduce`) | one seeded still frame of the full field, repainted only on resize or a theme change; no haze animation, no fades; follows the OS setting live |
+| `off` | no 2D context (or a hook threw): the poster stays as is |
+| `tone="premium"` | amber/bone haze, poster and embers |
+| `dir="rtl"` | plume, poster and scrim mirror |
+| narrow (< 500 px) | 140 embers (× density), plume nearer the centre, wider start-side shade |
+
+## Accessibility
+
+- [ ] Every effect layer (haze, poster embers, canvas wrapper, scrim) is `aria-hidden`; the canvas
+      sits inside an `aria-hidden` wrapper (not on the `<canvas>` itself).
+- [ ] `children` stay ordinary DOM: headings, links and buttons keep their roles and tab order.
+- [ ] Contrast at rest: overlay text on the start side sits on ≥ 78% `--sk-well` shade (≥ 70% below
+      500 px); `text-text` and `text-text-dim` meet 4.5:1 against the dark stage in both page
+      themes (the stage pins `data-theme="dark"`).
+- [ ] Reduced motion: one still frame, no haze loop, no fades; follows the OS setting live.
+- [ ] WCAG 2.3.1: no flashing. Embers twinkle at ≤ 1.2 Hz with ≤ 16% amplitude; nothing strobes.
+- [ ] WCAG 2.2.2 (pause, stop, hide): decorative motion pauses off-screen and in hidden tabs, and
+      apps can stop it with `paused`.
+- [ ] Pointer parallax is decoration only; nothing depends on it.
 
 ---
 

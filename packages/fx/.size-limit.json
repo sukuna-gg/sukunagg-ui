@@ -36,7 +36,7 @@
     "name": "FlowField (our code + shared loop; react, @sukunagg/ui excluded)",
     "path": "dist/index.js",
     "import": "{ FlowField }",
-    "limit": "4.5 kB",
+    "limit": "4.75 kB",
     "ignore": [
       "react",
       "react-dom",

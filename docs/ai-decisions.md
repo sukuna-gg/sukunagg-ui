@@ -9,6 +9,28 @@ agent's own calls. Newest first.
 
 ---
 
+## D39 — @sukunagg/fx: one shared loop under five client islands
+
+- **Decision:** (1) **One loop for every effect** (`packages/fx/src/internal/loop.ts`): a CSS poster
+  renders on the server; the island pauses offscreen (IntersectionObserver) and in hidden tabs,
+  caps the pixel ratio, survives a lost GPU context and a StrictMode double mount, tolerates a null
+  context (happy-dom), and draws one still frame under reduced motion, switching live both ways.
+  (2) **The motion setting is never read inside a frame.** Reading `matchMedia(...).matches` per
+  frame made Chromium swallow the `change` event, so a running effect never reached `still`; the
+  loop now reads it only when it re-evaluates its state (regression test: zero reads per frame).
+  (3) **Always-dark stages** (ParticleField, FlowField, Lightning) pin `data-theme="dark"` like
+  VideoPlayer; HoloCard and BracketBeam follow the theme. (4) **No effect engines:** hand-written
+  Canvas2D, one WebGL1 shader and measured SVG; deps match `@sukunagg/charts` (clsx, tailwind-merge,
+  tailwind-variants). (5) **One CSS module per component** in `packages/fx/src/styles/`, assembled into
+  `styles.css`. (6) **FlowField budget 4.5 → 4.75 kB:** the review's perf fixes (cached still frame,
+  debounced rebuild, rescaled trails, 1x store) cost 107 B and cut a live reduce switch from 118 ms to
+  21 ms. (7) **HoloCard is flat at rest** instead of the mockup's idle sway: any sway blurs the card in
+  Firefox at DPR 2. `DECISION(open)` for the owner.
+- **Why:** the package exists for effects the CSS-only rules can't do, so its loop must carry the
+  guarantees those rules gave for free (no work offscreen, reduced motion, SSR).
+- **Reverse:** (6) lower the budget once FlowField is trimmed; (7) re-add the sway wrapper and its two
+  keyframes in `holo-card.css` (see `docs/component-holo-card.md` §11).
+
 ## D38 — Showpieces wave (ui): how nine animated components fit the library
 
 - **Decision:** (1) **One motion module per component** in `packages/ui/scripts/motion/<name>.ts`,

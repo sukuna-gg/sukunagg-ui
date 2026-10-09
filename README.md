@@ -15,7 +15,7 @@
 
 **SSR-safe, accessible React components for dark-first products — and for the AI agents that build them.**
 
-<!-- count -->65<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
+<!-- count -->70<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
 contrast in both themes, `prefers-reduced-motion` honored, zero runtime styling, React Server
 Components-ready, React 18 and 19. Dark is the identity; light is a mode.
 
@@ -128,6 +128,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `Badge` | A small, pill-shaped label for status and metadata — "LIVE", counts, tags. | [docs/llms/badge.md](docs/llms/badge.md) |
 | `BarChart` · @sukunagg/charts | Compares amounts across categories: games per placement, kills per weapon by season, revenue per plan per month, pick rate per agent. | [docs/llms/bar-chart.md](docs/llms/bar-chart.md) |
 | `BorderBeam` | Sends a short light around the border of a card, a featured match, a season pass or a plan tile, to mark the one thing on a screen that deserves attention. | [docs/llms/border-beam.md](docs/llms/border-beam.md) |
+| `BracketBeam` · @sukunagg/fx | Shows a single-elimination tournament bracket and sends a beam of light along the champion's path, round by round, until the trophy card ignites. | [docs/llms/bracket-beam.md](docs/llms/bracket-beam.md) |
 | `Breadcrumbs` | Show the path to the current page and let users jump back up it. | [docs/llms/breadcrumbs.md](docs/llms/breadcrumbs.md) |
 | `Button` | Triggers an action. | [docs/llms/button.md](docs/llms/button.md) |
 | `Card` | A surface container that groups related content on an elevation. | [docs/llms/card.md](docs/llms/card.md) |
@@ -145,12 +146,15 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `Drawer` | A panel that slides in from an edge (nav, filters, details). | [docs/llms/drawer.md](docs/llms/drawer.md) |
 | `EmptyState` | Takes the place of content that isn't there: no results, nothing yet this season, a player not found, a service not answering. | [docs/llms/empty-state.md](docs/llms/empty-state.md) |
 | `Field` | Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you. | [docs/llms/field.md](docs/llms/field.md) |
+| `FlowField` · @sukunagg/fx | A matchmaking-screen backdrop where crimson particles stream along a drifting noise field and swirl around the content you centre on it. | [docs/llms/flow-field.md](docs/llms/flow-field.md) |
 | `GlitchText` | Hits real text with short RGB-split glitch bursts, for elimination banners, match results and error or offline headings. | [docs/llms/glitch-text.md](docs/llms/glitch-text.md) |
 | `GradientText` | Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases. | [docs/llms/gradient-text.md](docs/llms/gradient-text.md) |
 | `Heatmap` · @sukunagg/charts | A calendar of activity: one square per day, weeks as columns, darker or brighter by how much happened — games played per day, commits, sessions. | [docs/llms/heatmap.md](docs/llms/heatmap.md) |
+| `HoloCard` · @sukunagg/fx | A holographic foil card that wraps your card art and tilts toward the pointer or the arrow keys. | [docs/llms/holo-card.md](docs/llms/holo-card.md) |
 | `HoverCard` | Preview richer context for a link without a click — a user card, a repo summary, a footnote. | [docs/llms/hover-card.md](docs/llms/hover-card.md) |
 | `AlertIcon`, `ChartIcon`, `CheckIcon`, `ChevronDownIcon`, `ChevronLeftIcon`, `ChevronRightIcon`, `ChevronUpIcon`, `ClockIcon`, `CloseIcon`, `ExternalIcon`, `InfoIcon`, `LockIcon`, `MoonIcon`, `RefreshIcon`, `SearchIcon`, `SunIcon`, `UserIcon` | A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links. | [docs/llms/icon.md](docs/llms/icon.md) |
 | `Input` | A single-line text input. | [docs/llms/input.md](docs/llms/input.md) |
+| `Lightning` · @sukunagg/fx | A crackling crimson lightning bolt behind a hero banner, drawn by one WebGL shader over a server-rendered SVG poster. | [docs/llms/lightning.md](docs/llms/lightning.md) |
 | `AreaChart`, `LineChart` · @sukunagg/charts | Shows change across an ordered axis: rating over the last 30 matches, damage per round by role per week, placement per game, gold difference per minute. | [docs/llms/line-chart.md](docs/llms/line-chart.md) |
 | `LootReveal` | Flips a row of face-down item cards to reveal what a player won, one after another, with a rarity glow per card and a spark burst for legendaries. | [docs/llms/loot-reveal.md](docs/llms/loot-reveal.md) |
 | `MatchFound` | The ready-check prompt a game client shows when the queue pops: a draining countdown ring, who on the team has accepted, and the Accept / Decline actions. | [docs/llms/match-found.md](docs/llms/match-found.md) |
@@ -158,6 +162,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `Meter` | Show a scalar measurement within a known range: storage used, quota, password strength, a score. | [docs/llms/meter.md](docs/llms/meter.md) |
 | `NumberField` | Enter a number precisely. | [docs/llms/number-field.md](docs/llms/number-field.md) |
 | `Pagination`, `paginationRange` | Navigate between pages of results, with first/last always shown and ellipses in between. | [docs/llms/pagination.md](docs/llms/pagination.md) |
+| `ParticleField` · @sukunagg/fx | An always-dark hero stage where crimson embers rise out of a glowing haze behind your overlay content, for season launches, event banners, landing heroes and "play now" panels. | [docs/llms/particle-field.md](docs/llms/particle-field.md) |
 | `Popover` | Show a small, interactive panel next to the element that opened it — filters, quick settings, a share box, a date picker later. | [docs/llms/popover.md](docs/llms/popover.md) |
 | `Progress` | A horizontal progress bar, determinate or indeterminate. | [docs/llms/progress.md](docs/llms/progress.md) |
 | `RadialGauge` · @sukunagg/charts | One value against a range, drawn as a 270° arc with the number in the middle: LP to the next division, plan usage, a score out of 100. | [docs/llms/radial-gauge.md](docs/llms/radial-gauge.md) |
