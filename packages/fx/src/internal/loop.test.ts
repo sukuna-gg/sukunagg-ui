@@ -207,6 +207,37 @@ describe('mountFx: 2D', () => {
     fx.destroy()
   })
 
+  it('never reads the motion setting inside a frame (Chromium would swallow its change event)', () => {
+    const e = setup()
+    const { root, canvas } = stage()
+    const fx = mountFx(root, canvas, recorder())
+    e.intersect(true)
+    expect(fx.state).toBe('running')
+    // Count reads of the live query; in Blink a per-frame read refreshes its cached value before
+    // the change check, so `change` never fires and the effect would stay `running`.
+    const mql = matchMedia('(prefers-reduced-motion: reduce)')
+    let value = mql.matches
+    let reads = 0
+    Object.defineProperty(mql, 'matches', {
+      configurable: true,
+      get() {
+        reads++
+        return value
+      },
+      set(next: boolean) {
+        value = next
+      },
+    })
+    e.frame(16)
+    e.frame(16)
+    e.frame(16)
+    expect(reads).toBe(0)
+    e.reduceMotion(true)
+    expect(fx.state).toBe('still')
+    expect(e.pendingFrames()).toBe(0)
+    fx.destroy()
+  })
+
   it('caps the device pixel ratio at 2, or at maxDpr', () => {
     const e = setup({ dpr: 3 })
     const a = stage()

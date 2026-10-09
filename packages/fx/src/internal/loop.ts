@@ -256,6 +256,10 @@ function engine(
   let last: number | undefined // previous frame's timestamp; undefined = first frame after a start
   const cleanups: (() => void)[] = []
   const motion = typeof matchMedia === 'function' ? matchMedia(REDUCED_MOTION) : undefined
+  // Read the motion setting only in sync(), never per frame: in Chromium, reading `.matches` inside a
+  // frame refreshes the query's cached value before its change check, so the `change` event is
+  // swallowed and a running effect would never reach `still`.
+  let reduced = motion?.matches ?? false
 
   function set(next: FxState): void {
     if (next === state) return
@@ -283,7 +287,7 @@ function engine(
     if (lost || state === 'off') return undefined
     clock.dt = dt
     clock.time += dt
-    clock.still = motion?.matches ?? false
+    clock.still = reduced
     return run(frame)
   }
 
@@ -304,9 +308,10 @@ function engine(
 
   function sync(): void {
     if (dead || state === 'off') return
+    reduced = motion?.matches ?? false
     const next: FxState = lost
       ? 'lost'
-      : motion?.matches
+      : reduced
         ? 'still'
         : paused || !onScreen || document.hidden
           ? 'paused'
