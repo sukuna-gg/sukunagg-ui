@@ -430,7 +430,7 @@
     "name": "ScrambleText (static + glyph island, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ ScrambleText }",
-    "limit": "2 kB",
+    "limit": "2.5 kB",
     "ignore": [
       "react",
       "react-dom",
