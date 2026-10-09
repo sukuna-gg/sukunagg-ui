@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt).
 
-@sukunagg/ui is a React 18/19 component library: 65 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 70 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -88,6 +88,16 @@ Install `bun add @sukunagg/charts` (peers on `@sukunagg/ui` for its `theme.css` 
 - [Heatmap](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/heatmap.md): A calendar of activity: one square per day, weeks as columns, darker or brighter by how much happened — games played per day, commits, sessions.
 - [LineChart](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/line-chart.md): Shows change across an ordered axis: rating over the last 30 matches, damage per round by role per week, placement per game, gold difference per minute.
 - [RadialGauge](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/radial-gauge.md): One value against a range, drawn as a 270° arc with the number in the middle: LP to the next division, plan usage, a score out of 100.
+
+## @sukunagg/fx
+
+Install `bun add @sukunagg/fx` (peers on `@sukunagg/ui` for its `theme.css` tokens; client islands over a server-rendered CSS poster). Tailwind apps add `@import "@sukunagg/fx/theme.css"; @source "../node_modules/@sukunagg/fx/dist"`; others `import "@sukunagg/fx/styles.css"`.
+
+- [BracketBeam](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/bracket-beam.md): Shows a single-elimination tournament bracket and sends a beam of light along the champion's path, round by round, until the trophy card ignites.
+- [FlowField](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/flow-field.md): A matchmaking-screen backdrop where crimson particles stream along a drifting noise field and swirl around the content you centre on it.
+- [HoloCard](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/holo-card.md): A holographic foil card that wraps your card art and tilts toward the pointer or the arrow keys.
+- [Lightning](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/lightning.md): A crackling crimson lightning bolt behind a hero banner, drawn by one WebGL shader over a server-rendered SVG poster.
+- [ParticleField](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/particle-field.md): An always-dark hero stage where crimson embers rise out of a glowing haze behind your overlay content, for season launches, event banners, landing heroes and "play now" panels.
 
 ## Theming
 

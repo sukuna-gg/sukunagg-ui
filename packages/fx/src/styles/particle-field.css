@@ -1,0 +1,152 @@
+/*
+ * ParticleField motion CSS (@sukunagg/fx, Q39). Spec: docs/component-particle-field.md §4.
+ * Owned by the ParticleField builder; theme.css imports it. This header is authoring notes: the
+ * build drops it from dist/theme.css. Guide: packages/fx/BUILDERS.md § 4.
+ *
+ * The stage root (particle-field.styles.tsx) sets the tone colors these utilities read:
+ *   --sk-particle-field-hot   the plume / ember halo color
+ *   --sk-particle-field-deep  the floor glow
+ *   --sk-particle-field-glow  the horizon line bloom
+ *   --sk-particle-field-s     the plume side: 1 (end = right) or -1 under rtl:
+ * Base styles are the final frame (the haze at full height); the keyframe's `from` holds the low
+ * point of the breath. Decorative only, so reduced motion stops it.
+ */
+@keyframes sk-particle-field-haze {
+  from {
+    opacity: 0.72;
+    translate: 0 5%;
+    scale: 1 0.9;
+  }
+}
+
+@utility animate-particle-field-haze {
+  animation: sk-particle-field-haze 9s ease-in-out infinite alternate;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* The poster → canvas crossfade (the mockup's slow bloom). */
+@utility particle-field-fade {
+  transition: opacity 1.6s var(--sk-ease);
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+@utility particle-field-haze {
+  background:
+    radial-gradient(
+      22% 95% at calc(50% + var(--sk-particle-field-s, 1) * 20%) 104%,
+      color-mix(in srgb, var(--sk-particle-field-hot) 15%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      40% 58% at calc(50% + var(--sk-particle-field-s, 1) * 20%) 110%,
+      color-mix(in srgb, var(--sk-particle-field-hot) 44%, transparent),
+      transparent 72%
+    ),
+    radial-gradient(
+      120% 56% at 50% 112%,
+      color-mix(in srgb, var(--sk-particle-field-deep) 62%, transparent),
+      transparent 76%
+    );
+}
+
+/* Eight still embers: the server/no-JS poster the canvas replaces. */
+@utility particle-field-embers {
+  --sk-particle-field-core: color-mix(in oklab, var(--sk-premium) 35%, var(--sk-text));
+  --sk-particle-field-halo: color-mix(in srgb, var(--sk-particle-field-hot) 60%, transparent);
+  background:
+    radial-gradient(
+      circle 11px at calc(50% + var(--sk-particle-field-s, 1) * 22%) 81%,
+      var(--sk-particle-field-core),
+      var(--sk-particle-field-halo) 22%,
+      transparent
+    ),
+    radial-gradient(
+      circle 8px at calc(50% + var(--sk-particle-field-s, 1) * 36%) 68%,
+      var(--sk-particle-field-core),
+      var(--sk-particle-field-halo) 25%,
+      transparent
+    ),
+    radial-gradient(
+      circle 7px at calc(50% + var(--sk-particle-field-s, 1) * 13%) 62%,
+      var(--sk-particle-field-hot),
+      var(--sk-particle-field-halo) 25%,
+      transparent
+    ),
+    radial-gradient(
+      circle 6px at calc(50% + var(--sk-particle-field-s, 1) * 7%) 88%,
+      var(--sk-particle-field-core),
+      var(--sk-particle-field-halo) 30%,
+      transparent
+    ),
+    radial-gradient(
+      circle 6px at calc(50% + var(--sk-particle-field-s, 1) * 29%) 46%,
+      var(--sk-particle-field-hot),
+      transparent
+    ),
+    radial-gradient(
+      circle 5px at calc(50% + var(--sk-particle-field-s, 1) * 43%) 33%,
+      var(--sk-particle-field-core),
+      transparent
+    ),
+    radial-gradient(
+      circle 4px at calc(50% + var(--sk-particle-field-s, 1) * 24%) 28%,
+      var(--sk-particle-field-deep),
+      transparent
+    ),
+    radial-gradient(
+      circle 4px at calc(50% + var(--sk-particle-field-s, 1) * 15%) 17%,
+      var(--sk-particle-field-deep),
+      transparent
+    );
+}
+
+/* Vignette + start-side shade for overlay copy (::before), and the glowing horizon (::after). */
+@utility particle-field-scrim {
+  container-type: inline-size;
+  --sk-particle-field-v: radial-gradient(
+    88% 104% at 50% 56%,
+    transparent 48%,
+    color-mix(in srgb, var(--sk-well) 80%, transparent)
+  );
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+  }
+  &::before {
+    inset: 0;
+    background:
+      var(--sk-particle-field-v),
+      linear-gradient(
+        calc(var(--sk-particle-field-s, 1) * 90deg),
+        color-mix(in srgb, var(--sk-well) 78%, transparent),
+        color-mix(in srgb, var(--sk-well) 34%, transparent) 38%,
+        transparent 62%
+      );
+    @container (max-width: 499px) {
+      background:
+        var(--sk-particle-field-v),
+        linear-gradient(
+          calc(var(--sk-particle-field-s, 1) * 90deg),
+          color-mix(in srgb, var(--sk-well) 70%, transparent),
+          color-mix(in srgb, var(--sk-well) 30%, transparent) 75%,
+          transparent
+        );
+    }
+  }
+  &::after {
+    inset: auto 0 0;
+    height: 1px;
+    background: linear-gradient(
+      calc(var(--sk-particle-field-s, 1) * 90deg),
+      transparent 8%,
+      color-mix(in srgb, var(--sk-particle-field-hot) 70%, transparent) 66%,
+      transparent 96%
+    );
+    box-shadow: 0 0 14px 1px var(--sk-particle-field-glow);
+  }
+}

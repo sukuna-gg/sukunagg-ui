@@ -672,7 +672,7 @@ maps rarities onto existing tokens (`text-faint`, `chart-2`, `chart-5`, `premium
 | Topic | Decision |
 |---|---|
 | Design source | Pomo Design System (Sukuna language) as base |
-| Package name | `sukuna-ui` → **`@sukunagg/ui`** (+ `@sukunagg/video`, `@sukunagg/charts`), repo `sukuna-gg/sukunagg-ui` (Q29, renamed Q35) |
+| Package name | `sukuna-ui` → **`@sukunagg/ui`** (+ `@sukunagg/video`, `@sukunagg/charts`, `@sukunagg/fx` (Q39)), repo `sukuna-gg/sukunagg-ui` (Q29, renamed Q35) |
 | v1 components | Text, Badge, Card, Button, Input, Checkbox, Switch, Tooltip, Dialog, Select |
 | Docs language | English |
 | Package layout | Single package; **except** the VideoPlayer, which becomes standalone `@sukuna-ui/video` in a Bun-workspaces monorepo (no `sukuna-ui` dependency, `--vp-*` vars, dark default; `sukuna-ui` re-exports it) (Q3, Q27) |
@@ -708,3 +708,4 @@ maps rarities onto existing tokens (`text-faint`, `chart-2`, `chart-5`, `premium
 | Q28 | Approve the `--vp-*` variable set (names + Sukuna-dark defaults) for `@sukuna-ui/video`? | Shipped as built with the first `@sukunagg/video` publish (Q29); renaming now = breaking release. |
 | Q36 | Ship `color-scheme` per theme + an opt-in themed native-scrollbar `@utility`? Raise ScrollArea's neutral idle thumb (≈1.3:1) to ≥3:1 or relax that checklist item? | Proposed; `tone="accent"` built. Neutral-thumb change is visual (patch on `0.x`). |
 | Q38 | (a) Approve an opt-in `@sukunagg/fx` package for canvas/WebGL effects (`@sukunagg/ui` stays CSS-only)? (b) Which showpieces first? (c) Rarity-tier tokens for Loot/Rank reveals? | (a) and (b) answered in Q39 (fx approved; build all 14). (c) open: rarity tokens — LootReveal uses existing tokens meanwhile. |
+| Q39 | HoloCard: keep the card flat at rest (crisp in Firefox), or restore the mockup's idle sway (soft in Firefox while it moves)? | Built flat at rest, `DECISION(open)` (D39). Non-blocking; reversing is two keyframes. |

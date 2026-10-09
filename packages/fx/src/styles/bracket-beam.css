@@ -1,0 +1,63 @@
+/*
+ * BracketBeam motion CSS (@sukunagg/fx, Q39).
+ * Owned by the BracketBeam builder: no other effect edits this
+ * file, and theme.css already imports it. This header is authoring notes: the build drops it
+ * from dist/theme.css. Guide: packages/fx/BUILDERS.md § 4. Spec: docs/component-bracket-beam.md § 4.
+ *
+ * Two keyframes. Both base styles are the final frame: the trophy's halo at full strength (the
+ * breathe dims it and comes back), the shock ring invisible (it starts visible and expands away).
+ * The beams themselves are SVG painted by the island (bracket-beam.measure.tsx), not CSS.
+ */
+
+/* The trophy card's halo breathing while it is lit. Decorative: stops under reduced motion. */
+@keyframes sk-bracket-beam-breathe {
+  to {
+    opacity: 0.55;
+    scale: 0.92;
+  }
+}
+
+/* The ring that bursts off the trophy card as it ignites (replays whenever data-dim is removed). */
+@keyframes sk-bracket-beam-shock {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    inset: -22px;
+    border-radius: 32px;
+  }
+}
+
+@utility animate-bracket-beam-breathe {
+  animation: sk-bracket-beam-breathe 2.4s ease-in-out 0.6s infinite alternate;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@utility animate-bracket-beam-shock {
+  animation: sk-bracket-beam-shock 0.9s var(--sk-ease);
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* The wash behind a lit row on the champion's path (the 10% end stop keeps the lit score AA). */
+@utility bracket-beam-glow {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--sk-accent) 28%, transparent),
+    color-mix(in oklab, var(--sk-accent) 6%, transparent) 72%,
+    color-mix(in oklab, var(--sk-accent) 10%, transparent)
+  );
+}
+
+/* The trophy card's halo. */
+@utility bracket-beam-bloom {
+  background-image: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--sk-accent) 30%, transparent),
+    transparent
+  );
+}

@@ -1,0 +1,189 @@
+/*
+ * HoloCard motion CSS (@sukunagg/fx, Q39). Owned by the HoloCard builder; theme.css imports it.
+ * This header is authoring notes: the build drops it from dist/theme.css. Spec:
+ * docs/component-holo-card.md §4. Guide: packages/fx/BUILDERS.md § 4.
+ *
+ * - The island (holo-card.tilt.tsx) writes --sk-holo-card-x/-y (-1..1) and -a (0..1) inline on the
+ *   scene. The light (rim, foil mask, glare) sits at the tilt; everything else derives from them.
+ * - The card is flat at rest: only the light drifts. The drift is compositor-only (nothing is
+ *   repainted per frame): two keyframes move whole layers, `translate` along x (14 s period) and
+ *   `transform` along y (7 s period; a second property, so the two compose), sine-eased and
+ *   alternating, so together they trace the mockup's figure-eight. Each moving layer sets its
+ *   amplitude in --sk-holo-card-dx/-dy times --sk-holo-card-calm (1 - a), so the drift fades out
+ *   while the card is held. Moving layers are only as large as their travel needs (a software
+ *   compositor pays per pixel, every frame).
+ * - The card pins data-theme="dark" (a dark collectible in both themes), so the page-theme accent,
+ *   glow and focus ring are captured on the scene first, as --sk-holo-card-hue/-deep/-glow/-ring.
+ */
+
+/*
+ * DECISION(open): the idle drift is an infinite compositor-only transform animation of the light
+ * layers, a Q39 carve-out from docs/motion.md rule 5 (idle decoration). The mockup animated an
+ * @property that restyled and repainted the card on the main thread every frame; its card sway
+ * is not ported (a card whose 3D transform animates at rest renders soft in Firefox). The
+ * measured costs are in the component doc §11.
+ */
+@keyframes sk-holo-card-drift-x {
+  from {
+    translate: calc(var(--sk-holo-card-dx, 0px) * -1) 0;
+  }
+  to {
+    translate: var(--sk-holo-card-dx, 0px) 0;
+  }
+}
+
+@keyframes sk-holo-card-drift-y {
+  from {
+    transform: translateY(calc(var(--sk-holo-card-dy, 0px) * -1));
+  }
+  to {
+    transform: translateY(var(--sk-holo-card-dy, 0px));
+  }
+}
+
+/*
+ * The light's idle drift (foil band and dots, glare): half a period per direction, started
+ * mid-swing (negative delay), so every layer is centred and moving at mount. Paused with the loop
+ * (off-screen, hidden tab, the `paused` prop) through --sk-holo-card-play.
+ */
+@utility animate-holo-card-drift {
+  animation:
+    sk-holo-card-drift-x 7s cubic-bezier(0.37, 0, 0.63, 1) -3.5s infinite alternate,
+    sk-holo-card-drift-y 3.5s cubic-bezier(0.37, 0, 0.63, 1) -1.75s infinite alternate;
+  animation-play-state: var(--sk-holo-card-play, running);
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* Tilt state, the light position and size, captured page-theme colors. */
+@utility holo-card-scene {
+  --sk-holo-card-x: 0;
+  --sk-holo-card-y: 0;
+  --sk-holo-card-a: 0;
+  --sk-holo-card-calm: calc(1 - var(--sk-holo-card-a));
+  /* The light position (-1..1 per axis): the tilt. */
+  --sk-holo-card-lx: var(--sk-holo-card-x);
+  --sk-holo-card-ly: var(--sk-holo-card-y);
+  /* The resting drift keeps the mockup's light about 1.37x the centred one, on average. */
+  --sk-holo-card-spread: calc(1 + 0.37 * var(--sk-holo-card-calm));
+  --sk-holo-card-hue: var(--sk-accent);
+  --sk-holo-card-deep: var(--sk-accent-deep);
+  --sk-holo-card-glow: var(--sk-accent-glow);
+  --sk-holo-card-ring: var(--sk-focus-ring);
+  perspective: 900px;
+  touch-action: pan-y;
+  @media (prefers-reduced-motion: reduce) {
+    /* A fixed top-left light, like the mockup's static sheen. */
+    --sk-holo-card-lx: -0.5;
+    --sk-holo-card-ly: -0.55;
+    --sk-holo-card-spread: 1;
+  }
+}
+
+/* The card (inside data-theme="dark"): the 1.5px gradient rim, its shadow and the spring tilt. */
+@utility holo-card-edge {
+  --sk-holo-card-base: var(--sk-bg);
+  --sk-holo-card-ink: color-mix(in oklab, var(--sk-text) 82%, var(--sk-chart-4));
+  background: radial-gradient(
+    farthest-corner circle at calc(50% + var(--sk-holo-card-lx) * 50%)
+      calc(50% + var(--sk-holo-card-ly) * 50%),
+    var(--sk-holo-card-ink),
+    color-mix(in oklab, var(--sk-holo-card-hue) 60%, var(--sk-holo-card-base))
+      calc(38% * var(--sk-holo-card-spread)),
+    color-mix(in oklab, var(--sk-holo-card-base) 75%, var(--sk-holo-card-hue))
+      calc(80% * var(--sk-holo-card-spread))
+  );
+  box-shadow:
+    0 26px 40px -22px color-mix(in oklab, var(--sk-well) 90%, transparent),
+    0 0 34px -10px var(--sk-holo-card-glow);
+  transform: translateZ(calc(var(--sk-holo-card-a) * var(--sk-holo-card-tilt) * 16px))
+    rotateX(calc(var(--sk-holo-card-y) * var(--sk-holo-card-tilt) * -14deg))
+    rotateY(calc(var(--sk-holo-card-x) * var(--sk-holo-card-tilt) * 17deg));
+  @media (prefers-reduced-motion: reduce) {
+    transform: none;
+  }
+}
+
+/* Foil: a fine dot screen plus a 118deg rainbow band (its two children), masked to the light. */
+@utility holo-card-foil {
+  mix-blend-mode: color-dodge;
+  opacity: calc((0.2 + 0.28 * var(--sk-holo-card-a)) * var(--sk-holo-card-shine));
+  mask-image: radial-gradient(
+    farthest-corner circle at calc(50% + var(--sk-holo-card-lx) * 50%)
+      calc(50% + var(--sk-holo-card-ly) * 50%),
+    black,
+    transparent calc(130% * var(--sk-holo-card-spread))
+  );
+}
+
+/*
+ * The band slides 0.32 of the card per unit of light. Its box overhangs the face by its travel
+ * (0.24 x 0.16 of the card, a quarter each way); the image is one card larger than the box, so a
+ * percentage position moves it by whole cards: 50% - 32% * x.
+ */
+@utility holo-card-band {
+  --sk-holo-card-dx: calc(16% * var(--sk-holo-card-calm));
+  --sk-holo-card-dy: calc(10.667% * var(--sk-holo-card-calm));
+  inset: -25%;
+  background: repeating-linear-gradient(
+      118deg,
+      var(--sk-holo-card-hue) 0,
+      var(--sk-text) 20px,
+      var(--sk-holo-card-hue) 34px,
+      var(--sk-chart-5) 43px,
+      var(--sk-chart-2) 48px,
+      var(--sk-holo-card-hue) 60px
+    )
+    calc(50% - var(--sk-holo-card-lx) * 32%) calc(50% - var(--sk-holo-card-ly) * 32%) / 166.667%
+    166.667%;
+}
+
+/* The dots slide 18px per unit of light: 13.5 x 9px of travel at rest. */
+@utility holo-card-dots {
+  --sk-holo-card-dx: calc(13.5px * var(--sk-holo-card-calm));
+  --sk-holo-card-dy: calc(9px * var(--sk-holo-card-calm));
+  inset: -10px -14px;
+  background: radial-gradient(circle, var(--sk-holo-card-ink) 0 0.5px, transparent 1.1px)
+    calc(var(--sk-holo-card-lx) * 18px) calc(var(--sk-holo-card-ly) * 18px) / 11px 13px;
+}
+
+/*
+ * Glare: a soft highlight at the light. Its box is the face widened to a square (5:7 card), so it
+ * holds the resting highlight wherever the drift (0.75 x 0.5 of a half card) takes it. The radius
+ * is the mockup's farthest-corner distance on the card (61.43% of this box when centred, growing
+ * toward the edges), so the highlight matches it under the pointer.
+ */
+@utility holo-card-glare {
+  --sk-holo-card-dx: calc(26.786% * var(--sk-holo-card-calm));
+  --sk-holo-card-dy: calc(25% * var(--sk-holo-card-calm));
+  --sk-holo-card-rg: calc(
+    61.43% *
+      (
+        1 + 0.38 * max(var(--sk-holo-card-lx), -1 * var(--sk-holo-card-lx)) + 0.66 *
+          max(var(--sk-holo-card-ly), -1 * var(--sk-holo-card-ly))
+      ) *
+      var(--sk-holo-card-spread)
+  );
+  inset: 0 -20%;
+  mix-blend-mode: overlay;
+  opacity: calc((0.4 + 0.5 * var(--sk-holo-card-a)) * var(--sk-holo-card-shine));
+  background: radial-gradient(
+    var(--sk-holo-card-rg) var(--sk-holo-card-rg) at calc(50% + var(--sk-holo-card-lx) * 35.714%)
+      calc(50% + var(--sk-holo-card-ly) * 50%),
+    color-mix(in oklab, var(--sk-text) 85%, transparent),
+    color-mix(in oklab, var(--sk-text) 22%, transparent) 26%,
+    transparent 58%
+  );
+  @media (prefers-reduced-motion: reduce) {
+    inset: 0;
+    opacity: calc(0.75 * var(--sk-holo-card-shine));
+    background: linear-gradient(
+      118deg,
+      transparent 18%,
+      color-mix(in oklab, var(--sk-text) 55%, transparent) 36%,
+      color-mix(in oklab, var(--sk-text) 12%, transparent) 46%,
+      transparent 60%
+    );
+  }
+}

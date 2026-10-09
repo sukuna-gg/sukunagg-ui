@@ -1,0 +1,57 @@
+/*
+ * FlowField motion CSS (@sukunagg/fx, Q39).
+ * Owned by the FlowField builder: no other effect edits this
+ * file, and theme.css already imports it. This header is authoring notes: the build drops it
+ * from dist/theme.css (so every note lives here, not above the rules). Guide:
+ * packages/fx/BUILDERS.md § 4. Spec: docs/component-flow-field.md § 4.
+ *
+ * FlowField animates on a canvas (the shared fx loop), so it needs no @keyframes and no
+ * @property: only two static image utilities that no Tailwind utility can express, so reduced
+ * motion has nothing to stop. Colors only via var(--sk-*); the stage is pinned dark.
+ *
+ * - flow-field-poster: the server-rendered still (no-JS, first paint, no 2D context). Long
+ *   crimson arcs sweep in from two far-off centres, broken into streak bundles by spot masks, on a
+ *   deep-crimson glow; it fades out once the canvas has drawn. Masks only read alpha, so the
+ *   opaque --sk-well means "show". The arcs use plain token stops dimmed by opacity: Firefox drops
+ *   color-mix() stops inside repeating gradients (they render as speckles).
+ *   DECISION(open): FlowField poster — the mockup had no poster; this one is agent-designed
+ *   (docs/component-flow-field.md § 11).
+ * - flow-field-scrim: darkens the centre behind the content, the bottom edge and the corners
+ *   (the approved mockup's scrim).
+ */
+
+@utility flow-field-poster {
+  background:
+    radial-gradient(ellipse 62% 74% at 24% 34%, color-mix(in oklab, var(--sk-accent-deep) 30%, transparent), transparent 72%),
+    radial-gradient(ellipse 56% 70% at 80% 64%, color-mix(in oklab, var(--sk-accent-deep) 22%, transparent), transparent 72%),
+    var(--sk-well);
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  &::before {
+    background: repeating-radial-gradient(circle at -6% 118%, transparent 0 5px, var(--sk-accent) 6px, transparent 7.5px 10px, var(--sk-accent-deep) 11px, transparent 12.5px 15px);
+    opacity: 0.55;
+    mask:
+      radial-gradient(ellipse 42% 52% at 28% 30%, var(--sk-well) 15%, transparent 70%),
+      radial-gradient(ellipse 26% 34% at 10% 80%, var(--sk-well), transparent 70%),
+      radial-gradient(ellipse 30% 30% at 58% 12%, var(--sk-well), transparent 70%);
+  }
+  &::after {
+    background: repeating-radial-gradient(circle at 112% -24%, transparent 0 6px, var(--sk-accent-deep) 7px, transparent 8.5px 11px, var(--sk-accent) 12px, transparent 13.5px 16px);
+    opacity: 0.5;
+    mask:
+      radial-gradient(ellipse 40% 50% at 78% 66%, var(--sk-well) 15%, transparent 70%),
+      radial-gradient(ellipse 28% 30% at 50% 90%, var(--sk-well), transparent 70%),
+      radial-gradient(ellipse 24% 34% at 94% 18%, var(--sk-well), transparent 70%);
+  }
+}
+
+@utility flow-field-scrim {
+  background:
+    radial-gradient(ellipse 36% 34% at 50% 50%, color-mix(in oklab, var(--sk-well) 66%, transparent), transparent),
+    linear-gradient(to top, color-mix(in oklab, var(--sk-well) 85%, transparent), transparent 24%),
+    radial-gradient(ellipse 78% 90% at 50% 50%, transparent 52%, color-mix(in oklab, var(--sk-well) 85%, transparent));
+}

@@ -1,0 +1,95 @@
+[
+  {
+    "name": "Shared loop + useFxCanvas (the runtime under every canvas island; react excluded)",
+    "path": "dist/internal/use-fx-canvas.js",
+    "limit": "2 kB",
+    "ignore": ["react", "react-dom", "react/jsx-runtime"]
+  },
+  {
+    "name": "Shared loop + useFxLoop (the runtime under every DOM/SVG island; react excluded)",
+    "path": "dist/internal/use-fx-loop.js",
+    "limit": "1.5 kB",
+    "ignore": ["react", "react-dom", "react/jsx-runtime"]
+  },
+  {
+    "name": "theme.css (every effect's @property/@keyframes/@utility; ships to every Tailwind consumer)",
+    "path": "dist/theme.css",
+    "limit": "4 kB",
+    "rolldown": false
+  },
+  {
+    "name": "BracketBeam (our code + shared loop; react, @sukunagg/ui excluded)",
+    "path": "dist/index.js",
+    "import": "{ BracketBeam }",
+    "limit": "8 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@sukunagg/ui",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "FlowField (our code + shared loop; react, @sukunagg/ui excluded)",
+    "path": "dist/index.js",
+    "import": "{ FlowField }",
+    "limit": "4.75 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@sukunagg/ui",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "HoloCard (our code + shared loop; react, @sukunagg/ui excluded)",
+    "path": "dist/index.js",
+    "import": "{ HoloCard }",
+    "limit": "2.75 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@sukunagg/ui",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "Lightning (our code + shared loop; react, @sukunagg/ui excluded)",
+    "path": "dist/index.js",
+    "import": "{ Lightning }",
+    "limit": "5.5 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@sukunagg/ui",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "ParticleField (our code + shared loop; react, @sukunagg/ui excluded)",
+    "path": "dist/index.js",
+    "import": "{ ParticleField }",
+    "limit": "4.75 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@sukunagg/ui",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  }
+]

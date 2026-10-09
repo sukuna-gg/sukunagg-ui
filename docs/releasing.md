@@ -22,7 +22,7 @@ never publish; a human merges the Version Packages PR and creates the release ta
 ## Every PR
 
 1. `bun run changeset` — select the package(s) the change ships in (`@sukunagg/ui`,
-   `@sukunagg/video`; the repo is a Bun workspace, Q27), then pick the bump using the table above; write a one-line reason. Docs/CI-only
+   `@sukunagg/video`, `@sukunagg/charts`, `@sukunagg/fx`; the repo is a Bun workspace, Q27), then pick the bump using the table above; write a one-line reason. Docs/CI-only
    PRs may use an empty changeset or the `no-release` label.
 2. Classify **before** writing the changeset. If a CI classifier disagrees, CI is right — raise the
    bump or fix the regression; never edit the check.
@@ -64,7 +64,7 @@ Publishing is automated with the **Changesets GitHub Action**, and stays owner-g
 ### One-time setup (owner)
 
 - Create the `@sukuna` npm scope/org and grant publish rights.
-- Add repo secret **`NPM_TOKEN`** — an npm **Automation** token with publish access to the `@sukunagg` scope (`@sukunagg/ui`, `@sukunagg/video`, `@sukunagg/charts`). A granular token limited to named packages can't publish a *new* package (`@sukunagg/charts` 0.1.0) — scope it to the org or add the package.
+- Add repo secret **`NPM_TOKEN`** — an npm **Automation** token with publish access to the `@sukunagg` scope (`@sukunagg/ui`, `@sukunagg/video`, `@sukunagg/charts`, `@sukunagg/fx`). A granular token limited to named packages can't publish a *new* package (`@sukunagg/charts` 0.1.0, `@sukunagg/fx` 0.1.0) — scope it to the org or add the package. After a package's first publish, add it to the loops in `.github/workflows/npm-token-check.yml` (its `npm view` fails on an unpublished name).
 - The workflow has `id-token: write` for npm provenance; the repo must be public for provenance.
 - **Allow GitHub Actions to create and approve pull requests** — org (`sukuna-gg`) → Settings →
   Actions → General → Workflow permissions, then the same box on the repo. It is off by default;

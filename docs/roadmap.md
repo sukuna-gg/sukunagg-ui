@@ -4,7 +4,7 @@
 >
 > Legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[-]` dropped (say why)
 
-Last updated: 2026-10-05 — charts & stats: wave 1 built (branch `feat/charts-wave1-specs`), wave 2 specs written (§D8). 49 components.
+Last updated: 2026-10-09 — showpieces wave 1 (9 ui components) and the new `@sukunagg/fx` package (5 effects) built and reviewed (§D9). 70 components.
 Current phase: **Phase 8 (remix example left) + Phase 9 (CI enforcement jobs left).** Phases 0–7 done; the library is on npm.
 Current version: `@sukunagg/ui` **0.10.0** + `@sukunagg/video` **0.1.0**, published by the owner 2026-09-29 (Q29). Next: `@sukunagg/ui` 0.11.0 (charts & stats wave 1 changeset), then `@sukunagg/charts` 0.1.0 (wave 2).
 
@@ -355,6 +355,18 @@ state. Motion carve-out: `docs/motion.md` "Showpieces"; agent calls: D38.
 | ScrambleText (client file `scramble-text.scramble.tsx`) | static + client island | [x] | [x] 30 tests, 100% cov, 2.33 kB (budget 2.5 kB) | [x] |
 | GlitchText | static (server, CSS) | [x] | [x] 9 tests, 100% cov, 0.69 kB | [x] |
 
+### Wave 2 — new `@sukunagg/fx` package (branch `feat/fx-package`, stacked on wave 1)
+
+| Item | Engine | Doc | Code | Review |
+|---|---|---|---|---|
+| Package scaffold (workspace, tsup, size-limit, docs:build, Storybook `FX` section, showcase) | — | [x] `packages/fx/README.md`, `BUILDERS.md` | [x] publint + attw green, generator + showcase know it | n/a |
+| Shared loop (CSS poster, IO + visibilitychange pause, DPR cap, context loss, StrictMode, reduced-motion still frame) | — | [x] D39 | [x] 100% cov; 1.59 kB canvas / 1.08 kB DOM; Chromium live-reduce fix verified | n/a |
+| ParticleField | Canvas2D | [x] | [x] 47 tests, 100% cov, 4.51 kB | [x] |
+| HoloCard | pointer + CSS | [x] | [x] 24 tests, 100% cov, 2.65 kB | [x] flat at rest: DECISION(open) |
+| FlowField | Canvas2D | [x] | [x] 41 tests, 100% cov, 4.61 kB (budget 4.75 kB, D39) | [x] |
+| Lightning | WebGL1 | [x] | [x] 27 tests, 100% cov, 5.44 kB | [x] |
+| BracketBeam | SVG + layout | [x] | [x] 49 tests, 100% cov, 7.69 kB | [x] |
+
 ## E. Update log
 
 Agents append one line per meaningful status change: `YYYY-MM-DD · <what flipped> · <commit or PR>`.
@@ -449,3 +461,4 @@ Agents append one line per meaningful status change: `YYYY-MM-DD · <what flippe
 - 2026-10-07 · Q36 — ScrollArea `tone: 'neutral' | 'accent'` (owner asked for a "crimson variant"; named `accent` like Badge/Chip). Accent thumb = crimson 80% idle / solid hover (≥3:1 both themes); `Accent` + `Tones` stories; spec §4 drift fixed (track hover is `surface-2`, orientation is not a tv variant). patch · (feat/scroll-area-tone)
 - 2026-10-07 · Q37 "i like it... ship it" — owner approved ScrollArea `tone="accent"` as built; `feat/scroll-area-tone` pushed and PR opened. Merge/publish stay with the owner · (feat/scroll-area-tone)
 - 2026-10-09 · Q39 — showpieces wave 1 built and reviewed: RetroGrid, BorderBeam, RankReveal, MatchFound, LootReveal, XpLevelUp, AvatarFrame, ScrambleText, GlitchText (new, exported, stories, browser specs); 643 ui unit tests, 100% cov; cross-browser review rounds; 212/213 browser tests in Chromium/Firefox/WebKit (the 1 a Firefox timing flake under load, 3/3 alone); motion.md carve-out, D38, changeset patch. Owner visual review pending · (feat/ui-showpieces)
+- 2026-10-09 · Q39 — new package `@sukunagg/fx` built and reviewed: shared loop + ParticleField, HoloCard, FlowField, Lightning, BracketBeam (Storybook `FX` section, showcase, docs generator); 258 fx unit tests, 100% cov; Chromium live reduced-motion bug found in review and fixed in the loop; D39; changeset → 0.1.0 · (feat/fx-package)
