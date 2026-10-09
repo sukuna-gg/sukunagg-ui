@@ -9,6 +9,29 @@ agent's own calls. Newest first.
 
 ---
 
+## D38 — Showpieces wave (ui): how nine animated components fit the library
+
+- **Decision:** (1) **One motion module per component** in `packages/ui/scripts/motion/<name>.ts`,
+  stitched into the generated `theme.css` by `build-tokens.ts` in a fixed order, so builders never
+  shared a file. (2) **Top-level keyframes, like `animate-shine`:** `theme.css` grows from 8.6 kB to
+  about 57 kB (12.8 kB gzip) for every consumer, whether or not they use a showpiece. (3) **The base
+  style is the final frame;** one-shot reveals play on mount and replay by changing `key` (no hidden
+  "armed" state, no IntersectionObserver). (4) **MatchFound is presentational:** the app owns the
+  timer and the `aria-live` announcement; the component draws the ring, the CSS countdown and the
+  slots. (5) **LootReveal rarities map onto existing tokens** (`text-faint`, `chart-2`, `chart-5`,
+  `premium`) as a `DECISION(open)` until Q38(c) is answered. (6) **GlitchText uses `aria-hidden`
+  duplicate spans**, not `content: attr()`, so happy-dom can test it and each layer gets its own
+  `motion-reduce:`. (7) **ScrambleText is one `text` per instance** in a `'use client'` island; the
+  roster is several instances with staggered `delay`. (8) **No mono font token exists**, so labels
+  use `font-sans tabular-nums` (rule 8). (9) **Changeset is a patch:** on `0.x`, adding components is
+  "everything else" (`docs/releasing.md`).
+- **Why:** parallel builders, SSR and reduced motion without JS, and no new tokens without the owner.
+- **Trade-off:** (2) is the cost. Tailwind v4 can tree-shake keyframes declared inside `@theme`
+  (emitted only when an `animate-*` that uses them appears); the library doesn't use that form yet.
+- **Reverse:** (2) move each module's keyframes into an `@theme` block (`--animate-*` + `@keyframes`);
+  (5) swap the four classes in `loot-reveal.styles.tsx` once rarity tokens exist; (9) change the
+  changeset bump.
+
 ## D37 — @sukunagg/charts: in-house scale and path math instead of d3
 
 - **Decision:** Build the charts with no runtime dependencies: `src/internal/scale.ts` (d3's

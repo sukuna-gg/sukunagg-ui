@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt). This file concatenates every component page plus the design-token reference; the index is at https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt.
 
-@sukunagg/ui is a React 18/19 component library: 56 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 65 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -17,8 +17,10 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - Alert: An inline message that draws attention to information, success, a caution, or an error.
 - AlertDialog: Ask the user to confirm something that is hard to undo ("Delete project?", "Discard changes?").
 - Avatar: A user/entity image with a graceful fallback (initials or icon) while loading or on error.
+- AvatarFrame: Decorates a circular avatar with an animated frame: a crimson comet ring that circles it, a bone "premium" ring with a passing sheen and orbiting sparks, a live-broadcast halo with a LIVE pill, and an online/offline status dot cut cleanly out of the ring.
 - Badge: A small, pill-shaped label for status and metadata — "LIVE", counts, tags.
 - BarChart (@sukunagg/charts): Compares amounts across categories: games per placement, kills per weapon by season, revenue per plan per month, pick rate per agent.
+- BorderBeam: Sends a short light around the border of a card, a featured match, a season pass or a plan tile, to mark the one thing on a screen that deserves attention.
 - Breadcrumbs: Show the path to the current page and let users jump back up it.
 - Button: Triggers an action.
 - Card: A surface container that groups related content on an elevation.
@@ -36,12 +38,15 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - Drawer: A panel that slides in from an edge (nav, filters, details).
 - EmptyState: Takes the place of content that isn't there: no results, nothing yet this season, a player not found, a service not answering.
 - Field: Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you.
+- GlitchText: Hits real text with short RGB-split glitch bursts, for elimination banners, match results and error or offline headings.
 - GradientText: Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases.
 - Heatmap (@sukunagg/charts): A calendar of activity: one square per day, weeks as columns, darker or brighter by how much happened — games played per day, commits, sessions.
 - HoverCard: Preview richer context for a link without a click — a user card, a repo summary, a footnote.
 - Icon: A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links.
 - Input: A single-line text input.
 - LineChart (@sukunagg/charts): Shows change across an ordered axis: rating over the last 30 matches, damage per round by role per week, placement per game, gold difference per minute.
+- LootReveal: Flips a row of face-down item cards to reveal what a player won, one after another, with a rarity glow per card and a spark burst for legendaries.
+- MatchFound: The ready-check prompt a game client shows when the queue pops: a draining countdown ring, who on the team has accepted, and the Accept / Decline actions.
 - Menu: A dropdown menu of actions triggered by a button.
 - Meter: Show a scalar measurement within a known range: storage used, quota, password strength, a score.
 - NumberField: Enter a number precisely.
@@ -50,7 +55,10 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - Progress: A horizontal progress bar, determinate or indeterminate.
 - RadialGauge (@sukunagg/charts): One value against a range, drawn as a 270° arc with the number in the middle: LP to the next division, plan usage, a score out of 100.
 - RadioGroup: Choose one option from a small set.
+- RankReveal: Celebrates a new rank with a crest that bursts in over a ray field while an orbit draws around it and the rank name rises into place.
+- RetroGrid: A synthwave arena backdrop for hero sections: a crimson perspective grid scrolls toward the viewer under a glowing horizon, two spotlights sway in the sky and a light wave rolls out of the horizon every few seconds.
 - RowActions: Every data table eventually needs a per-row "Edit / Duplicate / Delete" menu.
+- ScrambleText: Decodes a short label out of glyph noise into its real text, sweeping left to right — for match-found titles, lobby rosters, callsigns and reveal moments.
 - ScrollArea: Give a bounded region (a list, a code block, a sidebar) an overlay scrollbar that looks the same in every browser and matches the Sukuna surface, instead of the OS default.
 - Select: A single-select dropdown.
 - ShinyText: Sweeps a soft light band across dimmed text — for "New" flags, premium labels, and subtle CTA emphasis.
@@ -69,6 +77,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - ToggleGroup: Pick one option from a small, mutually-exclusive set (segmented control), or toggle several independent options (a formatting toolbar).
 - Tooltip: A hover/focus tooltip for supplementary text.
 - VideoPlayer: Plays a single video with Sukuna-branded controls instead of each browser's native chrome, so video looks the same in Chrome, Safari and Firefox and matches the rest of the library.
+- XpLevelUp: Celebrates an XP gain that crosses a level: the bar fills to the top, flashes once, the badge bursts and counts up to the new level, then the bar settles at the progress into that level.
 
 ---
 
@@ -276,6 +285,168 @@ image loaded (image shown) · loading/error/no src (fallback shown).
 
 ---
 
+# AvatarFrame — @sukunagg/ui
+
+> Decorates a circular avatar with an animated frame: a crimson comet ring that circles it, a bone "premium" ring with a passing sheen and orbiting sparks, a live-broadcast halo with a LIVE pill, and an online/offline status dot cut cleanly out of the ring.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { AvatarFrame } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/avatar-frame · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-avatar-frame.md
+
+## Purpose
+
+Decorates a circular avatar with an animated frame: a crimson comet ring that circles it, a bone
+"premium" ring with a passing sheen and orbiting sparks, a live-broadcast halo with a LIVE pill, and
+an online/offline status dot cut cleanly out of the ring. It wraps any round child (usually
+`<Avatar>`), scales with that child's size, and is pure CSS, so it renders in Server Components and
+holds a still, finished frame under `prefers-reduced-motion`.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+
+export type AvatarFrameTone = 'accent' | 'premium'
+export type AvatarFrameStatus = 'online' | 'offline'
+
+interface AvatarFrameOwnProps {
+  /** The round thing being framed — usually an <Avatar>. Phrasing content (the root is a <span>). */
+  children: ReactNode
+  tone?: AvatarFrameTone        // default 'accent' — crimson comet ring | bone metal ring + sheen
+  live?: boolean                // default false — breathing halo, ripple, LIVE pill; accent ring goes solid
+  liveLabel?: ReactNode         // default 'Live' — visible pill text (real text, read by AT)
+  sparks?: boolean              // default false — three bone sparks orbiting the ring
+  status?: AvatarFrameStatus    // default undefined — no dot. Dot is cut out of ring + avatar
+  statusLabel?: string          // default 'Online' | 'Offline' — visually hidden; '' renders none
+}
+
+export type AvatarFrameProps =
+  AvatarFrameOwnProps & Omit<ComponentPropsWithoutRef<'span'>, 'children'>
+```
+
+- **Size comes from the child.** The frame adds a 3px ring + 3px gap around whatever it wraps
+  (`<Avatar size="sm">` → 44px frame, an 88px avatar → 100px frame). Every effect is measured in
+  container units of the frame (`cqw`), so the glow, halo, sparks, comet head, status dot, pill and
+  the status cut-out scale with it (the 3px ring itself stays 3px).
+- **The 6px pad is load-bearing; don't override the root's padding.** The status dot and its cut-out
+  find the avatar's edge from the frame box as `100cqw - 12px` (the avatar's width) and
+  `50cqw - 7px` (the dot's centre, 1px inside the avatar's edge). A different padding (`p-[10px]`)
+  shrinks the avatar inside the frame while the dot and the hole through the ring layers stay put,
+  ≈ 3px off the avatar's edge and out of line with the avatar's own cut-out. Spacing and alignment
+  overrides (`ml-2`, `align-top`) are fine.
+- **Effects paint outside the layout box; leave room around it.** Only the frame box takes layout
+  space. The live halo reaches ≈ 23% of the frame's width past each edge at its widest, the outer
+  spark orbit ≈ 20%, the glow less; the LIVE pill (11px type at line-height 1 on a 100px frame,
+  8px below ~73px) hangs half its height below the bottom edge: ≈ 8.5px on a 100px frame, ≈ 6px on
+  small ones. Neighbours and captions closer than that get painted over, so space frames (and their
+  captions) by at least ~20% of the frame plus the pill. In a tight grid, give the avatar a smaller
+  size rather than letting frames overlap (the Showcase story does this with a container query).
+- **Plays on mount, loops forever** (they are ambient decorations, not one-shot reveals). There is
+  nothing to replay. Pause it by not rendering the variant (e.g. `live={false}`).
+- **`--sk-avatar-frame-backdrop`** (optional CSS variable, default `var(--sk-surface)`): the colour of
+  the 3px separator ring around the LIVE pill. Set it when the frame sits on another surface, e.g.
+  `className="[--sk-avatar-frame-backdrop:var(--sk-bg)]"`. The status dot needs no backdrop — its gap
+  is a transparent cut-out.
+- **`--sk-avatar-frame-delay`** (optional CSS variable, default `0s`): shifts every loop of one frame.
+  Frames mount together, so a list of comets would turn in lockstep; give each a different negative
+  delay to start it mid-cycle, e.g. `className="[--sk-avatar-frame-delay:-1.1s]"`, or per item
+  ``style={{ '--sk-avatar-frame-delay': `${-i * 0.7}s` } as CSSProperties}``. Reduced motion ignores
+  it (no loops run).
+- **Put the link or button around the frame, not inside it.** With `status`, the avatar slot carries
+  the cut-out mask, which clips everything painted outside the child's own box, including a focus
+  outline. `<a href><AvatarFrame>…</AvatarFrame></a>` keeps the focus ring visible;
+  `<AvatarFrame><a href><Avatar /></a></AvatarFrame>` would clip it.
+- `data-sk-avatar-frame`, `data-tone`, `data-live` and `data-status` are set on the root for styling
+  hooks and tests.
+
+Deliberately **not** in v1: a `size` prop (the child sets it), a `color` prop or arbitrary ring
+colours (two tones on brand tokens), `away`/`busy`/`in-game` statuses (only online/offline have a
+token-backed colour + shape pair today), a configurable spark count or speed, a viewer count inside
+the pill (put it in the caption next to the avatar), and pausing offscreen (CSS animations of
+`rotate`/`scale`/`opacity` are compositor work; the browser already skips offscreen paint).
+
+## Variants & tokens
+
+| Prop | Layer | Tokens |
+|---|---|---|
+| `tone="accent"` | comet ring (conic, turns 3.2s), 8% track, blurred glow, white-hot head dot (6px with a 7px + 18px glow on a 100px frame; smaller on smaller frames, never larger) | `--sk-accent`, `--sk-accent-deep`, `--sk-accent-glow`, hot = `color-mix(accent 55%, --sk-text)` |
+| `tone="premium"` | metal ring (static conic), sheen sweep (5.5s, eased), 1px hairline, soft glow | `--sk-premium`, `--sk-premium-dim`, `--sk-on-accent` (highlights) |
+| `live` | breathing halo (2.8s), ripple ring (3.2s), LIVE pill with blinking dot (1.4s); accent ring turns solid | `--sk-accent`, `bg-gradient-accent` + `--sk-on-accent` (pill), `--sk-surface` (pill separator) |
+| `sparks` | three four-point stars with tails orbiting at 3.7s / 6.1s (reverse) / 9.3s | `--sk-premium` (star, tail, `drop-shadow` at 60%); core = `color-mix(premium 55%, --sk-text)` (light core on dark, dark core on light) |
+| `status="online"` | filled dot with a soft highlight, cut out of ring + glow + avatar | `--sk-success`, `--sk-on-accent` |
+| `status="offline"` | hollow ring dot (shape differs, not just colour) | `--sk-text-faint` |
+
+No new colour token. Masks use `black`/`transparent` (alpha only, not a colour). Motion CSS lives in
+`packages/ui/scripts/motion/avatar-frame.ts` and is emitted into the generated `theme.css`:
+
+```css
+/* One turn keyframe for every rotating layer; it starts from the layer's rest angle
+   (--sk-avatar-frame-phase), so t=0 IS the reduced-motion still frame. */
+@keyframes sk-avatar-frame-turn {
+  from { rotate: var(--sk-avatar-frame-phase, 0deg); }
+  to   { rotate: calc(var(--sk-avatar-frame-phase, 0deg) + 360deg); }
+}
+@keyframes sk-avatar-frame-breathe { from { scale: 0.94; opacity: 0.4; } to { scale: 1.04; opacity: 1; } }
+@keyframes sk-avatar-frame-ripple  { from { scale: 1; opacity: 0.7; } to { scale: 1.42; opacity: 0; } }
+@keyframes sk-avatar-frame-blink   { to { opacity: 0.3; } }
+
+/* Every loop takes var(--sk-avatar-frame-delay, 0s) as its delay (written $delay below). */
+@utility animate-avatar-frame-spin    { rotate: var(--sk-avatar-frame-phase, 0deg); animation: sk-avatar-frame-turn 3.2s linear $delay infinite; }
+@utility animate-avatar-frame-sheen   { rotate: var(--sk-avatar-frame-phase, 0deg); animation: sk-avatar-frame-turn 5.5s cubic-bezier(0.45, 0, 0.55, 1) $delay infinite; }
+@utility animate-avatar-frame-orbit   { rotate: var(--sk-avatar-frame-phase, 0deg); animation: sk-avatar-frame-turn var(--sk-avatar-frame-t, 6s) linear $delay infinite var(--sk-avatar-frame-dir, normal); }
+@utility animate-avatar-frame-breathe { animation: sk-avatar-frame-breathe 2.8s cubic-bezier(0.45, 0, 0.55, 1) $delay infinite alternate; }
+@utility animate-avatar-frame-ripple  { animation: sk-avatar-frame-ripple 3.2s cubic-bezier(0.2, 0.6, 0.3, 1) $delay infinite; }
+@utility animate-avatar-frame-blink   { animation: sk-avatar-frame-blink 1.4s ease-in-out $delay infinite alternate; }
+
+/* Paint + geometry that can't be a plain utility (gradients, masks, pseudo-element shapes):
+   avatar-frame-band (ring-shaped mask, width --sk-avatar-frame-bw, default 3px),
+   avatar-frame-comet / -comet-glow / -metal / -sheen / -halo (conic + radial fills),
+   avatar-frame-head (the comet's head dot: clamp(4px, 6cqw, 7px), glow min(18px, 18cqw)),
+   avatar-frame-spark (star + tail),
+   avatar-frame-status / -online / -offline (dot size, 45° position, fill),
+   avatar-frame-cutout / -cutout-avatar (the status hole through the ring layers and through the
+   avatar itself). */
+```
+
+Every animated property is `rotate`, `scale` or `opacity` (compositor-only, `docs/motion.md` rule 2):
+the ring turns as an element (its status hole lives on a static parent), and sparks ride a rotating
+orbit instead of an `offset-path`. Four keyframes, no `@property`.
+
+## States
+
+| State | Behavior |
+|---|---|
+| default (`accent`) | comet ring + glow + head dot circle the avatar clockwise every 3.2s. |
+| `premium` | metal ring is still; a white sheen sweeps around it every 5.5s (eased). |
+| `sparks` | three sparks orbit at three radii and speeds, one counter-clockwise. |
+| `live` | halo breathes, a ripple ring expands and fades, the pill dot blinks (≤ 1 blink/s). Accent ring is solid. |
+| `status` | dot at the avatar's 45° bottom-right edge; ring, glow and avatar are cut around it (transparent gap). |
+| hover | the glow brightens (`opacity` transition, `--sk-duration-slow`). |
+| `prefers-reduced-motion` | every loop stops on its rest frame: ring + head at 40°, sheen at −20°, sparks parked at three points, halo at 70%, ripple hidden, pill dot solid. Nothing is hidden. |
+| no `@property` / old engines | nothing depends on `@property`; container units (`cqw`) need Chrome 105 / Safari 16 / Firefox 110. |
+
+## Accessibility
+
+- [ ] Every decorative layer (rings, glow, head, sheen, halo, ripple, sparks, status dot, pill dot) is
+      `aria-hidden`; the child keeps its own semantics (`<Avatar alt>` / fallback text).
+- [ ] Status is never colour-only: online is a filled dot, offline a hollow ring, and the visually
+      hidden `statusLabel` says it in words (pass `''` when visible text next to the avatar already does).
+- [ ] The LIVE pill is real text (`liveLabel`), `--sk-on-accent` on `bg-gradient-accent` — ≥ 4.5:1 in
+      both themes (the flat dark `--sk-accent` would be ≈ 3.5:1, so the pill does not use it).
+- [ ] Status dot and offline ring are ≥ 3:1 against `--sk-surface`/`--sk-bg` in both themes (non-text).
+- [ ] `prefers-reduced-motion`: all six loops stop on a still frame (`motion-reduce:animate-none`);
+      covered by `test/browser/avatar-frame.test.ts`.
+- [ ] No flashing (WCAG 2.3.1): the fastest change is the pill dot fading to 30% once per 2.8s cycle;
+      nothing flashes more than 3×/s.
+- [ ] Not focusable and no pointer capture of its own: the decorative layers are
+      `pointer-events: none`, so a framed avatar inside a button/link stays fully clickable.
+- [ ] The focusable element wraps the frame (as in the `FriendsList` story), never sits inside it:
+      with `status` the avatar slot is masked to the child's box, which would clip a focus outline
+      drawn outside it.
+
+---
+
 # Badge — @sukunagg/ui
 
 > A small, pill-shaped label for status and metadata — "LIVE", counts, tags.
@@ -408,6 +579,186 @@ every series (stacked adds a Total row).
 - [ ] Per-bar colors are explained by a legend; the category label and value are always text.
 - [ ] Keyboard: one tab stop, ←/→ (↑/↓ horizontal) through categories, Escape hides the tooltip.
 - [ ] Marks ≥ 3:1 against the surface with default tokens; app colors are the app's call.
+
+---
+
+# BorderBeam — @sukunagg/ui
+
+> Sends a short light around the border of a card, a featured match, a season pass or a plan tile, to mark the one thing on a screen that deserves attention.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { BorderBeam } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/border-beam · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-border-beam.md
+
+## Purpose
+
+Sends a short light around the border of a card, a featured match, a season pass or a plan
+tile, to mark the one thing on a screen that deserves attention. The beam is decoration on a
+wrapper element: the consumer's own border, radius and surface stay the resting look, and under
+`prefers-reduced-motion` the orbit is replaced by a still tint of the same color.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef } from 'react'
+
+export type BorderBeamElement = 'div' | 'article' | 'section' | 'li'
+
+interface BorderBeamOwnProps {
+  as?: BorderBeamElement               // default 'div'
+  tone?: 'accent' | 'premium'          // default 'accent' — crimson, or the bone/gold premium color
+  speed?: 'slow' | 'normal' | 'fast'   // default 'normal' — one lap per 6.5s / 4s / 2.5s
+  phase?: number                       // default 0 — where the head starts, as a fraction of a lap
+}
+
+export type BorderBeamProps = BorderBeamOwnProps & ComponentPropsWithoutRef<'div'>
+```
+
+Usage — the BorderBeam **is** the card (the beam then rides the card's own border), or it wraps one:
+
+```tsx
+<BorderBeam as="article" aria-label="Featured match" className="border border-line bg-surface p-5">
+  …
+</BorderBeam>
+
+<BorderBeam tone="premium" speed="slow">
+  <Card tone="premium" className="h-full">…</Card>
+</BorderBeam>
+```
+
+- The root defaults to `rounded-lg` so wrapping a default `Card` lines up; pass another
+  `rounded-*` in `className` to match a different radius. Every layer is `rounded-[inherit]`.
+- When wrapping, let the card fill the wrapper (`h-full`): a stretched flex/grid row makes the
+  wrapper taller than an auto-height card, and the beam follows the wrapper. An opaque wrapped card
+  also covers the inner sheen (§4) — only the ring and the outer glow show.
+- `phase` offsets the start of the lap (`0.5` = half a lap ahead), so several beams on one screen
+  don't orbit in lockstep. Non-finite values are ignored. Changing `key` is not needed: the orbit
+  is a loop, not a one-shot.
+- Don't put `overflow-hidden` on the root: the glow and the stroke's drop-shadow sit just outside
+  the border box. Clip media inside the card instead.
+
+Deliberately **not** in v1: arbitrary colors or durations (enums keep the class strings literal,
+rule 7), a `paused`/`disabled` switch (`animate-border-beam-orbit` is a custom utility tailwind-merge
+can't dedupe against `animate-none`, same reason as ShinyText; reduced motion already stops it), a
+tail-length prop (the ring shortens its tail on its own on wide or tall cards, §4), more than one
+beam per element, and a pause-when-offscreen observer (that would need a client island; the
+browser already throttles hidden tabs).
+
+## Variants & tokens
+
+| Variant | Values → variables on the root (literal arbitrary properties) |
+|---|---|
+| tone | **accent** → color `var(--sk-accent)`; head `light-dark(var(--sk-accent), color-mix(in oklab, var(--sk-accent), var(--sk-on-accent) 62%))`; glow `light-dark(color-mix(in oklab, var(--sk-accent) 20%, transparent), var(--sk-accent-glow))`; bloom `light-dark(color-mix(… var(--sk-accent) 40%, transparent), var(--sk-accent))` · **premium** → color `--sk-premium` warmed toward `--sk-chart-4` (50% light / 22% dark); head 78% toward `--sk-chart-4` (light) / 70% toward `--sk-on-accent` (dark); glow and bloom faint `--sk-chart-4` (light) / `--sk-premium` at 55% and the beam color (dark) |
+| speed | slow → `[--sk-border-beam-duration:6.5s]` · normal → `4s` · fast → `2.5s` |
+| phase | inline `--sk-border-beam-phase: <n>` (unitless), read by `animate-border-beam-orbit` as a negative delay |
+
+Each `light-dark(<light theme>, <dark theme>)` pair gives the dark theme a white-hot head and an
+emissive bloom, and the light theme a flat head and a faint tint — the approved mockup's per-theme
+tuning. `light-dark()` follows `color-scheme`, which the theme blocks don't set yet (roadmap T2),
+so every layer derives it from the nearest `data-theme`:
+`scheme-dark in-data-[theme=light]:scheme-light [[data-theme=light]_[data-theme=dark]_&]:scheme-dark`
+(a dark island inside a light page stays dark).
+
+Three `aria-hidden` layers, all `absolute`, `rounded-[inherit]` and `pointer-events-none`:
+
+| Layer | Paint | Stacking |
+|---|---|---|
+| glow | a 6px conic ring blurred 9px (`-inset-1`), `opacity-75`, 100 on hover / focus-within | under the content (`-z-10`) |
+| sheen | a faint conic wash inside the edge, radially masked (`opacity-70`, 100 on hover / focus-within) | under the content (`-z-10`) |
+| ring | the 1.5px stroke (`-inset-px`): long fading tail → full color → the hot head, plus a 1.5px drop-shadow | over the content (rendered last) |
+
+The root is `relative isolate`, so the under-content layers paint above the root's own background
+and border but below its children; the ring paints over everything, so it also covers the border of
+a wrapped `Card`.
+
+Motion CSS lives in `packages/ui/scripts/motion/border-beam.ts` and is emitted into the generated
+`theme.css` by `bun run tokens:build`:
+
+```css
+@property --sk-border-beam-angle {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@keyframes sk-border-beam-orbit {
+  to {
+    --sk-border-beam-angle: 360deg;
+  }
+}
+
+/* One lap per --sk-border-beam-duration; --sk-border-beam-phase (0-1) starts it part-way round. */
+@utility animate-border-beam-orbit {
+  animation: sk-border-beam-orbit var(--sk-border-beam-duration, 4s) linear
+    calc(var(--sk-border-beam-phase, 0) * var(--sk-border-beam-duration, 4s) * -1) infinite;
+}
+
+@utility border-beam-ring {
+  container-type: size; /* absolutely inset, so containment never changes the card's layout */
+  filter: drop-shadow(0 0 1.5px var(--sk-border-beam-color));
+  &::before {
+    /* conic-gradient(from var(--sk-border-beam-angle), transparent 0 58%, color 14% @72%,
+       color 62% @88%, color @95%, var(--sk-border-beam-head) @99%, transparent),
+       masked to a 1.5px ring (content-box XOR border-box) */
+  }
+  @container (aspect-ratio > 3 / 2) or (aspect-ratio < 2 / 3) {
+    &::before { /* same sweep, tail shortened to 74% / 84% / 92% / 96.5% */ }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &::before { background: color-mix(in oklab, var(--sk-border-beam-color) 34%, transparent); }
+  }
+}
+
+@utility border-beam-glow {
+  filter: blur(9px) drop-shadow(0 0 1.5px var(--sk-border-beam-color));
+  &::before { /* 6px conic ring: transparent 0 80%, glow @93%, bloom @99% — masked like the ring */ }
+}
+
+@utility border-beam-sheen {
+  filter: drop-shadow(0 0 1.5px var(--sk-border-beam-color));
+  /* conic wash: transparent 0 76%, light-dark(color 5%, color 11%) @96.5%, transparent;
+     mask: radial-gradient(farthest-side, transparent 45%, black) */
+}
+```
+
+(The full bodies are in the motion module; they only reference `--sk-*` tokens and the
+`--sk-border-beam-*` variables above. The masks use `black` as an alpha mask, never as a color.)
+
+Why the tail changes with shape: the sweep is a constant angle, so on a wide, short card (or a
+tall, narrow one) the same angle covers most of a long edge and the head appears to race. The ring
+layer is its own size container and its `::before` shortens the tail past a 3:2 aspect ratio — the
+approved mockup did the same in its stacked phone layout.
+
+No new **color** token: every color is `--sk-accent`, `--sk-accent-glow`, `--sk-on-accent`,
+`--sk-premium` or `--sk-chart-4`, mixed with `color-mix(in oklab, …)`.
+
+## States
+
+| State | Behavior |
+|---|---|
+| default | the beam orbits clockwise forever, one lap per `speed`; the glow and sheen ride with the head. |
+| hover / focus-within | glow and sheen brighten to full opacity (`duration-slow`, `ease-sukuna`). |
+| wide or tall card (aspect ratio past 3:2) | the ring's tail is shorter, so the head doesn't race along the long edges. |
+| prefers-reduced-motion | no orbit (`motion-reduce:animate-none` on every layer); glow and sheen are hidden; the ring becomes a still full-border tint of the beam color (34%). Nothing is hidden that carries meaning. |
+| server / no-JS | identical to default — the component is pure CSS, there is nothing to hydrate. |
+| no `@property` support | the angle can't interpolate, so the beam rests at its start angle (a still beam on the border). |
+| no `light-dark()` support (pre-2024 engines) | the beam declarations are invalid at computed time, so no beam paints; the card keeps its own border and content. |
+| no container queries | the long tail on every shape. |
+
+## Accessibility
+
+- [ ] Every beam layer is `aria-hidden="true"` and `pointer-events-none`; the accessible content
+      is the consumer's `children` only (the component adds no role, name or focus stop).
+- [ ] `prefers-reduced-motion: reduce` stops the orbit on every layer and swaps it for a still tint —
+      covered by `test/browser/border-beam.test.ts`.
+- [ ] No flashing (WCAG 2.3.1): a single moving highlight passes any point at most once per lap
+      (≥ 2.5s), far below 3 per second; no luminance strobe.
+- [ ] Contrast at rest is the consumer's: the beam never sits under text (glow and sheen are
+      faint and confined to the edge; the 1.5px ring is outside the content padding), so text
+      contrast is unchanged in both themes (axe, both themes).
+- [ ] The beam is not a focus indicator; interactive children keep their own focus rings
+      (hover / focus-within only brighten the glow).
 
 ---
 
@@ -1533,6 +1884,186 @@ the control.
 
 ---
 
+# GlitchText — @sukunagg/ui
+
+> Hits real text with short RGB-split glitch bursts, for elimination banners, match results and error or offline headings.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { GlitchText } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/glitch-text · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-glitch-text.md
+
+## Purpose
+
+Hits real text with short RGB-split glitch bursts, for elimination banners, match results and
+error or offline headings. The text renders once as real, selectable text; a red/blue fringe and a
+displaced slice flicker over it for about 0.4s every 3.5s, and reduced motion shows the clean text.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef } from 'react'
+
+export type GlitchTextElement =
+  | 'span' | 'p' | 'div' | 'strong' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+
+interface GlitchTextOwnProps {
+  as?: GlitchTextElement   // default 'span' — pick it for semantics ('h1' for a result banner)
+  children: string         // the text; rendered once for AT, copied into aria-hidden layers
+  intro?: boolean          // default true — wipe-in reveal on mount (replay: change `key`)
+  scanline?: boolean       // default false — static CRT line texture over the glyphs
+}
+
+export type GlitchTextProps =
+  GlitchTextOwnProps & Omit<ComponentPropsWithoutRef<'span'>, 'children'>
+```
+
+- Typography comes from the consumer (`className`, or the surrounding text): the effect works at
+  any size because every offset is in `em`. The look in the stories is
+  `font-display font-black uppercase leading-none`.
+- The intro plays **on mount**. To replay it, remount with a new `key`
+  (`<GlitchText key={round}>Eliminated</GlitchText>`). The burst loop runs for as long as the
+  element is mounted.
+- The root is `inline-block` (transforms don't apply to inline boxes); pass `block` when it should
+  fill its row. Its `transform` is animated, so position it with `translate`/`rotate`/`scale`
+  (separate properties in Tailwind v4), not `skew-*`.
+- Bursts don't change the page's scroll width, even with `block` in a narrow column: the copies
+  are moved by `text-shadow` (ink overflow) and the edge streak stays inside the root. The one
+  exception is the word's own jitter (two skewed 52ms steps per burst, plus the intro's settle),
+  which reaches up to ~0.2em past the root's box. A page gutter covers it. Flush against the edge of a
+  horizontal scroller, give the scroller that much inline padding or wrap the text in
+  `overflow-x-clip`.
+- Keep the font size at or under ~160px (clamp fluid `vw`/`cqi` type below that) — see §8.
+
+Deliberately **not** in v1: `ReactNode` children (the text is copied into three or four layers, so
+markup or ids would be duplicated), a configurable burst interval or intensity (the fixed 3.5s
+period is what keeps it under the WCAG 2.3.1 flash limit), custom fringe colors (the accent and
+`chart-2` tokens give the red/blue split in both themes), hover-only or paused modes, a mono font
+(no mono token exists).
+
+## Variants & tokens
+
+| Prop / slot | Values → utilities |
+|---|---|
+| `intro` | `true` → root `animate-glitch-text-burst-intro`, text `animate-glitch-text-reveal` · `false` → root `animate-glitch-text-burst` |
+| `scanline` | `true` → renders the `scanline` layer (`glitch-text-scanlines`, clipped to the glyphs) |
+| fringe | `--sk-glitch-text-tint: var(--sk-accent)`, late copy `var(--sk-chart-2)` (the shadow colour) |
+| shard | the consumer's text colour (`currentColor`), split `--sk-accent` / `--sk-chart-2` |
+| text / shard glow | `color-mix(in oklab, var(--sk-accent-glow) 45%, transparent)` |
+| edge streak | `linear-gradient(90deg, transparent, --sk-accent, --sk-text, --sk-accent, transparent)` |
+| scanlines | solid `--sk-bg` lines, 1px every 3px, on a layer at `opacity-30` |
+
+How it is built (no `content: attr()` pseudo-elements — real spans, so happy-dom can test them and
+each layer has its own `motion-reduce:`):
+
+- **root** (`as`): runs `sk-glitch-text-burst` — a 3.5s `steps(1, end)` loop that is clean for 3.1s,
+  then jitters for ~0.37s in 52.5ms steps. It drives the inherited `--sk-glitch-text-y0`/`-y1` (the
+  slice band) and `--sk-glitch-text-dx` (its displacement) and a small skew/translate. It takes the
+  consumer's `className`, padding and border included.
+- **frame**: a plain `relative isolate` box inside the root that the layers are positioned
+  against, so they stay on the glyphs whatever padding or border the root gets.
+- **text**: the real text, glowing, with the slice band cut out (`glitch-text-cut`). With `intro` it
+  wipes in left→right in steps and settles from a skew.
+- **fringe** ×2 (`aria-hidden`, behind the text): accent and `chart-2` copies, hidden at rest
+  (`inset(50% 0 50% 0)`), flashing thin offset slices during a burst, the second 105ms later.
+  Their glyphs are transparent; the only paint is one `text-shadow` in `--sk-glitch-text-tint`,
+  offset sideways.
+- **scanline** (`aria-hidden`, optional): a copy whose glyphs are filled with a line texture.
+- **shard** (`aria-hidden`, on top): the cut band, displaced by `--sk-glitch-text-dx`, with an
+  accent/`chart-2` split. It is a size container clipped on the block axis (`overflow-y: clip`)
+  holding **shardInk**: the glyphs in the consumer's colour, moved one shard-height down
+  (`translate: 0 100cqh`, clipped away) and painted back up into the band by `text-shadow`
+  (`dx -100cqh`).
+- **edge** (`aria-hidden`): a bright streak under the shard (`max(1px, 0.04em)` tall), 0px tall
+  at rest, spanning the frame.
+
+Why shadows and not `translate`: a moved box counts as scrollable overflow, so a full-width root
+grew the page by up to 0.4em + 8% on every burst (a scrollbar blinking every 3.5s). A shadow is
+ink overflow and never scrolls. The fringes can use a transparent fill because their colour is an
+explicit token; the shard needs the consumer's `currentColor`, which Firefox resolves against the
+text fill when painting a shadow, so its fill stays visible and is parked out of sight instead.
+
+The CSS lives in `packages/ui/scripts/motion/glitch-text.ts` and is emitted into the generated
+`theme.css` by `bun run tokens:build`:
+
+```css
+@property --sk-glitch-text-y0 { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
+@property --sk-glitch-text-y1 { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
+@property --sk-glitch-text-dx { syntax: '<length>'; inherits: true; initial-value: 0px; }
+@property --sk-glitch-text-k { syntax: '<number>'; inherits: true; initial-value: 1; }
+@property --sk-glitch-text-m { syntax: '<number>'; inherits: false; initial-value: 1; }
+
+@keyframes sk-glitch-text-burst  { /* 0–88.5% clean, 88.6–99.1% seven 52.5ms steps of band + jitter */ }
+@keyframes sk-glitch-text-split  { /* fringe slices + offset multiplier on the same 3.5s clock */ }
+@keyframes sk-glitch-text-k      { from { --sk-glitch-text-k: 2.2; } }   /* intro: stronger split */
+@keyframes sk-glitch-text-wipe   { /* stepped clip-path reveal, left → right */ }
+@keyframes sk-glitch-text-settle { from { transform: translateX(-0.14em) skewX(-14deg); } }
+
+@utility animate-glitch-text-burst       { animation: sk-glitch-text-burst 3.5s steps(1, end) -3.08s infinite; }
+@utility animate-glitch-text-burst-intro { animation: sk-glitch-text-burst 3.5s steps(1, end) -3.08s infinite,
+                                                      sk-glitch-text-k 700ms ease-out backwards; }
+@utility animate-glitch-text-reveal      { animation: sk-glitch-text-wipe 420ms steps(1, end) backwards,
+                                                      sk-glitch-text-settle 600ms var(--sk-ease-spring) backwards; }
+@utility animate-glitch-text-split       { animation: sk-glitch-text-split 3.5s steps(1, end) -3.08s infinite; }
+@utility animate-glitch-text-split-late  { animation: sk-glitch-text-split 3.5s steps(1, end) -2.975s infinite; }
+@utility glitch-text-cut       { clip-path: polygon(/* everything except the y0..y1 band */); }
+@utility glitch-text-glow      { text-shadow: 0 0 0.45em <glow>; }
+@utility glitch-text-fringe    { clip-path: inset(50% 0 50% 0); -webkit-text-fill-color: transparent;
+                                 text-shadow: ±0.06em × m × k 0 var(--sk-glitch-text-tint); }
+@utility glitch-text-shard     { container-type: size; overflow-y: clip;
+                                 clip-path: inset(y0 -1em calc(100% - y1) -1em); }
+@utility glitch-text-shard-ink { display: block; translate: 0 100cqh;
+                                 text-shadow: (dx × k) -100cqh currentColor, split, glow; }
+@utility glitch-text-edge      { top: y1; left: 0; right: 0; height: min(max(1px, 0.04em), (y1 - y0) × 99); gradient streak; }
+@utility glitch-text-scanlines { background-image: repeating-linear-gradient(to bottom, transparent 0 2px, var(--sk-bg) 2px 3px); }
+```
+
+The split keyframe opens the fringe slices with `inset(<top> -0.5em <bottom> -0.5em)` so their
+sideways shadows aren't cut at the box edge. The scanline stops are solid: Firefox paints a
+`color-mix()` stop inside a 3px repeating gradient as one flat tint, so the 30% comes from the
+layer's `opacity-30`.
+
+The `-3.08s` delay puts the first burst ~20ms after mount, so it lands on the intro. Five
+keyframes, five `@property`, twelve utilities: five `animate-glitch-text-*` and seven
+`glitch-text-*` (utilities are tree-shaken; keyframes and `@property` ship with `theme.css`).
+**No new color token** — accent, `chart-2`, accent-glow, text and bg only.
+
+## States
+
+| State | Behavior |
+|---|---|
+| default (mount) | `intro`: the text wipes in left→right (420ms, stepped) and settles from a skew (600ms spring) while the first burst fires with a doubled split (`--sk-glitch-text-k` 2.2 → 1 over 700ms). |
+| loop | clean text for 3.1s, then a ~0.37s burst: a band of the text jumps sideways with a red/blue edge, thin red and blue slices flick out behind it, the whole word jitters. Repeats every 3.5s. |
+| `intro={false}` | no wipe; the loop starts at once (first burst ~20ms after mount). |
+| `scanline` | a static 1px/3px line texture over the glyphs (not motion; also shown under reduced motion). |
+| prefers-reduced-motion | `motion-reduce:animate-none` on root and text, `motion-reduce:hidden` on every decorative layer: clean, glowing, static text. Nothing is hidden at rest, so there is no "armed" state to get stuck in. |
+| forced colors | `text-shadow` is forced off, so the shard can't paint the band: `forced-colors:[clip-path:none]` keeps the text whole, the fringes are transparent and the streak's gradient is dropped. The word still jitters during a burst; no band flickers. |
+| no `@property` support | Nothing seeds the variables (Tailwind emits no `@layer properties` fallback for these registrations). While the loop runs, the burst keyframes set the band variables at every step (`0%` in the clean phase), discretely, which `steps(1, end)` makes look the same; `--sk-glitch-text-k`/`-m` read with `var(…, 1)` fallbacks. When the loop doesn't run (reduced motion) they are unset, so every `var()` that reads them is invalid: the cut falls back to `clip-path: none`, the edge to 0px, and the text rests clean. |
+| server / no JS | identical to the client render (pure CSS); the animation starts when the CSS loads. |
+
+## Accessibility
+
+- [ ] The text is real DOM text, present once in the accessibility tree; every copy is
+      `aria-hidden="true"` and `select-none`. Use `as="h1"`…`"h6"` for headings.
+- [ ] WCAG 2.3.1 (three flashes): the effect is **positional** jitter, not a luminance flash. The
+      word's lit area stays constant (the shard is the same glyphs moved, the cut-out it fills is
+      the same band). Inside a burst only the thin colored fringe slices and the moved band
+      change from step to step. The burst as a whole switches on and off **once per 3.5s**
+      (0.29/s), and the period is fixed on purpose (§3). But a burst has 7–8 transitions inside
+      0.37s, so the changed area per step must stay under the general-flash limit (25% of a
+      341×256px field, ~21.8k px²). Measured in Chromium, the most that changes in any one step:
+      ~8.3k px² at 56px type, ~13k px² per field at 120px, ~19.6k px² at 200px (near the limit).
+      **Keep the font size at or under ~160px**, and clamp fluid `vw`/`cqi` type below that. No
+      saturated-red transitions were found.
+- [ ] `prefers-reduced-motion: reduce` → no intro, no bursts, no layers (`motion-reduce:` on every
+      animated span); the clean text is the resting state, so nothing is hidden.
+- [ ] Contrast at rest is the consumer's text color on its surface; the glow only adds light
+      around the glyphs and never replaces the fill.
+- [ ] No focus or keyboard behavior (not interactive).
+- [ ] axe: zero violations in both themes.
+
+---
+
 # GradientText — @sukunagg/ui
 
 > Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases.
@@ -1972,6 +2503,412 @@ game-specific rules.
 - [ ] ≥ 2 series → legend + end labels; identity never color-alone.
 - [ ] Keyboard: ←/→ move the crosshair, Home/End, Escape; live region reads the point.
 - [ ] Diverging fills are explained by a legend ("Blue side ahead" / "Red side ahead").
+
+---
+
+# LootReveal — @sukunagg/ui
+
+> Flips a row of face-down item cards to reveal what a player won, one after another, with a rarity glow per card and a spark burst for legendaries.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { LootReveal } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/loot-reveal · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-loot-reveal.md
+
+## Purpose
+
+Flips a row of face-down item cards to reveal what a player won, one after another, with a rarity
+glow per card and a spark burst for legendaries. Use it for pack openings, match rewards and drops.
+It plays once on mount with CSS only; every card's name, kind and rarity are real text in the DOM
+from the first server render, and reduced motion shows the revealed row at once.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+
+export type LootRarity = 'common' | 'rare' | 'epic' | 'legendary'
+
+export interface LootRevealItem {
+  name: ReactNode        // item name on the card face (real text)
+  rarity: LootRarity     // colors the card; 'legendary' adds the charge-up and spark burst
+  icon?: ReactNode       // art in the middle of the face; decorative (aria-hidden), name carries meaning
+  kind?: ReactNode       // small chip at the top of the face: "Spray", "Mask", "Banner"
+}
+
+interface LootRevealOwnProps {
+  items: readonly LootRevealItem[]   // one card per item, revealed left → right
+  stagger?: 'normal' | 'slow'        // default 'normal' — 350ms vs 700ms between flips
+  play?: boolean                     // default true — false renders the revealed row with no motion
+  rarityLabels?: Partial<Record<LootRarity, ReactNode>> // default Common / Rare / Epic / Legendary
+  backIcon?: ReactNode               // emblem on the card backs; default the Sukuna flame mark
+}
+
+export type LootRevealProps = LootRevealOwnProps & Omit<ComponentPropsWithoutRef<'ul'>, 'children'>
+```
+
+**Playback.** It plays once, on mount. To replay, change its `key` (`<LootReveal key={packId} …/>`);
+to show a pack the player already opened, pass `play={false}`. Card `i` (0-based) starts flipping at
+`200ms + i × step + 450ms × (legendary cards up to and including i)` (step = 350ms, or 700ms for
+`stagger="slow"`): a legendary card first charges up for 450ms, and the cards after it wait for it.
+Apps can use that formula to time their own sound or `aria-live` "3/3 revealed" counter (the
+stories do).
+
+**Overflow.** The legendary burst and the resting rays (290% of a card) reach well past the cards.
+The root clips them horizontally (`overflow-x: clip`), so they never widen the page or scroll a
+phone sideways; vertically they still spill. Inside a stage that clips itself (a pack screen with
+`overflow: hidden`), pass `className="overflow-x-visible"` so the rays reach the stage's edges —
+the stories do:
+
+```tsx
+<div className="overflow-hidden rounded-lg bg-surface p-3.5">
+  <LootReveal
+    key={pack.id}
+    aria-label="Crimson Vow Pack rewards"
+    items={items}
+    className="overflow-x-visible"
+  />
+</div>
+```
+
+On a phone with no stage, that clip lands in the page gutter, so the legendary's resting rays
+(and the outer halos) stop at a straight edge 16–24px inside the screen. That is the deliberate
+trade-off for never scrolling sideways. For edge-to-edge rays, put the reveal in a full-width
+parent that clips (`overflow-x: clip` on a section that spans the screen) and pass
+`className="overflow-x-visible"`.
+
+Sizing: the root fills its container's width (`container-type: inline-size`) and the cards share
+it. Each card is `clamp(72px, 99cqi / n − 4.5cqi, 124px)` for n cards. The `− 4.5cqi` is its slot's
+own `2.25cqi` padding on each side, so every slot takes 99cqi / n and n cards always fit one row.
+At n = 3 the card is 28.5cqi, as in the prototype. The 124px cap leaves the row narrower and
+centred. Only the 72px floor wraps cards onto a new row: in one row, four cards fit a root from
+~356px wide, five from ~471px and six from 600px. A 540px pack screen (a 512px root) shows four
+cards at ~104px each. A rarity label wider than a small card ("Legendary" is ~82px) first uses
+its slot's padding (`-mx-[2.25cqi]`) before it widens the slot. The name's type is `2.5cqi`
+(9.5–13px) as in the prototype, capped at 10.5% of the card. The cap never binds at n = 3; with
+4+ cards it makes the names shrink with the cards, not only with the row.
+
+Long names wrap inside the card, breaking an unbreakable word where needed
+(`overflow-wrap: anywhere`), and a long `kind` truncates with an ellipsis. For nicer breaks in
+translated compound words, put soft hyphens (U+00AD, `&shy;` in HTML) in the name, or wrap it in
+an element with `hyphens: auto` and the right `lang`.
+
+Deliberately **not** in v1: click-to-flip / interactive cards (the prototype's buttons; reveals are
+automatic, so the cards are not focus stops), an `onRevealed` callback (it would need a client
+timer — use the formula above), per-item colors (rarity owns color, Q38(c)), hover lift, a
+"skip" control (the app can re-render with `play={false}`).
+
+## Variants & tokens
+
+| Prop | Value → classes |
+|---|---|
+| rarity (per item) | common → `[--sk-loot-reveal-color:var(--sk-text-faint)]` · rare → `[--sk-loot-reveal-color:var(--sk-chart-2)]` · epic → `[--sk-loot-reveal-color:var(--sk-chart-5)]` · legendary → `[--sk-loot-reveal-color:var(--sk-premium)]` + `[--sk-loot-reveal-glint:color-mix(in_oklab,var(--sk-loot-reveal-color)_55%,var(--sk-on-accent))]` |
+| stagger | normal → `[--sk-loot-reveal-step:350ms]` · slow → `[--sk-loot-reveal-step:700ms]` |
+| play | true → the `animate-loot-reveal-*` classes below · false → none (revealed frame) |
+
+`--sk-loot-reveal-color` paints the face border, gradient wash, bottom bar, kind chip, icon, glow,
+halo and ring. The rarity label is that color mixed 25% toward `--sk-text`
+(`text-[color-mix(in_oklab,var(--sk-loot-reveal-color)_75%,var(--sk-text))]`): the card's own
+halo, glow and rays sit behind it, and the raw color falls under AA there in light (§8).
+**No new color token** — the rarity mapping onto existing tokens is a `DECISION(open)` (Q38(c),
+§11). Card backs use `--sk-accent` on `--sk-surface-2`; the face
+text is `--sk-text`; the kind chip's text is `--sk-surface` (`text-surface`) on the rarity color;
+the "• • •" placeholder is `--sk-text-faint`. Sizes: `aspect-[5/7]`,
+`rounded-md` (`--sk-radius-md`), `shadow`s from `--sk-shadow-card`.
+
+Per-card inline custom properties (set by the logic, never class names): `--sk-loot-reveal-i`
+(index), `--sk-loot-reveal-charge` (legendaries up to and including the card), and on the root
+`--sk-loot-reveal-n` (card count, sizes the cards). Sparks carry `--sk-loot-reveal-j` (0–23).
+The root's class sets `--sk-loot-reveal-card` (the card width, §3). The box's width and the
+name's type cap read it. Its `cqi` resolves where it is used, against the root container.
+
+The motion CSS lives in `packages/ui/scripts/motion/loot-reveal.ts` and is emitted into the
+generated `theme.css` by `scripts/build-tokens.ts`. **6 keyframes**; one shared `bloom` keyframe
+reads its start values from variables, so each layer's end state is simply its own (final) style.
+A layer whose resting `rotate`/`scale`/`translate` is not the default must start the bloom there
+too (the flare rests at `y 180deg`, so its utility sets `--sk-loot-reveal-r0: y 180deg`).
+
+```css
+@keyframes sk-loot-reveal-flip { from { rotate: y 0deg; } }               /* .flip rests at y 180deg */
+@keyframes sk-loot-reveal-pop {                                           /* the card lifts + settles */
+  28% { translate: 0 -3.2cqi; scale: 1.07; }
+  70% { translate: 0 0.4cqi; scale: 0.99; }
+}
+@keyframes sk-loot-reveal-side {                                          /* visibility swap at mid-flip */
+  0%, 11% { visibility: var(--sk-loot-reveal-pre); animation-timing-function: step-start; }
+}
+@keyframes sk-loot-reveal-bloom {                                         /* shared appear/fade curve */
+  0% {
+    opacity: var(--sk-loot-reveal-o0, 0);
+    scale: var(--sk-loot-reveal-s0, 1);
+    rotate: var(--sk-loot-reveal-r0, 0deg);
+    translate: var(--sk-loot-reveal-y0, 0 0);
+  }
+  20% { opacity: var(--sk-loot-reveal-o1, 1); }
+}
+@keyframes sk-loot-reveal-charge {                                        /* legendary back: shake + glow */
+  20%, 60% { translate: -1.6px 0; rotate: -1deg; scale: 1.02; }
+  40%, 80% { translate: 1.6px 0; rotate: 1deg; scale: 1.03; }
+  100% { color: var(--sk-loot-reveal-color); border-color: var(--sk-loot-reveal-color);
+         box-shadow: var(--sk-shadow-card), 0 0 28px <color 60%>, inset 0 0 22px <color 35%>; }
+}
+@keyframes sk-loot-reveal-spark {                                         /* one spark flies out + fades */
+  0% { opacity: 0; scale: 1.6 1; translate: <45% of the way along --sk-loot-reveal-a>; }
+  8%, 55% { opacity: 1; }
+  100% { opacity: 0; scale: 0.2 1; translate: <full distance --sk-loot-reveal-d, +12px fall>; }
+}
+```
+
+| Utility | On | Keyframe · duration · easing · start (relative to the card's flip) |
+|---|---|---|
+| `loot-reveal-clock` | `<li>` | sets `--sk-loot-reveal-at` from `-i`, `-charge` and `--sk-loot-reveal-step` |
+| `animate-loot-reveal-flip` | flip | flip · 900ms · spring `linear(…)` (overshoots to ~197°) · +0 |
+| `animate-loot-reveal-pop` | card | pop · 900ms · ease-in-out · +0 |
+| `animate-loot-reveal-back` / `-face` | back / face | side · 900ms · +0 (back shown until 11%, face after) |
+| `animate-loot-reveal-charge` | legendary back | charge · 450ms · −450ms, then side |
+| `animate-loot-reveal-glyph` | icon | bloom (0 → 1, scale .55, −8°) · 700ms · `--sk-ease-spring` · +120ms |
+| `animate-loot-reveal-halo` | halo | bloom (fade in) · 800ms · ease · +0 |
+| `animate-loot-reveal-ring` | ring | bloom (.9 → 0, grows to 1.2 × 1.14) · 700ms · `--sk-ease` · +550ms |
+| `animate-loot-reveal-label` / `-hint` | rarity text / "• • •" | bloom (rise 4px in) · 350ms · +300ms, plus side (hidden until the flip, like the face) / (fade out) · 200ms · +0 |
+| `animate-loot-reveal-rays` | legendary rays | bloom (spin −40° → 20°, rest at .3) · 2.4s · +100ms |
+| `animate-loot-reveal-core` / `-wave` | legendary flash / shock ring | bloom · 1.1s · +80ms / 900ms · +100ms |
+| `animate-loot-reveal-flare` / `-sheen` | legendary face glow / light sweep | bloom (fade in/out, held at `y 180deg`) · 1.3s · +100ms / (−120% → 120%) · 1.1s · +350ms |
+| `animate-loot-reveal-spark` | 24 legendary sparks | spark · 700–1300ms · +100–190ms (CSS `sin()`/`pow()` hash of `-j`) |
+| `loot-reveal-spark` | each spark | angle/distance/length variables from `--sk-loot-reveal-j` |
+| `loot-reveal-glow` / `-glow-gilded` | face | resting rarity glow (gilded = legendary double inner ring) |
+| `loot-reveal-flare` | legendary flare layer | the flare's box-shadow (opacity animated) |
+
+Every animated slot also carries `motion-reduce:animate-none`. Durations and easings are literals
+inside the utilities (the `sk-shine` precedent), tunable as a patch pre-1.0.
+
+## States
+
+| State | Behavior |
+|---|---|
+| server / no-JS | Same HTML and CSS as the client — the animation is pure CSS, so it plays without JS. |
+| default (`play`) | Backs show, then each card lifts and flips (spring) in order; the face's icon pops, the rarity label rises in, a halo and an expanding ring glow in the rarity color. |
+| legendary | Its back shakes and charges to the rarity color for 450ms, then it flips with a light flash, shock ring, rotating rays (they stay at 30%), 24 sparks (16 behind, 8 in front of the card) and a sheen across the face. |
+| `play={false}` | The revealed row, no animation (an opened pack). The legendary's one-shot burst layers (flash, shock ring, flare, sheen, sparks) are not rendered; its rays and halo are. |
+| prefers-reduced-motion | `motion-reduce:animate-none` on every animated layer → the revealed row immediately, with the resting halo and rays; nothing flashes, nothing moves. |
+| replay | Change `key`; React remounts the list and CSS replays from the backs. |
+
+## Accessibility
+
+- [ ] A real `<ul>`/`<li>` list; pass `aria-label` ("Crimson Vow Pack rewards") to name it. The
+      `<ul>` has an explicit `role="list"`, since `list-style: none` makes Safari/VoiceOver drop
+      list semantics ("list, 3 items" is part of the reveal).
+- [ ] Each item's kind, name and rarity label are real text in the DOM from the first render —
+      motion never gates the information. Screen readers get "Banner, Crimson Vow Gold Banner,
+      Legendary"; rarity is never color-only (the label spells it out).
+- [ ] Card backs, the icon wrapper, halo, ring, rays, flash, sparks, sheen and the "• • •"
+      placeholder are `aria-hidden`.
+- [ ] During its stagger delay a face **and its rarity label** are `visibility: hidden`
+      (face-down), so a card joins the accessibility tree when it turns over — never a bare
+      "Legendary" before its name: the last of 5 cards after ~1.7s (+0.45s per legendary
+      charge-up, ~2.6s with two legendaries). Kind, name and label share one moment.
+- [ ] Not interactive: no focus stops, no hover-only content.
+- [ ] `prefers-reduced-motion: reduce` → no motion at all (`motion-reduce:animate-none` on every
+      layer); the revealed frame shows at once.
+- [ ] WCAG 2.3.1: no flashing — the legendary light flash happens once (one fade in/out over 1.1s),
+      sparks fade, nothing repeats.
+- [ ] Contrast at rest (Q38(c) mapping, both themes): face text `--sk-text` on `--sk-surface-2`;
+      the kind chip is `--sk-surface` on the rarity color (≥ 4.73:1; light `rare` is the lowest).
+      The 10px rarity label sits on the card's own halo, glow and (legendary) rays, so it is
+      measured on the **rendered** background (label text hidden, Chromium): with the raw rarity
+      color light fell to 3.9–4.6:1, so the label is mixed 25% toward `--sk-text`. Now light
+      5.7–6.7:1 on a `--sk-surface` stage (darkest background pixel ≥ 5.0:1) and 5.7–6.0:1 straight
+      on `--sk-bg`; dark 7.0–10.2:1 (was 5.0–9.8).
+- [ ] Apps that want an announcement own it (an `aria-live="polite"` "3/3 revealed" counter, as in
+      the stories); the component does not announce.
+
+---
+
+# MatchFound — @sukunagg/ui
+
+> The ready-check prompt a game client shows when the queue pops: a draining countdown ring, who on the team has accepted, and the Accept / Decline actions.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { MatchFound } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/match-found · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-match-found.md
+
+## Purpose
+
+The ready-check prompt a game client shows when the queue pops: a draining countdown ring, who on
+the team has accepted, and the Accept / Decline actions. It is presentational: the app owns the
+timer, the accept/decline requests and the screen-reader announcement, and passes the result back
+in as `state` and `accepted`. The countdown runs in CSS from mount, so it works in Server
+Components and before hydration.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+
+export type MatchFoundState = 'pending' | 'accepted' | 'declined' | 'expired'
+
+export interface MatchFoundProps extends Omit<ComponentPropsWithoutRef<'section'>, 'title'> {
+  title?: ReactNode          // default 'Match found'; a string is split into words for the title wipe and sized to fit its longest word
+  eyebrow?: ReactNode        // small accent line over the title, with a live dot: "Ranked · 5v5"
+  meta?: ReactNode           // one line under the title: map · region · average MMR
+  headingLevel?: 'h2' | 'h3' | 'h4'   // default 'h2'
+  seconds?: number           // default 12 — the accept window; the ring counts down from it (whole seconds, 1–3600)
+  players?: number           // default 5 — one slot per player; the last slot is you
+  accepted?: number          // default 0 — players ready so far, including you once state is 'accepted'
+  state?: MatchFoundState    // default 'pending' — your answer, or 'expired' when the app's timer ran out
+  status?: ReactNode         // overrides the status line ("2/5 ready", "All ready", "Declined", "Expired")
+  timerLabel?: ReactNode     // default `Accept within ${seconds} seconds` — screen-reader text while pending
+  unitLabel?: ReactNode      // default 'sec' — under the number
+  youLabel?: ReactNode       // default 'You' — in your slot while pending
+  children?: ReactNode       // the actions: put Accept first, then Decline
+}
+```
+
+- **Plays on mount.** The countdown and the entrance run from the moment the element mounts. To
+  restart (a new queue pop), change the React `key`. Changing `seconds` on a mounted instance
+  re-times the running countdown instead of restarting it.
+- **The app owns time.** `seconds` only drives the picture. Run your own timer, set
+  `state="expired"` when it ends, and announce changes in your own `aria-live` region. On
+  `expired` the countdown animations are removed, so the ring shows its final frame (0, drained)
+  even if your timer and the CSS drifted apart.
+- **Phases.** `accepted >= players` with `state="accepted"` is *all ready*: the ring freezes
+  where it was and turns success green. `declined` freezes it grey. `accepted` alone keeps it
+  running (others still have to accept).
+- **Actions.** `children` is laid out as a row (Accept 1.5× wider on narrow widths, 150px minimum
+  on wide). While `state="pending"`, the **first** action gets a decorative glow pulse and a light
+  sheen (`::before` / `::after`, motion-safe only) — put the primary Accept first. The component
+  never renders or disables buttons itself; disable yours once the player has answered.
+- **Layout.** Fills its container's width and switches from stacked (narrow) to ring-left (from a
+  460px container) with a container query. Bring the frame: a Card, a Dialog popup with `p-0`, or
+  your own surface — the decoration (corner hatch, top accent line) sits on the component's edges.
+- `id`: when set, the title gets `${id}-title` and the section is labelled by it (a named region).
+
+Deliberately **not** in v1: a built-in timer or `onExpire` callback (the app owns time; a JS timer
+would make it a client component), built-in Accept/Decline buttons (`children` keeps the app's own
+Button, loading and disabled states), per-player avatars or names in the slots, a team-vs-team
+layout (10 slots for 5v5 both sides), configurable urgency window (fixed to the last 3 seconds),
+sound.
+
+## Variants & tokens
+
+| Part | State | Tokens |
+|---|---|---|
+| eyebrow + live dot | always | `text-accent`, dot glow `--sk-accent-glow` |
+| title | always | `font-display` 900, expanded, `text-text`; wipe bar `bg-accent` |
+| meta | always | `text-text-dim` (consumer can color spans) |
+| ring | running | arc + comet `currentColor` = `--sk-accent`, then `--sk-danger` for the last 3 s |
+| ring | all ready | `--sk-success` (forced, frozen) |
+| ring | declined | `--sk-text-faint` ring, `--sk-text-dim` number (forced, frozen) |
+| ring | expired | `--sk-danger`, 0, drained, comet hidden |
+| ring dial | always | disc `--sk-well`/40 + `--sk-line-soft`, ticks `--sk-line` / `--sk-text-faint`, track `--sk-line` |
+| number | running | `--sk-text`, then `--sk-danger` for the last 3 s; `unit` `--sk-text-faint` |
+| slot | waiting | `--sk-surface-2`, ring `--sk-line`, dashed spinner `--sk-text-faint` |
+| slot | ready | `--sk-success` fill + glow, check `--sk-bg` |
+| your slot | pending | ring + "You" `--sk-accent` |
+| your slot | declined / expired | ring + ✕ `--sk-danger` |
+| status | running / ready / lost | `--sk-text-dim` / `--sk-success` / `--sk-danger` |
+| first action | pending | glow pulse `--sk-accent-glow`, sheen `--sk-on-accent`/40 |
+
+No new color token. No mono token exists, so the eyebrow, status, unit and "You" label use
+`font-sans` with tracking and `tabular-nums` (the mockup's JetBrains Mono is page-only). The ring
+glow mixes `currentColor` at the mockup's per-theme strengths (halo 22% / drop-shadow 55% on dark,
+9% / 30% on light) through the `match-found-glow` utility, keyed on the closest `data-theme` (the
+mockup's `light-dark()` needs `color-scheme`, which the themes don't set).
+
+Motion CSS, from `packages/ui/scripts/motion/match-found.ts` (emitted into the generated
+`theme.css` by `scripts/build-tokens.ts`). Base styles are the **final frame**; every keyframe's
+`from` holds the start, so seven keyframes cover the whole choreography by reading per-element
+custom properties that each utility sets:
+
+```css
+@property --sk-match-found-n { syntax: '<integer>'; inherits: false; initial-value: 0; }
+
+@keyframes sk-match-found-enter {   /* entrances and pulses: from a fade / offset / scale */
+  from {
+    opacity: var(--sk-match-found-o, 0);
+    translate: var(--sk-match-found-t, 0 0);
+    scale: var(--sk-match-found-s, 1);
+  }
+}
+@keyframes sk-match-found-wipe {    /* title bar: grows from the left, leaves to the right */
+  0% { scale: 0 1; transform-origin: left; }
+  50% { scale: 1 1; transform-origin: left; }
+  50.1% { scale: 1 1; transform-origin: right; }
+  100% { scale: 0 1; transform-origin: right; }
+}
+@keyframes sk-match-found-count { from { --sk-match-found-n: 3600; } }   /* literal: see below */
+@keyframes sk-match-found-sweep { from { stroke-dashoffset: 0; rotate: 0deg; } }
+@keyframes sk-match-found-tint { from { color: var(--sk-match-found-from); } }
+@keyframes sk-match-found-ping {
+  from { opacity: var(--sk-match-found-o, 0.75); scale: var(--sk-match-found-s, 0.94); }
+  to { opacity: 0; scale: var(--sk-match-found-s2, 1.55); }
+}
+@keyframes sk-match-found-glow {
+  from { box-shadow: 0 0 0 0 var(--sk-accent-glow); }
+  to { box-shadow: 0 0 var(--sk-match-found-blur, 0px) var(--sk-match-found-spread, 6px) transparent; }
+}
+```
+
+| Utility | Element | Animation |
+|---|---|---|
+| `match-found-number` | number | `counter-reset` from `--sk-match-found-n`, drawn by `::after { content: counter() }` |
+| `animate-match-found-count` | number | count 3600 → 0 over 3600 s, `steps(3600, end)`, delay `seconds − 3600` (so it shows `seconds` at mount and 0 at the end) + tint to danger at `seconds − 3` |
+| `match-found-glow` | dial | sets `--sk-match-found-halo` / `--sk-match-found-shadow` per theme (not an animation) |
+| `animate-match-found-urgent` | dial | tint accent → danger at `seconds − 3` |
+| `animate-match-found-drain` | arc, comet | sweep over `seconds`, `var(--sk-match-found-ease, linear)` |
+| `animate-match-found-spin` | waiting slot spinner | sweep 7 s linear infinite |
+| `animate-match-found-scan` | top accent line | enter `scale: 0 1`, 900 ms |
+| `animate-match-found-slide` | eyebrow | enter from −12px x, 420 ms |
+| `animate-match-found-rise` | meta, slots, status, actions | enter from +10px y, 480 ms, delay `--sk-match-found-d` |
+| `animate-match-found-show` / `-wipe` | title words / their bar | tint from transparent at `d + 310ms`; wipe 620 ms |
+| `animate-match-found-pop-in` | ring | enter from `scale .82`, 700 ms overshoot |
+| `animate-match-found-breathe` | ring halo | enter from `opacity .5`, 2.6 s alternate infinite |
+| `animate-match-found-ping` / `-ping-urgent` / `-ping-ready` | ripple rings | ping ×2 on mount / ×3 in the last 3 s / ×2 when all ready |
+| `animate-match-found-beat` | number | enter from `scale 1.14`, 1 s ×3 in the last 3 s |
+| `animate-match-found-lock` | ring svg | enter from `scale 1.07` when all ready |
+| `animate-match-found-pop` / `-burst` | a slot that fills | enter from `scale .7` overshoot / ping to `scale 2.2` |
+| `animate-match-found-live` / `-pulse` | eyebrow dot / first action | glow 1.4 s / 1.6 s infinite |
+| `animate-match-found-sheen` | first action `::after` | the existing `sk-shine` keyframe, 4.8 s linear infinite |
+
+Every count/drain/tint animation ends its shorthand with `var(--sk-match-found-play, running)`, so
+the root freezes them by setting `--sk-match-found-play: paused`.
+
+The count keyframe is literal because Firefox doesn't interpolate a registered custom property
+whose keyframe value uses `var()` (it stayed on the start value; Chromium and WebKit were fine).
+Running 3600 → 0 over an hour with a negative delay of `seconds − 3600` gives the same one-step-a-
+second countdown from `seconds` in all three engines, which is why `seconds` is capped at 3600.
+
+## States
+
+| State | Behavior |
+|---|---|
+| mount | scan line, eyebrow, title wipe, ring pop-in + ripple, meta / slots / status / actions rise in a stagger (60 → 860 ms). |
+| pending | ring drains and counts down once a second; the last 3 s turn danger with a ripple and a number beat each second. Your slot shows "You" with a dashed spinner; the first action pulses. |
+| accepted | your slot fills (pop + burst); the countdown keeps running; the action emphasis stops. |
+| all ready | `state="accepted"` and `accepted >= players`: ring + number + status turn success, the ring freezes where it was, one lock thump + ripple. Status "All ready". |
+| declined | ring freezes grey; your slot shows ✕ in danger; status "Declined" in danger. |
+| expired | countdown animations removed → final frame: 0, drained, danger, comet hidden; your slot ✕; status "Expired". |
+| a teammate accepts (`accepted` +1) | that slot transitions to success with a pop and a burst ring (class change → the animation starts then). |
+| prefers-reduced-motion | entrances, ripples, pulses, beat, sheen, spinner and pop/burst are off (`motion-safe:`); slot fills are instant. **The countdown keeps running** — the number and the ring step once per second (`steps(seconds, end)`), because the remaining time is information. |
+| server / no-JS | identical: everything is CSS and starts when the HTML is parsed. |
+| no `@property` support | the number can't interpolate, so it shows its final 0 while the ring still drains. |
+
+## Accessibility
+
+- [ ] Real heading (`headingLevel`, default `h2`) carries the title; `id` makes the section a named
+      region.
+- [ ] The ring, number, slots and ripples are `aria-hidden` decoration. Screen readers get the
+      `sr-only` "Accept within N seconds" (while pending) and the visible status line
+      ("2/5 ready", "All ready", "Declined", "Expired"), which never relies on color alone.
+- [ ] No `aria-live` inside: the app announces changes in its own live region (documented, shown
+      in the `InLobby` story) so announcements follow the app's real timer and requests.
+- [ ] Actions are the consumer's real buttons; the pulse and sheen are pointer-transparent
+      pseudo-elements that never cover the focus ring (box-shadow on `::before`, not the button).
+- [ ] Reduced motion: decorative motion off; the countdown keeps stepping once per second.
+- [ ] Contrast at rest: title `--sk-text`, meta/status `--sk-text-dim`, eyebrow `--sk-accent`,
+      unit/waiting `--sk-text-faint` — all ≥ 4.5:1 on `--sk-surface` in both themes.
+- [ ] No flashing (WCAG 2.3.1): the last-3-seconds ripple and beat are one per second, and
+      ripples are thin rings, not full-area luminance flashes.
 
 ---
 
@@ -2456,6 +3393,347 @@ unchecked · checked (accent border + dot) · focus-visible ring · disabled.
 
 ---
 
+# RankReveal — @sukunagg/ui
+
+> Celebrates a new rank with a crest that bursts in over a ray field while an orbit draws around it and the rank name rises into place.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { RankReveal } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/rank-reveal · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-rank-reveal.md
+
+## Purpose
+
+Celebrates a new rank with a crest that bursts in over a ray field while an orbit draws around it and
+the rank name rises into place. Use it on a post-match or season-reward screen, once per promotion.
+It plays once on mount (CSS only); change its `key` to replay it. The finished frame is the resting
+state, so reduced motion, no JS and a server render all show the complete reveal.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+
+interface RankRevealOwnProps {
+  /** The new rank, e.g. "Master". Real text in a heading (`headingLevel`, unless 'p'); scales to fit. */
+  title: ReactNode
+  /** Division or tier numeral after the title, in the tone color: "I", "III", "2". */
+  division?: ReactNode
+  /** Small uppercase line above the title. Pass `null` to drop it. Default 'Rank up'. */
+  eyebrow?: ReactNode
+  /** One line under the title: the change. `<strong>` → full text color, `<em>` → premium. */
+  description?: ReactNode
+  /** The centerpiece (~96–120px). Default: the built-in crest. Rendered aria-hidden. */
+  emblem?: ReactNode
+  /** Burst color. Default 'accent' (crimson); 'premium' is the bone/gold top-tier treatment. */
+  tone?: 'accent' | 'premium'
+  /** Element for `title`, to fit the page outline. Default 'h2'. */
+  headingLevel?: 'h2' | 'h3' | 'h4' | 'p'
+}
+
+export type RankRevealProps = RankRevealOwnProps &
+  Omit<ComponentPropsWithoutRef<'div'>, 'title' | 'children'>
+```
+
+- **Plays on mount, once.** There is no `play` prop and no hidden "armed" state. To replay, remount
+  it: `<RankReveal key={replayCount} … />`.
+- The root fills its container's width (`w-full`) and clips the ray field (`overflow-hidden`). Give
+  it a stage — a card, a dialog, a hero — around 320px tall; it centers its content vertically if
+  the stage is taller.
+- **The stage needs a definite width.** The root is a size container (inline-size containment, so
+  the title can scale with its width, §4), and a size container takes its width from its parent,
+  never from its content. A shrink-to-fit parent (`width: fit-content`, inline-block, an absolutely
+  positioned box or a native `<dialog>` with no width) would collapse it to its padding, so the
+  root declares an intrinsic width floor (`contain-intrinsic-inline-size: 288px`): such a parent
+  gets the 320px phone layout. Give the stage a width for anything larger (the library's `Dialog`
+  already has one).
+- The effect layer (rays, halo, orbit, pips, sparks, glints, crest, ray mask) is sized in **px**,
+  like the `--sk-text-*` tokens, so it lines up at any root font size (a "Large" 20px browser
+  default, a 62.5% root). Only the copy's spacing follows the rem spacing scale.
+- It has no background of its own, only a soft tone glow behind the crest that fades out well inside
+  its box, so it sits seamlessly inside a bigger card (see the `PostMatch` story). The darker
+  vignette in the gallery card is stage chrome (the stories), not the component.
+- The root carries `data-sk-rank-reveal` (a stable hook for tests and app CSS).
+
+Deliberately **not** in v1: a `play`/`paused` prop or play-on-view (needs JS; replay is `key`),
+`children`/actions (put the Continue button in your screen), rarity/tier colors (Q38(c) is open —
+`tone` covers crimson vs premium), a `size` prop (one tuned size; the title scales with the width),
+sound, and configurable timings (the choreography is one literal timeline, §4).
+
+## Variants & tokens
+
+| Part | accent (default) | premium |
+|---|---|---|
+| Ray field, halo, glows | `--sk-accent-glow` | `--sk-premium` @ 55% |
+| Crest face (outer hex) | `--sk-accent` → `--sk-accent-deep` | `--sk-premium` → `--sk-premium-dim` 70% + the crest's dark `--sk-bg` (depth, §11) |
+| Tone glow (root, `rank-reveal-glow`) | `--sk-accent` @ 10% | `--sk-premium` @ 10% |
+| Eyebrow | `--sk-accent` 82% + `--sk-text` | `--sk-premium` 82% + `--sk-text` |
+| Title sheen, division numeral | `--sk-accent` | `--sk-premium` |
+| Small (even) pips | `--sk-accent` | `--sk-premium-dim` (premium itself is nearly the bone, §11) |
+
+Shared by both tones:
+
+| Part | Token(s) |
+|---|---|
+| Crest core (dark in both themes) | the built-in crest pins `data-theme="dark"` (like VideoPlayer) and mixes the tone's deep color with `--sk-bg`; facets use `--sk-text` / `--sk-bg` there |
+| "Bone" (big pips, orbit ring, wave, spark tips, glints) | `color-mix(--sk-premium 72%, --sk-on-accent)` |
+| Crest outline + flame | `color-mix(--sk-on-accent 75%, --sk-premium)` |
+| Tick arc | `--sk-text` @ 16% |
+| Pip knock-out ring | `--sk-surface` (the stage it is designed to sit on) |
+| Title | `--sk-text`, `font-display` black, expanded, `clamp(20px, 9cqi, 42px)`: 42px from a ~500px root, then 9% of the root's content width; prints as plain `--sk-text` |
+| Description | `--sk-text-dim` 13px; `<strong>` `--sk-text`; `<em>` `--sk-premium`, `tabular-nums` |
+
+**No new color token.** Colors are captured on the root as `--sk-rank-reveal-hue|deep|glow|bone|cb`
+(component-local custom properties, like `--sk-stat-value`) so the dark-pinned crest still gets the
+page theme's accent. No mono token exists, so the `+32 RR` style uses `font-sans tabular-nums`.
+
+### Motion CSS (`packages/ui/scripts/motion/rank-reveal.ts` → generated `theme.css`)
+
+Eight keyframes (no `@property`). Each one only states its *start* (and peak); the element's own
+utilities are the final frame, so `motion-reduce:animate-none` lands on the finished reveal.
+Per-element shape values come from component-local variables set by literal classes
+(`[--sk-rank-reveal-s:.4]`) — one keyframe serves many elements instead of near-duplicates. The
+waves' final frame is invisible (`opacity-0`, scale 2.9 / 4.4), so they reuse `enter` too.
+
+```css
+@keyframes sk-rank-reveal-enter {          /* fade / scale-in / rise / draw */
+  from {
+    opacity: var(--sk-rank-reveal-o, 0);
+    scale: var(--sk-rank-reveal-s, 1);
+    translate: var(--sk-rank-reveal-y, 0);
+    stroke-dashoffset: var(--sk-rank-reveal-dash, 0);
+  }
+}
+@keyframes sk-rank-reveal-pop {            /* overshoot in: halo, pips, glints */
+  0% { opacity: 0; scale: var(--sk-rank-reveal-from, 0); rotate: var(--sk-rank-reveal-r0, 0deg); }
+  45% { opacity: 1; scale: var(--sk-rank-reveal-peak, 1); }
+}
+@keyframes sk-rank-reveal-burst {          /* flash in, travel, vanish: sparks */
+  0% { opacity: 0; transform: var(--sk-rank-reveal-t0, none); }
+  12% { opacity: 1; }
+  100% { opacity: 0; transform: var(--sk-rank-reveal-t1, none); }
+}
+@keyframes sk-rank-reveal-flash { 0% { filter: brightness(1.5); } 30% { filter: brightness(2.8) saturate(.7); } }
+@keyframes sk-rank-reveal-sheen { from { background-position: 100% 0; } }
+@keyframes sk-rank-reveal-spin { to { rotate: 360deg; } }
+@keyframes sk-rank-reveal-breathe { to { opacity: .62; } }
+@keyframes sk-rank-reveal-slot {           /* a copy line clips at its bottom edge, then releases */
+  0%, 85% { clip-path: inset(-40px -60px 0); }
+  to { clip-path: inset(-40px -60px -40px); }
+}
+```
+
+Static image layers (too long for one arbitrary class; none is named `bg-*`, which tailwind-merge
+would pair with `bg-<color>`): `rank-reveal-glow` (the root's tone glow), `rank-reveal-rays` /
+`rank-reveal-rays-alt` (two `repeating-conic-gradient(in srgb, …)` ray fields with a radial mask —
+`in srgb` because Firefox draws a repeating conic gradient with `color-mix()` stops as dotted
+hairlines under the default oklab interpolation; each is preceded by the same gradient without
+`in srgb`, which a browser without gradient interpolation methods keeps instead),
+`rank-reveal-halo`, `rank-reveal-glint` (a four-point cross) and `rank-reveal-flame` (the crest's flame as an SVG `mask`).
+
+The timeline (one `@utility animate-rank-reveal-<part>` per part, literal durations, `both` fill
+unless noted):
+
+| Part | Animation |
+|---|---|
+| rays / rays-alt | enter 1s / 1.3s (+.1s) from scale .55, then spin 90s / 140s reverse (loop) |
+| halo | pop 1.2s (.4 → 1.2), then breathe 3.6s from 1.4s (loop, alternate) |
+| crest | enter .9s spring from scale .4 at .12s; its emblem flashes .8s at .12s |
+| wave / wave-alt | enter .9s / 1.25s at .32s / .42s from opacity 1, scale .55 → 2.9 / 4.4 and gone (no fill: unseen during the delay) |
+| spark ×10 | burst .75s at .34s, radial streaks to 150px / 116px |
+| orbit / ticks | draw .9s at .45s / fade 1s at .5s |
+| pip ×8 | pop .5s at .52s + i × 65ms (0 → 1.7) |
+| glint / glint-alt | pop .8s at 1.35s / 1.6s, rotating −45° → 45°, ends hidden |
+| eyebrow / title / line | rise .6s / .7s / .6s at .82s / .94s / 1.08s; title sheen 1s at 1.3s |
+| slot (each copy line) | slot 2s linear, no fill: clipped at its bottom edge until 1.7s, released by 2s |
+
+Settles by ~2.4s (glint-alt ends last); after that only the two decorative loops (ray spin, halo
+breathe) run.
+
+## States
+
+| State | Behavior |
+|---|---|
+| default (on mount) | plays the ~2.4s timeline in §4 once, then rests on the final frame; the rays keep a slow spin and the halo breathes. |
+| settled | crest, ray field, orbit, pips and copy fully visible; waves, sparks and glints are gone (transient). |
+| replay | change `key`: React remounts the root and the CSS animations start over. |
+| prefers-reduced-motion | every part carries `motion-reduce:animate-none` → the settled frame immediately, no loops. Nothing is hidden. |
+| server / no-JS | same markup; the CSS animations run without JS. |
+| older browsers | needs `color-mix()`, CSS trig (`cos()`/`sin()`) and container query units (`cqi`), Baseline 2023. Gradient interpolation methods (`in srgb`) are Baseline 2024 (Firefox 127); before that the ray fields fall back to the same gradient without `in srgb`. Where the 2023 features are missing those declarations drop (tints vanish, the pips collapse onto the crest); the crest, title and description stay legible. |
+| print | backgrounds are not printed, so the sheen-filled title falls back to plain `--sk-text` (`print:bg-none`); the decorative layers drop out. |
+| `tone="premium"` | bone/gold burst instead of crimson (§4). |
+
+## Accessibility
+
+- [ ] The whole effect layer (rays, crest, orbit, pips, sparks, glints) is one `aria-hidden` subtree;
+      a custom `emblem` is hidden too (the title carries the meaning).
+- [ ] Real text in reading order: eyebrow → title (a heading, `headingLevel`) → description. The
+      rank is never only in the crest.
+- [ ] Every keyframe has a `motion-reduce:animate-none` fallback and the base styles are the final
+      frame, so reduced motion shows the complete reveal with no loops (asserted in unit + browser).
+- [ ] The title never clips: it scales with the root's width and a longer single word wraps
+      (`overflow-wrap:anywhere`); it prints as plain text (no background-clip sheen).
+- [ ] Contrast at rest: title `--sk-text`, eyebrow (accent 82% + text) and description
+      `--sk-text-dim` clear 4.5:1 on `--sk-surface` in both themes; the ray field is masked out
+      under the copy.
+- [ ] WCAG 2.3.1: the only flash is one crest brighten (.8s) and two small glints — no more than 3
+      flashes in any second, and none full-screen.
+- [ ] Not a live region: the app announces the promotion from its **own persistent live region**
+      (`aria-live="polite"`, present before its text changes), as with MatchFound. A
+      `role="status"` on RankReveal itself is unreliable: it mounts already filled and replay
+      remounts it, and many screen-reader/browser pairs skip a live region that arrives with its
+      content.
+- [ ] Arrows in `description` should be `aria-hidden` with sr-only words ("to"), as in the stories.
+
+---
+
+# RetroGrid — @sukunagg/ui
+
+> A synthwave arena backdrop for hero sections: a crimson perspective grid scrolls toward the viewer under a glowing horizon, two spotlights sway in the sky and a light wave rolls out of the horizon every few seconds.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { RetroGrid } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/retro-grid · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-retro-grid.md
+
+## Purpose
+
+A synthwave arena backdrop for hero sections: a crimson perspective grid scrolls toward the viewer
+under a glowing horizon, two spotlights sway in the sky and a light wave rolls out of the horizon
+every few seconds. The effect is pure CSS (no JS, no canvas) and theme-aware: a night arena in dark,
+a pale dawn sky with crimson ink on a bone floor in light. Your content (`children`) sits centred
+in the sky above the horizon; reduced motion stops every loop and keeps a still grid.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+
+interface RetroGridOwnProps {
+  /**
+   * How fast the floor scrolls toward the viewer (one grid cell per 2.4s / 1.2s / 0.6s).
+   * The spotlights and the horizon wave keep their own tempo.
+   */
+  speed?: 'slow' | 'normal' | 'fast'   // default 'normal'
+  /** Overlay content (hero copy, CTAs), centred in the sky above the horizon. */
+  children?: ReactNode
+}
+
+export type RetroGridProps = RetroGridOwnProps & ComponentPropsWithoutRef<'div'>
+```
+
+- The root is a block `<div>` that fills its container's width (`w-full`) with a default
+  `min-h-96`; size it with a `min-h-*` class (`min-h-[420px]`, `min-h-svh`), which merges last and
+  replaces the default (an `h-*` below 384px alone can't undercut `min-h-96`). The horizon always
+  sits at 62% of the height; content taller than the sky grows the whole grid and keeps that ratio.
+  A fixed `h-*` can't grow, so content taller than its sky spills past the horizon onto the floor:
+  prefer `min-h-*`.
+- `children` are centred in the sky, inset 24px from the top and 30px from the horizon, so tall
+  content never touches the top edge.
+- The floor reaches both sides of the frame at any size, full-viewport heroes (`min-h-svh` on a
+  1920px+ screen) included.
+- The root is an inline-size container (`@container`), so `children` can size type with `cqi`
+  units or `@md:`-style container variants. Below 560px of width the grid cells shrink (72px →
+  56px) and the spotlights move outward.
+- It is a backdrop, not a landmark: wrap it in your own `<section>`/`<header>` or pass `role` and
+  `aria-label` through the native props.
+
+Deliberately **not** in v1: a configurable horizon height, cell size or color (the palette is the
+approved Sukuna one, built from tokens), a `paused` prop (reduced motion covers the a11y need; the
+custom `animate-*` utilities don't dedupe in tailwind-merge, so a freeze variant would be an
+unresolved cascade fight, as with ShinyText `disabled`), separate tempos for the spotlights and the
+wave, an `as` prop.
+
+## Variants & tokens
+
+| Variant | Values → utility (on both floor planes) |
+|---|---|
+| speed | slow → `animate-retro-grid-scroll-slow` (2.4s/cell) · normal → `animate-retro-grid-scroll` (1.2s/cell) · fast → `animate-retro-grid-scroll-fast` (0.6s/cell) |
+
+**No new color token.** Every color is a `color-mix()` of existing tokens, held in component-private
+custom properties set by `retro-grid-stage` on the root:
+
+| Property | Dark (default) | Light |
+|---|---|---|
+| `--sk-retro-grid-line` (crisp near lines) | `--sk-accent` 54% | same |
+| `--sk-retro-grid-sub` (mid-cell depth grid) | `--sk-accent` 13% | same |
+| `--sk-retro-grid-soft` (far-plane line glow) | `--sk-accent` 36% | `--sk-accent` 28% |
+| `--sk-retro-grid-halo` (wave tail) | `--sk-accent` 20% | `--sk-accent` 11% |
+| `--sk-retro-grid-beam` (spotlights) | `--sk-accent` 20% | `--sk-accent` 8% |
+| `--sk-retro-grid-sky` (sky at the horizon) | `--sk-accent-deep` 38% in `--sk-bg` | `--sk-accent` 15% in `--sk-bg` |
+| `--sk-retro-grid-ground` (floor fill) | `--sk-well` 65% in `--sk-bg` | same |
+| `--sk-retro-grid-core` (hot line / wave crest) | `--sk-accent` 35% in `--sk-text` | `--sk-accent` |
+| `--sk-retro-grid-vignette` (edge falloff) | `--sk-well` | `--sk-bg` |
+
+Glow and horizon line use `--sk-accent` / `--sk-accent-glow` directly. Masks use plain alpha stops
+(`black`, `transparent`, `rgb(0 0 0 / n%)`); only their alpha matters. Emitted into the generated `theme.css` from
+`packages/ui/scripts/motion/retro-grid.ts` (`bun run tokens:build`), all with literal class names:
+
+```css
+/* 4 keyframes */
+/* Every floor transform ends in scale(var(--sk-retro-grid-zoom, 1)): see retro-grid-tilt below. */
+@keyframes sk-retro-grid-scroll {           /* floor: one cell toward the viewer, then loop */
+  from { transform: rotateX(75deg) translate3d(0, 0, 0) scale(var(--sk-retro-grid-zoom, 1)); }
+  to   { transform: rotateX(75deg) translate3d(0, var(--sk-retro-grid-cell), 0) scale(…); }
+}
+@keyframes sk-retro-grid-sweep {            /* the light wave the horizon emits */
+  0%       { transform: rotateX(75deg) translate3d(0, -1300px, 0) scale(…); opacity: 0; }
+  12%      { opacity: 1; }
+  58%      { transform: rotateX(75deg) translate3d(0, 40px, 0) scale(…); opacity: 1; }
+  64%, 100% { transform: rotateX(75deg) translate3d(0, 40px, 0) scale(…); opacity: 0; }
+}
+@keyframes sk-retro-grid-beam { to { rotate: var(--sk-retro-grid-to); } }       /* spotlight sway */
+@keyframes sk-retro-grid-emit { 0%, 60%, 100% { opacity: 0.78; } 7% { opacity: 1; } } /* flare */
+
+@utility animate-retro-grid-scroll      { animation: sk-retro-grid-scroll 1.2s linear infinite; }
+@utility animate-retro-grid-scroll-slow { animation: sk-retro-grid-scroll 2.4s linear infinite; }
+@utility animate-retro-grid-scroll-fast { animation: sk-retro-grid-scroll 0.6s linear infinite; }
+@utility animate-retro-grid-sweep { animation: sk-retro-grid-sweep 6s linear 1s infinite; }
+@utility animate-retro-grid-emit  { animation: sk-retro-grid-emit 6s ease-out 1s infinite; }
+@utility animate-retro-grid-beam {
+  animation: sk-retro-grid-beam 9s ease-in-out var(--sk-retro-grid-delay, 0s) infinite alternate;
+}
+```
+
+Paint utilities (no `bg-` prefix, so tailwind-merge never pairs them with `bg-<color>`):
+`retro-grid-stage` (palette properties + light-scheme overrides + the sky→floor gradient),
+`retro-grid-beam` (conic spotlight + fade mask), `retro-grid-floor` / `retro-grid-near` (perspective
+150px, vanishing line on the horizon, depth masks), `retro-grid-plane` (soft wide lines, far plane;
+its cell and line widths divide by `--sk-retro-grid-zoom`), `retro-grid-plane-near` (crisp lines +
+depth grid), `retro-grid-tilt` (the shared `rotateX(75deg) scale(var(--sk-retro-grid-zoom, 1))`:
+a layer drawn as a 1/zoom scale model is scaled back to full size on the same plane, and the
+translations before the `scale()` stay in full-size pixels), `retro-grid-sweep`, `retro-grid-glow`,
+`retro-grid-line`, `retro-grid-vignette`. The exact CSS lives in `scripts/motion/retro-grid.ts`.
+
+## States
+
+| State | Behavior |
+|---|---|
+| default | floor scrolls one cell per 1.2s; spotlights sway (9s, alternate, right one offset 4s); every 6s the horizon flares and a light wave rolls toward the viewer. |
+| `speed` slow / fast | floor at 2.4s / 0.6s per cell; everything else unchanged. |
+| light theme (`data-theme="light"` on an ancestor or the root) | pale dawn sky, softer line glow and spotlights, crimson hot line, bone floor (deliberate, not an inversion). A dark region nested inside a light page stays dark. |
+| container < 560px wide | cells shrink to 56px; spotlights move out to 18% / 82%. |
+| prefers-reduced-motion | `motion-reduce:` stops the floor, spotlights and flare at their resting frame and removes the wave (`motion-reduce:hidden`): a still lit grid. |
+| no children | a pure backdrop at the default `min-h-96`. |
+| server / no-JS | identical (CSS only). |
+
+## Accessibility
+
+- [ ] Every decorative layer is inside one `aria-hidden` scene; only `children` are exposed.
+- [ ] No semantics imposed: the root is a plain `<div>`; native `role`/`aria-*` pass through.
+- [ ] `prefers-reduced-motion: reduce` stops all four loops (`motion-reduce:animate-none`) and
+      removes the wave (`motion-reduce:hidden`); covered by `test/browser/retro-grid.test.ts`.
+- [ ] Contrast at rest (measured on rendered pixels, 380px-tall hero): `text-text` clears 8:1
+      everywhere in the sky in both themes. `text-text-dim` clears 4.5:1 only in the upper sky
+      (5.2:1 about 75px above the horizon); inside the horizon glow it drops to 4.3:1 (dark, ~50px
+      above) and 3.1:1 (right on the line). Set small secondary text there in `text-text/70` or
+      stronger (6.3:1 dark, 5.7:1 light at ~50px), as the stories do.
+- [ ] No flashing (WCAG 2.3.1): the only brightness change is the horizon flare, once per 6s
+      (0.78 → 1 opacity over ~0.4s), far below 3 per second.
+- [ ] `pointer-events-none` on the scene: the backdrop never steals clicks from `children`.
+
+---
+
 # RowActions — @sukunagg/ui
 
 > Every data table eventually needs a per-row "Edit / Duplicate / Delete" menu.
@@ -2542,6 +3820,174 @@ highlighted / disabled (Menu's). Reduced motion via Menu.
 - [ ] Items are `role="menuitem"`; icons are `aria-hidden`, the label is the name.
 - [ ] Arrow keys / Enter / Escape via Menu; focus returns to the trigger.
 - [ ] Actions header keeps a screen-reader column name ("Actions", visually hidden).
+
+---
+
+# ScrambleText — @sukunagg/ui
+
+> Decodes a short label out of glyph noise into its real text, sweeping left to right — for match-found titles, lobby rosters, callsigns and reveal moments.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { ScrambleText } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/scramble-text · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-scramble-text.md
+
+## Purpose
+
+Decodes a short label out of glyph noise into its real text, sweeping left to right — for match-found
+titles, lobby rosters, callsigns and reveal moments. The server renders the real text (correct for
+no-JS, SEO and screen readers); the decode is a one-shot enhancement that plays on mount, never
+changes the layout, and is skipped entirely under `prefers-reduced-motion`.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef } from 'react'
+
+export type ScrambleTextElement =
+  'span' | 'p' | 'div' | 'strong' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+
+interface ScrambleTextOwnProps {
+  text: string                 // the real text: server/no-JS/reduced-motion output and the AT name
+  as?: ScrambleTextElement     // default 'span' — pick it for semantics (`'h1'` for a hero title)
+  delay?: number               // ms before the decode starts; default 0 (negative = 0)
+  duration?: number            // ms the decode lasts once started; default 800; <= 0 = no decode
+  seed?: number                // noise PRNG seed; default derived from `text` (same text → same decode)
+}
+
+// `children` and `dangerouslySetInnerHTML` are omitted — `text` is the content (one string per
+// instance; React would throw if both were set).
+export type ScrambleTextProps = ScrambleTextOwnProps &
+  Omit<ComponentPropsWithoutRef<'span'>, 'children' | 'dangerouslySetInnerHTML'>
+```
+
+**Replay** by changing `key` (`<ScrambleText key={round} text="MATCH FOUND" />`): the decode plays on
+mount. A change to `text`, `delay`, `duration` or `seed` also restarts it. **Stagger** several lines
+by rendering several instances with increasing `delay` (see the `MatchLobby` story).
+
+Deliberately **not** in v1: multi-line/rich children (one string per instance), play-on-view
+(`startOnView`, as Counter has), re-scramble on hover (the `MatchLobby` story shows it with the
+`key` pattern), a custom noise alphabet, per-call easing/front controls, an `onComplete` callback
+(functions can't cross the server → client island boundary).
+
+## Variants & tokens
+
+No style variants — size, weight, font and color are inherited from the context (or `className`).
+
+**At rest** — server, no-JS, reduced motion, and again once a decode has finished — the visible
+line is the real `text` as **one text node** (so kerning and wrapping are exactly those of plain
+text) next to an empty overlay. No `data-state` on the server; `data-state="done"` once the island
+has run.
+
+**While decoding** the island sets `data-state="running"` on the layer, which hides the real text
+with `visibility: hidden` — it keeps its place, so nothing reflows, and a parent's gradient fill,
+`text-shadow` or `-webkit-text-stroke` can't show it early. It then draws one **cell** per grapheme
+in the overlay, placed over that glyph's measured box. Each cell moves through four island states
+(`data-glyph`):
+
+| Cell state | Draws | Tokens |
+|---|---|---|
+| `hidden` — before the noise front reaches it | nothing | — |
+| `noise` — cycling a noise glyph every 42–80 ms | a noise glyph, centred | `--sk-text-faint` |
+| `lock` — the last 120 ms before it resolves | a noise glyph, tinted cell, glow | `--sk-accent`, `--sk-accent` 16% (`bg-accent/16`), `--sk-accent-glow` text-shadow |
+| `done` — resolved | the real glyph at its pen position, accent afterglow fading to the inherited color | `--sk-accent` → inherited (or `--sk-text` under a transparent `color`, see below), `--sk-accent-glow` → none |
+
+When the last afterglow ends the island removes every cell and shows the real text again — the
+cells drew each glyph exactly where the real one sits, so that hand-off is invisible, and no
+animation is left on the subtree to restart when a hidden parent (Tabs, Accordion, `hidden md:block`)
+is shown again.
+
+**Noise fits its glyph.** A noise glyph is never more than 1.1× as wide as the glyph it covers
+(the alphabet is measured in the line's own font — once per computed font, cached for every
+instance, re-measured when a web font arrives; the four narrowest characters are always allowed,
+for `i`, `.`, `1`), so in a proportional font a wide `#` never spills over a narrow `i` into its
+neighbours.
+
+Cells paint with `-webkit-text-fill-color: currentColor` and inherit everything else, so an
+inherited `text-shadow` or text-stroke styles the noise too. Under a gradient fill the cells draw
+in the inherited `color` and the gradient returns when the overlay is removed (positioned boxes
+aren't part of a `background-clip: text` mask):
+
+- `GradientText` and `ShinyText` keep a real fallback `color` (`text-accent`, `text-dim`) and hide
+  the fill with `-webkit-text-fill-color: transparent`, so the decode draws in that color.
+- A bare `bg-clip-text text-transparent` parent (the common Tailwind pattern) sets `color` itself
+  to transparent, so a settled glyph would fade into nothing while the real text is still hidden.
+  The island detects it (computed `color` alpha 0 and no `-webkit-text-stroke-width`), sets
+  `data-clear` on the cells, and settled glyphs draw in `--sk-text` (`text-text`) instead; the
+  gradient takes over when the overlay goes. A transparent-`color` parent **with** a text-stroke is
+  left alone — the inherited stroke already draws the glyphs.
+
+Motion CSS, in `packages/ui/scripts/motion/scramble-text.ts` (emitted into the generated
+`theme.css` by `scripts/build-tokens.ts`):
+
+```css
+/* ScrambleText (Q39): the afterglow a glyph keeps for a beat after it locks to its real character. */
+@keyframes sk-scramble-text-settle {
+  from {
+    color: var(--sk-accent);
+    text-shadow: 0 0 0.5em var(--sk-accent-glow), 0 0 0.1em var(--sk-accent-glow);
+  }
+}
+
+@utility animate-scramble-text-settle {
+  animation: sk-scramble-text-settle 600ms var(--sk-ease);
+}
+```
+
+No new color token. One keyframe, one utility, no `@property`. The cell geometry is four inline
+custom properties (`--sk-scramble-text-x/y/w/h`) read by literal utilities. The decode itself is JS
+(`requestAnimationFrame` in the island) because it swaps characters; it is the documented Q39
+exception to `docs/motion.md` rule 1, like Counter.
+
+## States
+
+| State | Behavior |
+|---|---|
+| server / no-JS | the real `text`, once in an `sr-only` span (for AT) and once, unsplit, in the `aria-hidden` visible line. Empty overlay, no `data-glyph`, no `data-state`. |
+| mount (motion OK) | the layer gets `data-state="running"` (real text hidden, still in the layout); every cell is `hidden` until `delay` + its slot on the noise front (the first 30% of `duration`, left → right), then `noise`, then `lock` for its last 120 ms, then `done` with a 600 ms afterglow. Lock times spread over the last 82% of `duration` with a seeded ±5% jitter, so the text resolves left to right with a ragged edge; every glyph has locked by `delay + duration` (the last one within its final 5%). 600 ms after the last lock the cells are removed and the layer becomes `data-state="done"`. |
+| prefers-reduced-motion | **no decode** — the real text shows immediately, no cell is made, no rAF is scheduled, `data-state="done"`. The afterglow keyframe is also guarded (`motion-reduce:…animate-none`). |
+| reduced motion switched on mid-decode | the island listens to the media query's `change` while it runs: the frame is cancelled, the cells removed and the layer lands on `data-state="done"` at once. |
+| `duration <= 0` / blank `text` / no layout box (a `display: none` ancestor at mount) | same as reduced motion: final text, nothing scheduled. |
+| resize / web font arriving mid-decode | the cells are re-measured (window `resize`, `document.fonts` `loadingdone`), so the noise follows the reflowed line; a font arriving also empties the alphabet-width cache (once per event, however many lines are running). |
+| inherited `color` is transparent (`bg-clip-text text-transparent`), no text-stroke | cells get `data-clear`; settled glyphs fade from the accent into `--sk-text` rather than into nothing, then the parent's gradient shows when the overlay goes. |
+| prop change (`text`, `delay`, `duration`, `seed`) | the running decode is cancelled and its cells removed; a new decode starts from the new values. |
+| replay | change `key` — the component remounts and plays again. |
+| hidden tab | rAF stops with the tab; the decode clock advances at most 64 ms per frame, so it resumes where it left off instead of skipping to the end. |
+| hidden → shown parent after settling | nothing replays: no cell, no `data-glyph` and no animation remain once the decode ends. |
+| unmount | the frame is cancelled, cells and listeners removed; nothing leaks. |
+
+> One-frame note (Counter precedent): the server and the first client render show the final text,
+> then the mount effect switches the line to its blank pre-state before the first animation frame.
+> We optimize for no-JS/SEO/AT correctness over that sub-frame flash (not observed in Chromium,
+> Firefox or WebKit); it never happens under reduced motion.
+
+## Accessibility
+
+- [ ] The real text is in the DOM once for assistive tech (`sr-only`, unsplit — VoiceOver reads it
+      as a word, not letter by letter); the visible line is `aria-hidden` (it is also
+      `visibility: hidden` while decoding, which would drop it from the tree).
+- [ ] Semantics via `as` (`h1`–`h6`, `p`, `strong`…): the heading's accessible name is the real text
+      from the first paint, never noise.
+- [ ] `prefers-reduced-motion: reduce` shows the final text with no decode and no afterglow;
+      switching it on mid-decode ends the decode at once.
+- [ ] The visible line never draws nothing: under a transparent inherited `color` (bare
+      `bg-clip-text text-transparent`) settled glyphs fall back to `--sk-text` (§4). For a gradient
+      title, prefer `GradientText` (real fallback `color` + `-webkit-text-fill-color: transparent`).
+- [ ] Testing note for consumers: the element's `textContent`/`innerText` holds the text twice
+      (sr-only + `aria-hidden` visible copy), so `getByText('MATCH FOUND')` finds two nodes. Query
+      by role instead (`getByRole('heading', { name: 'MATCH FOUND' })`).
+- [ ] Tuned for Latin and other non-joining text. Each grapheme is drawn alone while decoding, so
+      joining or conjunct-forming scripts (Arabic, Devanagari) show unjoined forms through the
+      decode and its 600 ms afterglow, then snap to the shaped run when the overlay is removed. The
+      real text (and AT) is always correct.
+- [ ] No flashing: glyphs change at most every 42 ms in a small area with faint color; there is no
+      full-area luminance flash (WCAG 2.3.1 — under 3 flashes per second of the text block).
+- [ ] At rest the text uses the inherited color — contrast is the context's responsibility, exactly
+      like plain text. The faint noise is transient and decorative.
+- [ ] No layout shift during the decode (the real text keeps its place while hidden).
+- [ ] Copy/paste of the visible line returns the real text once.
+- [ ] Windows High Contrast (`forced-colors`): nothing is hidden with color, so the decode runs in
+      system colors (noise in `CanvasText`, tints dropped) and lands on the real text.
 
 ---
 
@@ -3888,6 +5334,171 @@ thumb `scale` (`duration-fast`, listed explicitly — rule 3); volume slider wid
 - [ ] Contrast (owner visual pass): control icons `--sk-text` on the scrim ≥ 4.5:1 over a bright frame; crimson played bar ≥ 3:1 against the `bg-text/20` track.
 - [x] Autoplay is the consumer's choice; `autoplayPolicy="muted"` is the only autoplay mode and always shows "Tap to unmute". Caption tracks are the consumer's responsibility (WCAG 1.2.2).
 - [x] Touch targets ≥ 32px in compact, 36px otherwise; touch row 48px.
+
+---
+
+# XpLevelUp — @sukunagg/ui
+
+> Celebrates an XP gain that crosses a level: the bar fills to the top, flashes once, the badge bursts and counts up to the new level, then the bar settles at the progress into that level.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { XpLevelUp } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/xp-level-up · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-xp-level-up.md
+
+## Purpose
+
+Celebrates an XP gain that crosses a level: the bar fills to the top, flashes once, the badge bursts
+and counts up to the new level, then the bar settles at the progress into that level. It plays once
+on mount with CSS only; the base styles are the settled card, so reduced motion, no JavaScript and
+browsers without `@property` all show the final state. With `levelUp={false}` it plays a plain XP
+gain (the bar fills from `from` to `progress`, no burst).
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+
+/** Strings XpLevelUp renders; override any subset through `labels`. */
+export interface XpLevelUpLabels {
+  badge: string                              // default 'LV' — caption over the badge number
+  target: (level: number) => ReactNode       // default n => <>To <b>LV {n}</b></> — under the bar
+  level: (level: number) => string           // default n => `Level ${n}` — sr-only badge text
+  bar: (next: number) => string              // default n => `XP to level ${n}` — progressbar name
+}
+
+interface XpLevelUpOwnProps {
+  level: number            // the level reached; the badge counts level − 1 → level (rounded, ≤ 99,999)
+  progress: number         // 0–100 into `level`, where the bar settles (clamped; NaN → 0)
+  from?: number            // 0–100, where the fill starts (clamped; a plain gain caps it at progress). Default 0
+  levelUp?: boolean        // default true; false = plain XP gain (fill from → progress, no burst)
+  title?: ReactNode        // eyebrow over the card (the season / pass name)
+  headline?: ReactNode     // default 'Level up' — wiped in at the burst
+  prelude?: ReactNode      // default 'Match complete' — the line the headline replaces
+  gain?: ReactNode         // the chip: '+2,450 XP · Match win' (wrap the amount in <b> to tint it)
+  xp?: ReactNode           // readout under the bar's right end; a string is also aria-valuetext
+  labels?: Partial<XpLevelUpLabels>
+  children?: ReactNode     // under the main row: reward tiers, buttons …
+}
+
+export type XpLevelUpProps = XpLevelUpOwnProps &
+  Omit<ComponentPropsWithoutRef<'div'>, 'title' | 'children'>
+```
+
+- **Plays on mount; replay by changing `key`** (`<XpLevelUp key={matchId} … />`). Mount it when it
+  is on screen; it doesn't wait for visibility.
+- `title` replaces the native `title` tooltip attribute (it is the eyebrow node).
+- The root is a size container (`@container`): under 28rem wide the badge and headline shrink.
+  A size container doesn't take its width from its content, so in a shrink-to-fit parent (a
+  `w-fit`/`w-max` dialog or popover, an `items-center` column, `inline-flex`, an absolutely
+  positioned toast, a grid `auto` column) it would collapse to 0. The root therefore carries an
+  intrinsic width (`[contain-intrinsic-inline-size:30rem] max-w-full`): 30rem there, capped at the
+  parent's width; in block flow it still stretches. Give it a width if you want another. It draws
+  no surface: put it in a `Card` (or any `overflow-hidden` box) — the glow and sparks reach
+  ~160px past the badge and should be clipped by your surface.
+- `level` up to five digits fits the badge: the number steps down to 28px at 1,000 and 22px at
+  10,000 (narrow: 22px / 18px). Six-digit levels overflow the hexagon.
+- `from` > `progress` is a level-up's normal shape (62% of the old level → 8% of the new). In a
+  plain gain (`levelUp={false}`) it would drain the bar, so `from` is capped at `progress` there.
+- **Timeline utilities for your own chrome.** `animate-xp-level-up-swap-out` (fades out at 1.2 s)
+  and `animate-xp-level-up-swap-in` (fades in at 1.36 s) are the ones the meta row uses; put them
+  on your own elements (a reward tier flipping "Locked" → "Unlocked") to sync with the burst. Pair
+  them with `motion-reduce:animate-none`, and with `opacity-0` on the swap-out element (base styles
+  are the final frame). Swap-in rises 6px; add `[--sk-xp-level-up-shift:0_0]` to fade in place
+  (the story's premium tint over the dim tier text does this).
+- Refined from the Q39 sketch: `from` defaults to `0` (a full charge), not the mockup's 62;
+  `levelUp`, `headline`, `prelude`, `labels` and `children` were added.
+
+Deliberately **not** in v1: multi-level jumps (`level` − 1 → `level` only), play-on-visible
+(IntersectionObserver would need a client island; remount instead), an `onComplete` callback (no
+JS), a sound hook, size variants (the container query covers narrow layouts), a mono font (no
+mono token exists: numbers use `font-sans tabular-nums`).
+
+## Variants & tokens
+
+| Variant | Values → effect |
+|---|---|
+| levelUp | `true` (default): fill → flash → burst → count → settle (timeline below). `false`: the bar fills `from` → `progress`, chip slides in; no burst layers are rendered. |
+| digits (internal) | `4` when \|level\| ≥ 1,000: badge number `text-[28px]` (narrow `text-[22px]`); `5` when ≥ 10,000: `text-[22px]` (narrow `text-xl`, 18px); otherwise 40/32px. Each restates `leading-none`, which tailwind-merge drops with the base size. |
+
+Every color is a `--sk-*` token: badge face `--sk-accent` → `--sk-accent-deep`, rim
+`--sk-premium`/`--sk-premium-dim` mixed with `--sk-on-accent`, glow/flash/ring `--sk-accent-glow` +
+`--sk-accent`, track `--sk-surface-2` + `--sk-line`/`--sk-line-soft`, headline sheen
+`--sk-text` → `--sk-accent` → `--sk-premium`, meta `--sk-text-faint`/`--sk-text`. No new color
+token. Sparks alternate `--sk-accent` and `--sk-premium` (§11). The face's highlight sits just
+above the top tip (`at 50% -4%`) so the LV caption clears 4.5:1 (§8). Forced colors: the track
+gets a `CanvasText` border and the fills `Highlight` (box-shadow rings and gradients are dropped);
+the LV caption is `forced-colors:relative` so it paints over the number's text backplate.
+
+Timeline (ms from mount): chip slides in 60 · fill + shine 250–1150 (pct readout counts `from` →
+100) · prelude out 960 · flash, ring, glow peak, badge pop 1000 · badge flare 1000–1400 · sparks 1000–1900 · level count
+1030–1450 (the number flips at ~1260) · headline wipe 1080 + sheen to 2180 · old fill out 1060 ·
+new fill 1260–2160 · meta swap 1200 / 1360.
+
+Motion CSS lives in `packages/ui/scripts/motion/xp-level-up.ts`, emitted into the generated
+`theme.css` by `bun run tokens:build`. Eight keyframes, two `@property` counters:
+
+```css
+@property --sk-xp-level-up-step { syntax: '<integer>'; inherits: false; initial-value: 0; }
+@property --sk-xp-level-up-t    { syntax: '<integer>'; inherits: false; initial-value: 100; }
+
+@keyframes sk-xp-level-up-in    { from { opacity: 0; translate: var(--sk-xp-level-up-shift, 0 6px); } }
+@keyframes sk-xp-level-up-out   { from { opacity: 1; } to { translate: 0 -6px; } }
+@keyframes sk-xp-level-up-fill  { from { translate: calc(var(--sk-xp-level-up-start, 0) * 1% - 100%) 0; } }
+@keyframes sk-xp-level-up-burst {
+  0%  { scale: var(--sk-xp-level-up-burst, 1.25); }
+  10% { opacity: 1; filter: var(--sk-xp-level-up-flare, none); }
+}
+@keyframes sk-xp-level-up-spark {
+  0% { opacity: 0; translate: 0 0; scale: 0.3 1; } 12% { opacity: 1; scale: 1 1; } 70% { opacity: 1; }
+}
+@keyframes sk-xp-level-up-roll {
+  0%  { --sk-xp-level-up-step: -1; }
+  45% { --sk-xp-level-up-step: -1; translate: 0 -50%; opacity: 0; filter: blur(2px); }
+  55% { --sk-xp-level-up-step: 0;  translate: 0 50%;  opacity: 0; filter: blur(2px); }
+}
+@keyframes sk-xp-level-up-title { /* clip-path wipe (0–47%) + background-position sheen (9–100%) */ }
+@keyframes sk-xp-level-up-count { from { --sk-xp-level-up-t: 0; } }
+```
+
+Utilities (each slot carries exactly one, so tailwind-merge never has to dedupe two):
+`animate-xp-level-up-{chip,glow,ring,spark,pop,flare,roll,prelude,headline,charge,shine,refill,gain,flash,swap-out,swap-in,count}`,
+plus static `xp-level-up-hex` (hexagon clip-path), `xp-level-up-spark` (trig geometry from the
+inline `--sk-xp-level-up-i`), `xp-level-up-level` and `xp-level-up-pct` (the `counter()` readouts).
+Every keyframe animates *from* the start state to the base styles, which are the final frame.
+
+## States
+
+| State | Behavior |
+|---|---|
+| default (`levelUp`) | Plays the timeline above once on mount, settling at `progress` with "Level up", the new level in the badge and "To LV n+1" + `xp` under the bar. |
+| `levelUp={false}` | Chip slides in, the bar fills `from` → `progress` with a shine; badge, `prelude` and meta are static. |
+| prefers-reduced-motion | Every animated slot carries `motion-reduce:animate-none`: the settled card renders immediately (final level, final bar, headline, meta). Nothing is hidden; the burst layers rest at `opacity: 0`. |
+| no `@property` support | The counters flip discretely instead of interpolating; the end state is identical. |
+| server / no-JS | Same markup and CSS; it plays on first paint and needs no hydration. |
+| replay | Change `key`; the remount restarts every keyframe. |
+
+## Accessibility
+
+- [ ] Badge art, glow, ring, sparks, flash, the prelude, the old target and the pct readout are
+      `aria-hidden`; the CSS-counter number is never the only source: `labels.level(level)` is in
+      the DOM as `sr-only` text.
+- [ ] The bar is `role="progressbar"` with `aria-valuemin=0`, `aria-valuemax=100`,
+      `aria-valuenow={progress}`, a name (`labels.bar(level + 1)`) and `aria-valuetext` from `xp`.
+- [ ] Reading order: title → "Level 42" → headline → gain → bar → target → xp → children.
+- [ ] `prefers-reduced-motion`: every animation stops (`motion-reduce:animate-none`) and the
+      settled card shows at once; verified in `test/browser/xp-level-up.test.ts`.
+- [ ] WCAG 2.3.1: one flash, once (no repetition), well under 3 per second.
+- [ ] Contrast at rest: headline `--sk-text`, meta `--sk-text-faint`, chip `--sk-text-dim` on
+      `--sk-accent` 11% — all clear 4.5:1 in both themes. The badge number is large white text on
+      the accent face (≥ 3:1). The 10px LV caption is full-strength white (no opacity) with a 1px
+      `--sk-accent-deep` shadow, over a face whose highlight sits above the top tip: measured
+      against the brightest pixel behind it, ≥ 4.6:1 in dark (wide and narrow) and ≥ 6:1 in light.
+- [ ] Forced colors: the track keeps a `CanvasText` border and the fills paint `Highlight` (the
+      ring is a box-shadow and the fills are gradients, both dropped), so the bar stays readable;
+      the LV caption is positioned there so the number's text backplate doesn't cover it.
+- [ ] Nothing is announced on mount (it is not a live region): apps that show it mid-session
+      announce the level-up themselves (e.g. a toast or their own `role="status"`).
 
 ---
 

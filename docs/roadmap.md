@@ -333,6 +333,28 @@ in Storybook: "lgtm ship it" (2026-10-05, Q34).
 
 ---
 
+## D9. Showpieces & FX (Q38, Q39)
+
+Owner request "really cool thing with animations / particles" (2026-10-07, Q38); 14 prototypes
+approved with "holy shit, let's build the components" (Q39). Same contract as v1: docs-first,
+three-file split, ≥90% cov, axe, stories, a browser spec each; every motion has a reduced-motion
+state. Motion carve-out: `docs/motion.md` "Showpieces"; agent calls: D38.
+
+### Wave 1 — CSS-only showpieces in `@sukunagg/ui` (branch `feat/ui-showpieces`)
+
+| Item | Kind | Doc | Code | Review |
+|---|---|---|---|---|
+| Motion layer: one `scripts/motion/<name>.ts` module per component → `theme.css` (44 keyframes; 57 kB, 12.8 kB gzip) | motion | [x] motion.md | [x] | n/a |
+| RetroGrid | static (server, CSS) | [x] | [x] 13 tests, 100% cov, 1.04 kB | [~] fixed, re-check pending |
+| BorderBeam | static (server, CSS) | [x] | [x] 16 tests, 100% cov, 0.84 kB | [x] |
+| RankReveal | static (server, CSS) | [x] | [x] 18 tests, 100% cov; 30/30 browser (3 engines) | [x] |
+| MatchFound | static (server, CSS countdown) | [x] | [x] 22 tests, 100% cov, 3.34 kB | [x] |
+| LootReveal | static (server, CSS) | [x] | [x] 22 tests, 100% cov | [~] fixed, re-check pending |
+| XpLevelUp | static (server, CSS counter) | [x] | [x] 25 tests, 100% cov, 2.57 kB | [x] |
+| AvatarFrame | static (server, CSS) | [x] | [x] 21 tests, 100% cov, 1.46 kB | [~] fixed, re-check pending |
+| ScrambleText (client file `scramble-text.scramble.tsx`) | static + client island | [x] | [x] 30 tests, 100% cov; 2.33 kB (over its 2 kB budget) | [x] |
+| GlitchText | static (server, CSS) | [x] | [x] 9 tests, 100% cov, 0.69 kB | [~] fixed, re-check pending |
+
 ## E. Update log
 
 Agents append one line per meaningful status change: `YYYY-MM-DD · <what flipped> · <commit or PR>`.
@@ -426,3 +448,4 @@ Agents append one line per meaningful status change: `YYYY-MM-DD · <what flippe
 - 2026-10-05 · Q35 "Published failed… check ci" — versions were right; Release fails creating the Version Packages PR (org setting off since the move to `sukuna-gg`, #22) and npm provenance would reject the stale `sukuna-gg/sukuna-ui` repo URLs → URLs moved to `sukuna-gg/sukunagg-ui`, owner setup added to releasing.md · (fix/release-repo-rename)
 - 2026-10-07 · Q36 — ScrollArea `tone: 'neutral' | 'accent'` (owner asked for a "crimson variant"; named `accent` like Badge/Chip). Accent thumb = crimson 80% idle / solid hover (≥3:1 both themes); `Accent` + `Tones` stories; spec §4 drift fixed (track hover is `surface-2`, orientation is not a tv variant). patch · (feat/scroll-area-tone)
 - 2026-10-07 · Q37 "i like it... ship it" — owner approved ScrollArea `tone="accent"` as built; `feat/scroll-area-tone` pushed and PR opened. Merge/publish stay with the owner · (feat/scroll-area-tone)
+- 2026-10-09 · Q39 — showpieces wave 1 built and reviewed: RetroGrid, BorderBeam, RankReveal, MatchFound, LootReveal, XpLevelUp, AvatarFrame, ScrambleText, GlitchText (new, exported, stories, browser specs); 643 ui unit tests, 100% cov; cross-browser review rounds in Chromium/Firefox/WebKit; motion.md carve-out, D38, changeset patch. Owner visual review pending · (feat/ui-showpieces)
