@@ -47,6 +47,30 @@ describe('ScrollArea', () => {
     expect(barOrientations(container)).toEqual(['vertical', 'horizontal'])
   })
 
+  it('colors every thumb neutral by default and crimson for tone="accent"', () => {
+    const thumbs = (root: HTMLElement) =>
+      Array.from(bars(root)).map((b) => b.firstElementChild as HTMLElement)
+    const neutral = render(
+      <ScrollArea orientation="both" className="h-40 w-40">
+        x
+      </ScrollArea>,
+    )
+    expect(thumbs(neutral.container)).toHaveLength(2)
+    for (const t of thumbs(neutral.container)) expect(t.classList.contains('bg-line')).toBe(true)
+    neutral.unmount()
+
+    const accent = render(
+      <ScrollArea tone="accent" orientation="both" className="h-40 w-40">
+        x
+      </ScrollArea>,
+    )
+    expect(thumbs(accent.container)).toHaveLength(2)
+    for (const t of thumbs(accent.container)) {
+      expect(t.classList.contains('bg-accent/80')).toBe(true)
+      expect(t.classList.contains('bg-line')).toBe(false)
+    }
+  })
+
   it('applies a consumer className to the root', () => {
     render(
       <ScrollArea className="rounded-none h-40" data-testid="sa">

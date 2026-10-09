@@ -53,6 +53,46 @@ export const Both: Story = {
   ),
 }
 
+/** `tone="accent"`: the Sukuna crimson thumb (80% idle, solid on hover). */
+export const Accent: Story = {
+  args: { tone: 'accent' },
+  render: (args) => (
+    <ScrollArea {...args} className="h-64 w-64 rounded-md border border-line">
+      <div className="p-4 text-text">
+        {lines.map((l) => (
+          <p key={l}>{l}</p>
+        ))}
+      </div>
+    </ScrollArea>
+  ),
+}
+
+/** Every tone side by side, scrolling both ways so both thumbs show. */
+export const Tones: Story = {
+  render: () => (
+    <div className="flex flex-wrap gap-6">
+      {(['neutral', 'accent'] as const).map((tone) => (
+        <div key={tone} className="space-y-2">
+          <p className="text-sm text-text-dim">{tone}</p>
+          <ScrollArea
+            tone={tone}
+            orientation="both"
+            className="h-48 w-56 rounded-md border border-line"
+          >
+            <div className="w-[480px] p-4 text-text">
+              {lines.map((l) => (
+                <p key={l} className="whitespace-nowrap">
+                  {l} — wide enough to scroll sideways too.
+                </p>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+      ))}
+    </div>
+  ),
+}
+
 export const InACard: Story = {
   render: () => (
     <div className="w-72 rounded-lg border border-line bg-surface p-4 shadow-card">

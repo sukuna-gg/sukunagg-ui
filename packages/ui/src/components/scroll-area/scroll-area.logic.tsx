@@ -14,6 +14,12 @@ export interface ScrollAreaProps extends ComponentPropsWithoutRef<'div'> {
    * @default 'vertical'
    */
   orientation?: 'vertical' | 'horizontal' | 'both'
+  /**
+   * Scrollbar color. `neutral` is a dim line-colored thumb that brightens on hover; `accent` is the
+   * Sukuna crimson (same palette name as Badge/Chip `tone`).
+   * @default 'neutral'
+   */
+  tone?: 'neutral' | 'accent'
   /** The scrollable content. */
   children: ReactNode
 }
@@ -31,7 +37,10 @@ export interface ScrollAreaProps extends ComponentPropsWithoutRef<'div'> {
  *   shows a visible ring. The thumb clears 3:1 against its track.
  * - Sizing: the component does not guess a size — give the root a height/`max-h`/width via
  *   `className` (e.g. `className="h-64"`), otherwise there is nothing to scroll.
- * - Variants: `orientation`: 'vertical' (default) | 'horizontal' | 'both' (adds a corner).
+ * - Variants:
+ *   - `orientation`: 'vertical' (default) | 'horizontal' | 'both' (adds a corner).
+ *   - `tone`: 'neutral' (default) | 'accent' — the crimson thumb sits at 80% and goes solid on
+ *     hover, clearing 3:1 on `surface` in both themes.
  * - The ref points at the root element.
  *
  * @example
@@ -51,12 +60,21 @@ export interface ScrollAreaProps extends ComponentPropsWithoutRef<'div'> {
  *   <div className="w-[1200px] p-4">…wide content…</div>
  * </ScrollArea>
  * ```
+ *
+ * @example
+ * ```tsx
+ * import { ScrollArea } from '@sukunagg/ui'
+ *
+ * <ScrollArea tone="accent" className="h-64">
+ *   <div className="p-4">…long content…</div>
+ * </ScrollArea>
+ * ```
  */
 export const ScrollArea = forwardRef<HTMLDivElement, ScrollAreaProps>(function ScrollArea(
-  { orientation = 'vertical', className, children, ...rest },
+  { orientation = 'vertical', tone, className, children, ...rest },
   ref,
 ) {
-  const styles = scrollAreaStyles()
+  const styles = scrollAreaStyles({ tone })
   const showVertical = orientation !== 'horizontal'
   const showHorizontal = orientation !== 'vertical'
   return (
