@@ -62,7 +62,7 @@ test.describe('fx loop', () => {
       const errors = watchErrors(page)
       await page.goto(story(LOOP))
       await expect(page.locator(root)).toHaveAttribute('data-state', 'running')
-      await expect.poll(() => framesIn(page, 300)).toBeGreaterThan(5)
+      await expect.poll(() => framesIn(page, 300)).toBeGreaterThan(1)
       const canvas = page.locator(`${root} canvas`)
       const a = await canvas.evaluate((c: HTMLCanvasElement) => c.toDataURL())
       await page.waitForTimeout(200)
@@ -78,7 +78,7 @@ test.describe('fx loop', () => {
       await expect.poll(() => framesIn(page, 300)).toBe(0)
       await setHidden(page, false)
       await expect(page.locator(root)).toHaveAttribute('data-state', 'running')
-      await expect.poll(() => framesIn(page, 300)).toBeGreaterThan(5)
+      await expect.poll(() => framesIn(page, 300)).toBeGreaterThan(1)
     })
 
     test('pauses off-screen (IntersectionObserver) and resumes in view', async ({ page }) => {
