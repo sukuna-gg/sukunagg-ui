@@ -665,6 +665,18 @@ BorderBeam, RankReveal, MatchFound, LootReveal, XpLevelUp, AvatarFrame, Scramble
 maps rarities onto existing tokens (`text-faint`, `chart-2`, `chart-5`, `premium`) as a
 `DECISION(open)` default — no new tokens until the owner approves rarity colors.
 
+## Q40. "how far we are from finishing ?" → "when they're done start working on this non-stop" → (size budgets) "Use the split version" → (push) "Push and open PRs" → "merge them"
+
+**Answer.** Status was given as asked; work resumed once the owner's other session went idle. The
+owner had restored `packages/ui/.size-limit.json` to its fused state mid-build; asked again at the
+end, they chose the split entries. Asked whether to push, they chose to push and open the two
+stacked PRs, then asked to merge them.
+
+**Decision.** `.size-limit.json` keeps one entry per component (ScrambleText budget 2 → 2.5 kB).
+Pushed `feat/ui-showpieces` (#30) and `feat/fx-package` (#31); merged #29, #30 and #31 into `main`
+on the owner's instruction, all CI green. The Version Packages PR, release tags and npm publishing
+stay with the owner.
+
 ---
 
 ## Decisions recorded so far
