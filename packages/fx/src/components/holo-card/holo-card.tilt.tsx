@@ -56,6 +56,8 @@ const zero = (v: Vec): void => {
   v.y = 0
   v.a = 0
 }
+/** Only a live card takes input: not under reduced motion (`still`), `paused`, or `off`. */
+const live = (scene: HTMLElement): boolean => scene.dataset.state === 'running'
 /** The tilt the input holds the card at, or `null` when nothing holds it (spring back to flat). */
 const goal = ({ pointer, key, last }: Input): Vec | null =>
   last === 'key' ? (key ?? pointer) : (pointer ?? key)
@@ -64,7 +66,8 @@ const goal = ({ pointer, key, last }: Input): Vec | null =>
  * The client half of `HoloCard`: the scene element, on the shared fx loop (`useFxLoop`). It
  * springs `--sk-holo-card-x/-y/-a` toward the pointer or the arrow-key target and writes them on
  * its own element (never React state, so no re-render per frame), then sleeps once settled.
- * Reduced motion paints the flat state once and ignores input; so does `paused`, until resumed.
+ * Reduced motion paints the flat state once and ignores input; `paused` holds the current tilt
+ * and ignores input until resumed (letting go still counts, so a resumed card springs back).
  * Keyboard listeners go on the focusable root (`parentElement`), which the server half renders.
  * Rendered only by `HoloCard`.
  * @internal
@@ -113,9 +116,6 @@ export function HoloCardTilt({ className, paused, children }: HoloCardTiltProps)
     { paused },
   )
 
-  // Only a live card takes input: not under reduced motion (`still`), `paused`, or `off`.
-  const live = (scene: HTMLElement): boolean => scene.dataset.state === 'running'
-
   const aim = (event: PointerEvent<HTMLDivElement>): void => {
     const scene = event.currentTarget
     if (!live(scene)) return
@@ -158,8 +158,8 @@ export function HoloCardTilt({ className, paused, children }: HoloCardTiltProps)
       const step = DIRECTIONS[event.key]
       if (!step || !live(scene)) return
       event.preventDefault()
-      // The first press starts from where the card is aimed now (the pointer, or flat).
-      const from = now.key ?? goal(now) ?? REST
+      // Each press nudges from where the card aims now (the last input: keys or pointer; or flat).
+      const from = goal(now) ?? REST
       now.key = {
         x: clamp(from.x + step[0] * KEY_STEP),
         y: clamp(from.y + step[1] * KEY_STEP),

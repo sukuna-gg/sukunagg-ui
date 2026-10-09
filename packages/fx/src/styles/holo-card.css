@@ -5,20 +5,23 @@
  *
  * - The island (holo-card.tilt.tsx) writes --sk-holo-card-x/-y (-1..1) and -a (0..1) inline on the
  *   scene. The light (rim, foil mask, glare) sits at the tilt; everything else derives from them.
- * - The idle motion is compositor-only: nothing is repainted per frame. Two keyframe pairs move
- *   whole layers, `translate` along x (14 s period) and `transform` along y (7 s period),
- *   sine-eased and alternating, so together they trace the mockup's figure-eight. Each moving
- *   layer sets its amplitude in --sk-holo-card-dx/-dy times --sk-holo-card-calm (1 - a), so the
- *   motion fades out while the card is held. Moving layers are only as large as their travel
- *   needs (a software compositor pays per pixel, every frame).
+ * - The card is flat at rest: only the light drifts. The drift is compositor-only (nothing is
+ *   repainted per frame): two keyframes move whole layers, `translate` along x (14 s period) and
+ *   `transform` along y (7 s period; a second property, so the two compose), sine-eased and
+ *   alternating, so together they trace the mockup's figure-eight. Each moving layer sets its
+ *   amplitude in --sk-holo-card-dx/-dy times --sk-holo-card-calm (1 - a), so the drift fades out
+ *   while the card is held. Moving layers are only as large as their travel needs (a software
+ *   compositor pays per pixel, every frame).
  * - The card pins data-theme="dark" (a dark collectible in both themes), so the page-theme accent,
  *   glow and focus ring are captured on the scene first, as --sk-holo-card-hue/-deep/-glow/-ring.
  */
 
 /*
- * DECISION(open): the idle drift and sway are compositor-only transform animations, a Q39
- * carve-out from docs/motion.md rule 5 (idle decoration). The mockup animated an @property that
- * repainted the whole card every frame on the main thread (component doc §11 has the numbers).
+ * DECISION(open): the idle drift is an infinite compositor-only transform animation of the light
+ * layers, a Q39 carve-out from docs/motion.md rule 5 (idle decoration). The mockup animated an
+ * @property that restyled and repainted the card on the main thread every frame; its card sway
+ * is not ported (a card whose 3D transform animates at rest renders soft in Firefox). The
+ * measured costs are in the component doc §11.
  */
 @keyframes sk-holo-card-drift-x {
   from {
@@ -38,24 +41,6 @@
   }
 }
 
-@keyframes sk-holo-card-sway-x {
-  from {
-    rotate: y calc(var(--sk-holo-card-dx, 0deg) * -1);
-  }
-  to {
-    rotate: y var(--sk-holo-card-dx, 0deg);
-  }
-}
-
-@keyframes sk-holo-card-sway-y {
-  from {
-    transform: rotateX(calc(var(--sk-holo-card-dy, 0deg) * -1));
-  }
-  to {
-    transform: rotateX(var(--sk-holo-card-dy, 0deg));
-  }
-}
-
 /*
  * The light's idle drift (foil band and dots, glare): half a period per direction, started
  * mid-swing (negative delay), so every layer is centred and moving at mount. Paused with the loop
@@ -65,17 +50,6 @@
   animation:
     sk-holo-card-drift-x 7s cubic-bezier(0.37, 0, 0.63, 1) -3.5s infinite alternate,
     sk-holo-card-drift-y 3.5s cubic-bezier(0.37, 0, 0.63, 1) -1.75s infinite alternate;
-  animation-play-state: var(--sk-holo-card-play, running);
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
-}
-
-/* The resting card's sway: the same timing, as small rotations of the card's wrapper. */
-@utility animate-holo-card-sway {
-  animation:
-    sk-holo-card-sway-x 7s cubic-bezier(0.37, 0, 0.63, 1) -3.5s infinite alternate,
-    sk-holo-card-sway-y 3.5s cubic-bezier(0.37, 0, 0.63, 1) -1.75s infinite alternate;
   animation-play-state: var(--sk-holo-card-play, running);
   @media (prefers-reduced-motion: reduce) {
     animation: none;
@@ -105,13 +79,6 @@
     --sk-holo-card-ly: -0.55;
     --sk-holo-card-spread: 1;
   }
-}
-
-/* The card's idle sway: 35% of the light's drift, through the card's own tilt angles. */
-@utility holo-card-sway {
-  --sk-holo-card-dx: calc(4.4625deg * var(--sk-holo-card-tilt) * var(--sk-holo-card-calm));
-  --sk-holo-card-dy: calc(-2.45deg * var(--sk-holo-card-tilt) * var(--sk-holo-card-calm));
-  transform-style: preserve-3d;
 }
 
 /* The card (inside data-theme="dark"): the 1.5px gradient rim, its shadow and the spring tilt. */

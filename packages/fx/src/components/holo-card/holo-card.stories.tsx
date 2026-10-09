@@ -236,9 +236,11 @@ const meta = {
   title: 'FX/HoloCard',
   component: HoloCard,
   tags: ['autodocs'],
-  args: { 'aria-label': labelOf(RYOMEN), intensity: 'normal' },
+  args: { 'aria-label': labelOf(RYOMEN), intensity: 'normal', paused: false },
   argTypes: {
     intensity: { control: 'inline-radio', options: ['subtle', 'normal'] },
+    // An app's pause control (WCAG 2.2.2) binds to this: the drift and any tilt hold.
+    paused: { control: 'boolean' },
     children: { control: false },
   },
 } satisfies Meta<typeof HoloCard>
@@ -246,7 +248,10 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-/** The example player card. Hover it, or Tab to it and use the arrow keys (Escape resets). */
+/**
+ * The example player card. Hover it, or Tab to it and use the arrow keys (Escape resets). Toggle
+ * `paused` to see what an app's pause control does.
+ */
 export const Playground: Story = {
   render: (args) => (
     <Stage className="mx-auto max-w-[560px]">
@@ -289,7 +294,7 @@ export const Roster: Story = {
       <ul className="m-0 flex list-none flex-wrap justify-center gap-x-20 gap-y-16 p-0">
         {ROSTER.map((player) => (
           <li key={player.name}>
-            <HoloCard intensity={args.intensity} aria-label={labelOf(player)}>
+            <HoloCard intensity={args.intensity} paused={args.paused} aria-label={labelOf(player)}>
               <PlayerArt {...player} />
             </HoloCard>
           </li>

@@ -97,25 +97,25 @@ describe('HoloCard', () => {
       expect(parts(container).root.classList.contains('[--sk-holo-card-tilt:1]')).toBe(true)
     })
 
-    it('drifts and sways only on compositor layers, guarded for reduced motion and paused with the loop', () => {
+    it('drifts only its light layers, guarded for reduced motion and paused with the loop', () => {
       const { container } = render(<Card />)
-      const { root, scene } = parts(container)
-      // The scene animates nothing itself: it hands the loop's pause to every moving layer.
+      const { root, scene, card } = parts(container)
+      // The scene animates nothing itself: it hands the loop's pause to every drifting layer.
       expect(scene.className).not.toContain('animate-')
-      expect(scene.classList.contains('data-[state=paused]:[--sk-holo-card-play:paused]')).toBe(true)
-      const sway = root.querySelector('.holo-card-sway') as HTMLElement
-      expect(sway.classList.contains('animate-holo-card-sway')).toBe(true)
+      expect(scene.classList.contains('data-[state=paused]:[--sk-holo-card-play:paused]')).toBe(
+        true,
+      )
       const drifting = ['.holo-card-band', '.holo-card-dots', '.holo-card-glare']
       for (const layer of drifting) {
         expect(root.querySelector(layer)?.classList.contains('animate-holo-card-drift')).toBe(true)
       }
-      const moving = root.querySelectorAll('[class*="animate-holo-card-"]')
-      expect(moving).toHaveLength(4)
-      for (const el of moving) expect(el.classList.contains('motion-reduce:animate-none')).toBe(true)
-      // The aura and floor rest still (their sway share was a few px), the foil mask follows the tilt.
-      for (const still of ['.holo-card-foil', '.holo-card-edge']) {
-        expect(root.querySelector(still)?.className).not.toContain('animate-')
-      }
+      const moving = root.querySelectorAll('[class*="animate-"]')
+      expect(moving).toHaveLength(3)
+      for (const el of moving)
+        expect(el.classList.contains('motion-reduce:animate-none')).toBe(true)
+      // The card is flat at rest: it is a direct child of the scene, with nothing moving it.
+      expect(card.parentElement === scene).toBe(true)
+      expect(root.querySelector('.holo-card-foil')?.className).not.toContain('animate-')
     })
 
     it('passes native props through, merges className and forwards the ref', () => {
@@ -298,6 +298,46 @@ describe('HoloCard', () => {
       expect(tilt(scene).a).toBe(1) // still hovered: the pointer holds it
     })
 
+    it('leaves modified arrows to the browser, and Home unless it undoes a key tilt', () => {
+      const { root, scene, fx } = mountLive()
+      let t = runUntilSettled(fx)
+      // Alt+← is Back, Shift+← selects, Ctrl/Meta+arrows belong to the OS and assistive tech.
+      for (const modifier of ['altKey', 'ctrlKey', 'metaKey', 'shiftKey'] as const) {
+        expect(fireEvent.keyDown(root, { key: 'ArrowLeft', [modifier]: true })).toBe(true)
+      }
+      expect(fireEvent.keyDown(root, { key: 'Home' })).toBe(true) // nothing to undo: page Home
+      expect(fireEvent.keyDown(root, { key: 'Escape' })).toBe(true)
+      expect(fx.pendingFrames()).toBe(0)
+      expect(tilt(scene)).toEqual({ x: 0, y: 0, a: 0 })
+      fireEvent.pointerMove(scene, { clientX: 190, clientY: 14 }) // a hover is not a key tilt
+      t = runUntilSettled(fx, t)
+      expect(fireEvent.keyDown(root, { key: 'Home' })).toBe(true)
+      fireEvent.keyDown(root, { key: 'ArrowDown' })
+      expect(fireEvent.keyDown(root, { key: 'Home', ctrlKey: true })).toBe(true) // Ctrl+Home: page top
+      expect(fireEvent.keyDown(root, { key: 'Home' })).toBe(false) // undoes the key tilt
+      runUntilSettled(fx, t)
+      expect(tilt(scene)).toEqual({ x: 0.9, y: -0.9, a: 1 }) // back to the pointer's aim
+    })
+
+    it('falls back to the key tilt when the pointer leaves, and nudges from where it aims', () => {
+      const { root, scene, fx } = mountLive()
+      fireEvent.keyDown(root, { key: 'ArrowRight' })
+      let t = runUntilSettled(fx)
+      fireEvent.pointerMove(scene, { clientX: 190, clientY: 266 }) // the last input wins
+      t = runUntilSettled(fx, t)
+      expect(tilt(scene)).toEqual({ x: 0.9, y: 0.9, a: 1 })
+      fireEvent.pointerLeave(scene)
+      t = runUntilSettled(fx, t)
+      expect(tilt(scene)).toEqual({ x: 0.34, y: 0, a: 1 }) // the key tilt, not the pointer's
+      fireEvent.pointerMove(scene, { clientX: 50, clientY: 140 })
+      fireEvent.keyDown(root, { key: 'ArrowUp' })
+      t = runUntilSettled(fx, t)
+      expect(tilt(scene)).toEqual({ x: -0.5, y: -0.34, a: 1 }) // nudged from the pointer's aim
+      fireEvent.keyDown(root, { key: 'Escape' })
+      runUntilSettled(fx, t)
+      expect(tilt(scene)).toEqual({ x: -0.5, y: 0, a: 1 }) // the pointer still holds it
+    })
+
     it('ignores other keys, and keys pressed inside interactive art', () => {
       env = installFxEnv()
       render(
@@ -316,6 +356,46 @@ describe('HoloCard', () => {
     })
   })
 
+  describe('paused', () => {
+    it('stays paused on screen, ignores input, and runs again when resumed', () => {
+      env = installFxEnv()
+      const view = render(<Card paused />)
+      const { root, scene } = parts(view.container)
+      env.resize(scene, 200, 280)
+      env.intersect(true)
+      expect(scene.dataset.state).toBe('paused') // on screen, but the app paused it
+      fireEvent.pointerMove(scene, { clientX: 190, clientY: 10 })
+      expect(fireEvent.keyDown(root, { key: 'ArrowRight' })).toBe(true) // arrows scroll again
+      expect(env.pendingFrames()).toBe(0)
+      expect(tilt(scene)).toEqual({ x: 0, y: 0, a: 0 })
+      view.rerender(<Card paused={false} />)
+      expect(scene.dataset.state).toBe('running')
+      expect(parts(view.container).scene === scene).toBe(true) // never remounted
+      expect(fireEvent.keyDown(root, { key: 'ArrowRight' })).toBe(false)
+      runUntilSettled(env)
+      expect(tilt(scene)).toEqual({ x: 0.34, y: 0, a: 1 })
+    })
+
+    it('holds a tilt mid-spring, and finishes the spring once resumed', () => {
+      const { root, scene, fx, rerender } = mountLive()
+      fireEvent.keyDown(root, { key: 'ArrowRight' })
+      fx.frame(16) // dt = 0
+      fx.frame(48)
+      const mid = tilt(scene).x
+      expect(mid).toBeGreaterThan(0)
+      expect(mid).toBeLessThan(0.34)
+      rerender(<Card paused />)
+      expect(scene.dataset.state).toBe('paused')
+      expect(fx.pendingFrames()).toBe(0)
+      expect(tilt(scene).x).toBe(mid) // frozen where it was
+      fireEvent.blur(root) // letting go still counts while paused
+      rerender(<Card />)
+      expect(scene.dataset.state).toBe('running')
+      runUntilSettled(fx, 48)
+      expect(tilt(scene)).toEqual({ x: 0, y: 0, a: 0 })
+    })
+  })
+
   describe('reduced motion', () => {
     it('holds a flat still frame and ignores the pointer and arrow keys', () => {
       env = installFxEnv({ reducedMotion: true })
@@ -327,6 +407,7 @@ describe('HoloCard', () => {
       expect(tilt(scene)).toEqual({ x: 0, y: 0, a: 0 })
       fireEvent.pointerMove(scene, { clientX: 190, clientY: 10 })
       expect(fireEvent.keyDown(root, { key: 'ArrowRight' })).toBe(true) // default scrolling
+      expect(fireEvent.keyDown(root, { key: 'Home' })).toBe(true) // and Home its own
       expect(env.pendingFrames()).toBe(0)
       expect(tilt(scene)).toEqual({ x: 0, y: 0, a: 0 })
     })

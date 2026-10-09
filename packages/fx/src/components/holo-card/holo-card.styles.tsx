@@ -3,11 +3,12 @@ import { tv, type VariantProps } from '../../utils/tv'
 /**
  * Slot class map for {@link HoloCard}. Pure and server-safe: no hooks, no DOM, no 'use client'.
  *
- * The `holo-card-*` utilities and `animate-holo-card-drift`/`-sway` come from
+ * The `holo-card-*` utilities and `animate-holo-card-drift` come from
  * `packages/fx/src/styles/holo-card.css` (shipped in `@sukunagg/fx/theme.css`). The base styles
- * are the rest frame: a centred card with its light in the middle. The idle drift and sway are
- * compositor-only transform animations on whole layers (nothing repaints per frame); the tilt
- * island writes `--sk-holo-card-x/-y/-a` on the scene. Reduced motion: a flat card, a static sheen.
+ * are the rest frame: a flat, centred card with its light in the middle. The idle drift is a
+ * compositor-only transform animation of the light layers (nothing repaints per frame; the card
+ * itself never moves at rest); the tilt island writes `--sk-holo-card-x/-y/-a` on the scene.
+ * Reduced motion: a flat card, a static sheen.
  */
 export const holoCardStyles = tv({
   slots: {
@@ -15,12 +16,8 @@ export const holoCardStyles = tv({
     // the card); the root's own outline is suppressed in favour of it.
     root: 'group/holo relative isolate block aspect-[5/7] w-50 shrink-0 outline-none',
     // The island's element: owns `data-state` (the loop writes it) and the tilt variables. Every
-    // drift/sway layer below pauses with the loop (off-screen, hidden tab, `paused`). The aura
-    // and floor rest still: their share of the sway was a few pixels, not worth a moving layer.
-    scene: [
-      'holo-card-scene absolute inset-0',
-      'data-[state=paused]:[--sk-holo-card-play:paused]',
-    ],
+    // drifting layer below pauses with the loop (off-screen, hidden tab, `paused`).
+    scene: ['holo-card-scene absolute inset-0', 'data-[state=paused]:[--sk-holo-card-play:paused]'],
     aura: [
       'pointer-events-none absolute -inset-x-20 -inset-y-12.5',
       'bg-[radial-gradient(closest-side,var(--sk-accent-glow),transparent)]',
@@ -33,8 +30,6 @@ export const holoCardStyles = tv({
       'bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--sk-well)_55%,transparent),transparent)]',
       '[translate:calc(var(--sk-holo-card-x)*-16px)_0]',
     ],
-    // The card's idle sway (small rotations); preserve-3d keeps the card's own tilt in perspective.
-    sway: 'holo-card-sway absolute inset-0 animate-holo-card-sway motion-reduce:animate-none',
     card: [
       'holo-card-edge absolute inset-0 rounded-lg',
       'group-focus-visible/holo:outline-2 group-focus-visible/holo:outline-offset-2',
@@ -52,7 +47,7 @@ export const holoCardStyles = tv({
       'holo-card-glare pointer-events-none absolute animate-holo-card-drift motion-reduce:animate-none',
   },
   variants: {
-    // Two scale factors the CSS module multiplies into the tilt/sway/lift and the foil/glare opacity.
+    // Two scale factors the CSS module multiplies into the tilt/lift and the foil/glare opacity.
     intensity: {
       normal: { root: '[--sk-holo-card-tilt:1] [--sk-holo-card-shine:1]' },
       subtle: { root: '[--sk-holo-card-tilt:0.5] [--sk-holo-card-shine:0.6]' },

@@ -12,13 +12,13 @@ export interface HoloCardProps extends Omit<ComponentPropsWithoutRef<'div'>, 'ar
   'aria-label': string
   /**
    * How strongly the card reacts: `'normal'` tilts up to 17° and lights the foil fully,
-   * `'subtle'` halves the tilt, sway and lift and dims the foil and glare to 60%.
+   * `'subtle'` halves the tilt and lift and dims the foil and glare to 60%.
    * @default 'normal'
    */
   intensity?: 'subtle' | 'normal'
   /**
-   * Freeze the card: the idle drift and sway stop where they are and the pointer and arrow keys
-   * stop tilting it (arrows scroll again). This is the hook for an app-level pause control
+   * Freeze the card: the idle drift stops where it is, a tilt holds, and the pointer and arrow
+   * keys stop tilting it (arrows scroll again). This is the hook for an app-level pause control
    * (WCAG 2.2.2); the card already pauses on its own off-screen, in hidden tabs and under
    * reduced motion. Toggling it never remounts the card.
    * @default false
@@ -26,9 +26,9 @@ export interface HoloCardProps extends Omit<ComponentPropsWithoutRef<'div'>, 'ar
   paused?: boolean
   /**
    * The card art, painted on the card face under the foil and glare. The face is dark in both
-   * themes (it pins `data-theme="dark"`), and the art can read `--sk-holo-card-x`/`-y` (−1…1)
-   * and `--sk-holo-card-a` (0…1) for parallax, plus `--sk-holo-card-hue`, `-deep`, `-ink` and
-   * `-base` for color.
+   * themes (it pins `data-theme="dark"`), and the art can read `--sk-holo-card-x`/`-y` (−1…1,
+   * the spring tilt; 0 at rest) and `--sk-holo-card-a` (0…1) for parallax, plus
+   * `--sk-holo-card-hue`, `-deep`, `-ink` and `-base` for color.
    */
   children?: ReactNode
 }
@@ -38,20 +38,22 @@ export interface HoloCardProps extends Omit<ComponentPropsWithoutRef<'div'>, 'ar
  *
  * @remarks
  * - SSR/RSC: a server component (no `'use client'`, no hooks). The whole card renders on the
- *   server, foil, glare and idle sway included (pure CSS); one small client island
+ *   server, foil, glare and idle drift included (pure CSS); one small client island
  *   (`holo-card.tilt.tsx`) adds the spring tilt on the shared `@sukunagg/fx` frame loop, which
  *   pauses off-screen and in hidden tabs and requests no frames once the card has settled.
- * - Motion: at rest the card sways gently and its light drifts (compositor-only transforms: no
- *   frames, no repaint); `paused` freezes both. The loop's state is `data-state`
- *   (`running | paused | still | off`) on the scene, the root's first child: select it with
- *   `[data-sk-fx="holo-card"] > [data-state]`, never on the root.
+ * - Motion: at rest the card is flat and its foil and glare drift (compositor-only transforms: no
+ *   frames, no repaint); `paused` freezes the drift and any tilt. The loop's state is
+ *   `data-state` (`running | paused | still | off`) on the scene, the root's first child: select
+ *   it with `[data-sk-fx="holo-card"] > [data-state]`, never on the root. A `className` on the
+ *   root can't stop the drift (`animate-none` lands on the root, not the light layers): use
+ *   `paused`.
  * - Accessibility: the root is focusable (`tabIndex={0}`), `role="group"` with
  *   `aria-roledescription="player card"` and your required `aria-label`. Arrow keys tilt it,
  *   `Escape`/`Home` reset it, the focus ring is drawn on the card. Arrows with a modifier
  *   (Alt+← is Back) are left to the browser, and `Home` is only claimed to undo a key tilt. Every
  *   decorative layer is `aria-hidden`. Override `tabIndex`/`aria-roledescription` with the native
  *   props.
- * - Reduced motion: no drift, no sway, no tilt; a static diagonal sheen. Keys keep their defaults.
+ * - Reduced motion: no drift, no tilt; a static diagonal sheen. Keys keep their defaults.
  * - Variants: `intensity`: 'normal' (default) | 'subtle'.
  * - Theme: the card is a dark collectible in both themes; its accent, aura and focus ring follow
  *   the page theme. Requires `@sukunagg/fx/theme.css` (Tailwind) or `@sukunagg/fx/styles.css`.
@@ -90,18 +92,17 @@ export const HoloCard = forwardRef<HTMLDivElement, HoloCardProps>(function HoloC
       <HoloCardTilt className={s.scene()} paused={paused}>
         <span aria-hidden="true" className={s.aura()} />
         <span aria-hidden="true" data-theme="dark" className={s.floor()} />
-        <div className={s.sway()}>
-          {/* DECISION(open): the card is dark in both themes (the approved light mockup keeps it
-              on the always-dark stage color); its accent, aura and ring follow the page theme. */}
-          <div data-theme="dark" className={s.card()}>
-            <div className={s.face()}>
-              {children}
-              <span aria-hidden="true" className={s.foil()}>
-                <span className={s.band()} />
-                <span className={s.dots()} />
-              </span>
-              <span aria-hidden="true" className={s.glare()} />
-            </div>
+        {/* DECISION(open): the card is dark in both themes (the approved light mockup keeps it on
+            the always-dark stage color); its accent, aura and ring follow the page theme. And it
+            is flat at rest: the mockup's idle sway is not ported (component doc §11). */}
+        <div data-theme="dark" className={s.card()}>
+          <div className={s.face()}>
+            {children}
+            <span aria-hidden="true" className={s.foil()}>
+              <span className={s.band()} />
+              <span className={s.dots()} />
+            </span>
+            <span aria-hidden="true" className={s.glare()} />
           </div>
         </div>
       </HoloCardTilt>
