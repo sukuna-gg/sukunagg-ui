@@ -347,12 +347,12 @@ state. Motion carve-out: `docs/motion.md` "Showpieces"; agent calls: D38.
 | Motion layer: one `scripts/motion/<name>.ts` module per component → `theme.css` (44 keyframes; 57 kB, 12.8 kB gzip) | motion | [x] motion.md | [x] | n/a |
 | RetroGrid | static (server, CSS) | [x] | [x] 13 tests, 100% cov, 1.04 kB | [x] |
 | BorderBeam | static (server, CSS) | [x] | [x] 16 tests, 100% cov, 0.84 kB | [x] |
-| RankReveal | static (server, CSS) | [x] | [x] 18 tests, 100% cov; 30/30 browser (3 engines) | [x] |
+| RankReveal | static (server, CSS) | [x] | [x] 18 tests, 100% cov, 2.69 kB; 30/30 browser (3 engines) | [x] |
 | MatchFound | static (server, CSS countdown) | [x] | [x] 22 tests, 100% cov, 3.34 kB | [x] |
-| LootReveal | static (server, CSS) | [x] | [x] 22 tests, 100% cov | [x] |
+| LootReveal | static (server, CSS) | [x] | [x] 22 tests, 100% cov, 2.79 kB | [x] |
 | XpLevelUp | static (server, CSS counter) | [x] | [x] 25 tests, 100% cov, 2.57 kB | [x] |
 | AvatarFrame | static (server, CSS) | [x] | [x] 21 tests, 100% cov, 1.46 kB | [x] |
-| ScrambleText (client file `scramble-text.scramble.tsx`) | static + client island | [x] | [x] 30 tests, 100% cov; 2.33 kB (over its 2 kB budget) | [x] |
+| ScrambleText (client file `scramble-text.scramble.tsx`) | static + client island | [x] | [x] 30 tests, 100% cov, 2.33 kB (budget 2.5 kB) | [x] |
 | GlitchText | static (server, CSS) | [x] | [x] 9 tests, 100% cov, 0.69 kB | [x] |
 
 ### Wave 2 — new `@sukunagg/fx` package (branch `feat/fx-package`, stacked on wave 1)
