@@ -14,7 +14,18 @@ const byClass = (r: HTMLElement, cls: string) =>
 
 describe('GlitchText', () => {
   it('server-renders every element × intro × scanline with the text and its hidden copies', () => {
-    const tags: GlitchTextElement[] = ['span', 'p', 'div', 'strong', 'h1', 'h2', 'h3', 'h6']
+    const tags: GlitchTextElement[] = [
+      'span',
+      'p',
+      'div',
+      'strong',
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6',
+    ]
     for (const as of tags) {
       for (const intro of [true, false]) {
         for (const scanline of [true, false]) {
@@ -28,6 +39,8 @@ describe('GlitchText', () => {
           // The text once for real, then fringe ×2 (+ scanline) and the shard as copies.
           expect(html.split('Eliminated').length - 1).toBe(scanline ? 5 : 4)
           expect(html.split('aria-hidden="true"').length - 1).toBe(scanline ? 5 : 4)
+          // Every copy that holds the text is kept out of search snippets (the edge has no text).
+          expect(html.split('data-nosnippet=""').length - 1).toBe(scanline ? 4 : 3)
         }
       }
     }
@@ -43,8 +56,11 @@ describe('GlitchText', () => {
     for (const copy of copies) {
       expect(copy.getAttribute('aria-hidden')).toBe('true')
       expect(copy.classList.contains('pointer-events-none')).toBe(true)
-      // Copies that hold text can't be selected, so copy/paste gets the word once.
-      if (copy.textContent) expect(copy.classList.contains('select-none')).toBe(true)
+      // Copies that hold text can't be selected or quoted in a search snippet.
+      if (copy.textContent) {
+        expect(copy.classList.contains('select-none')).toBe(true)
+        expect(copy.hasAttribute('data-nosnippet')).toBe(true)
+      }
     }
     const visible = screen.getAllByText('Eliminated').filter((el) => !el.closest('[aria-hidden]'))
     expect(visible).toHaveLength(1)
@@ -82,16 +98,23 @@ describe('GlitchText', () => {
     expect(text.classList.contains('glitch-text-cut')).toBe(true)
     expect(text.classList.contains('glitch-text-glow')).toBe(true)
     expect(text.classList.contains('motion-reduce:animate-none')).toBe(true)
+    // Forced colors drop the shard's shadows, so the band must not be cut there.
+    expect(text.classList.contains('forced-colors:[clip-path:none]')).toBe(true)
 
     const [fringe, late, shard, edge] = hidden(r)
     expect(fringe?.classList.contains('animate-glitch-text-split')).toBe(true)
-    expect(fringe?.classList.contains('text-accent')).toBe(true)
+    expect(fringe?.classList.contains('[--sk-glitch-text-tint:var(--sk-accent)]')).toBe(true)
     expect(late?.classList.contains('animate-glitch-text-split-late')).toBe(true)
-    expect(late?.classList.contains('text-chart-2')).toBe(true)
+    expect(late?.classList.contains('[--sk-glitch-text-tint:var(--sk-chart-2)]')).toBe(true)
     expect(late?.classList.contains('[--sk-glitch-text-side:-1]')).toBe(true)
     expect(shard?.classList.contains('glitch-text-shard')).toBe(true)
+    // The shard's glyphs live in one inner span, painted into the band by its text-shadow.
+    expect(shard?.children).toHaveLength(1)
+    expect(shard?.firstElementChild?.classList.contains('glitch-text-shard-ink')).toBe(true)
+    expect(shard?.firstElementChild?.textContent).toBe('Defeat')
     expect(edge?.classList.contains('glitch-text-edge')).toBe(true)
     expect(edge?.textContent).toBe('')
+    expect(edge?.hasAttribute('data-nosnippet')).toBe(false)
     for (const layer of [fringe, late, shard, edge]) {
       expect(layer?.classList.contains('motion-reduce:hidden')).toBe(true)
     }
@@ -116,6 +139,9 @@ describe('GlitchText', () => {
     expect(scan?.getAttribute('aria-hidden')).toBe('true')
     expect(scan?.classList.contains('bg-clip-text')).toBe(true)
     expect(scan?.classList.contains('[-webkit-text-fill-color:transparent]')).toBe(true)
+    // Solid line stops faded by the layer (a color-mix stop renders as a flat tint in Firefox).
+    expect(scan?.classList.contains('opacity-30')).toBe(true)
+    expect(scan?.classList.contains('motion-reduce:hidden')).toBe(false)
     expect(scan?.textContent).toBe('Offline')
   })
 

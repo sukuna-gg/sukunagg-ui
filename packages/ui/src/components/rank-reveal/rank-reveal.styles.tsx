@@ -19,16 +19,21 @@ export const rankRevealStyles = tv({
     root: [
       'relative isolate flex w-full flex-col items-center justify-center overflow-hidden',
       'px-4 pt-2 pb-8 text-center font-sans text-text @container rank-reveal-glow',
+      // A size container reports no content width of its own, so a shrink-to-fit parent (fit-
+      // content, inline-block, an unsized absolute box or <dialog>) would collapse it to its
+      // padding; this floor gives such a parent a 320px phone layout instead.
+      '[contain-intrinsic-inline-size:288px]',
       '[--sk-rank-reveal-bone:color-mix(in_oklab,var(--sk-premium)_72%,var(--sk-on-accent))]',
       '[--sk-rank-reveal-cb:color-mix(in_oklab,var(--sk-on-accent)_75%,var(--sk-premium))]',
     ],
     // The effect layer: one aria-hidden box; `anchor` is the crest's center (a 0×0 grid cell every
-    // part is stacked and centered on).
-    fx: 'pointer-events-none relative h-47 w-full shrink-0 select-none',
+    // part is stacked and centered on). All its geometry is px, like the 106×117 crest, the 74px pip
+    // radius and the ray mask, so the parts stay aligned whatever the root font size is.
+    fx: 'pointer-events-none relative h-[188px] w-full shrink-0 select-none',
     anchor:
-      'absolute top-25 left-1/2 grid size-0 grid-cols-[0px] grid-rows-[0px] place-items-center',
+      'absolute top-[100px] left-1/2 grid size-0 grid-cols-[0px] grid-rows-[0px] place-items-center',
     beams: [
-      'col-start-1 row-start-1 grid size-180 place-items-center',
+      'col-start-1 row-start-1 grid size-[720px] place-items-center',
       '[mask-image:linear-gradient(black_412px,transparent_458px)]',
     ],
     rays: [
@@ -40,19 +45,19 @@ export const rankRevealStyles = tv({
       '[--sk-rank-reveal-s:.55] animate-rank-reveal-rays-alt motion-reduce:animate-none',
     ],
     halo: [
-      'col-start-1 row-start-1 size-75 rounded-pill opacity-90 rank-reveal-halo',
+      'col-start-1 row-start-1 size-[300px] rounded-pill opacity-90 rank-reveal-halo',
       '[--sk-rank-reveal-from:.4] [--sk-rank-reveal-peak:1.2]',
       'animate-rank-reveal-halo motion-reduce:animate-none',
     ],
     wave: [
-      'col-start-1 row-start-1 size-27.5 rounded-pill opacity-0',
+      'col-start-1 row-start-1 size-[110px] rounded-pill opacity-0',
       'border-[1.5px] border-(--sk-rank-reveal-bone)',
       'shadow-[0_0_16px_var(--sk-rank-reveal-glow),inset_0_0_16px_var(--sk-rank-reveal-glow)]',
       '[scale:2.9] [--sk-rank-reveal-o:1] [--sk-rank-reveal-s:.55]',
       'animate-rank-reveal-wave motion-reduce:animate-none',
     ],
     waveAlt: [
-      'col-start-1 row-start-1 size-27.5 rounded-pill opacity-0',
+      'col-start-1 row-start-1 size-[110px] rounded-pill opacity-0',
       'border-[1.5px] border-(--sk-rank-reveal-hue)',
       'shadow-[0_0_16px_var(--sk-rank-reveal-glow),inset_0_0_16px_var(--sk-rank-reveal-glow)]',
       '[scale:4.4] [--sk-rank-reveal-o:1] [--sk-rank-reveal-s:.55]',
@@ -61,7 +66,7 @@ export const rankRevealStyles = tv({
     sparks:
       'col-start-1 row-start-1 grid size-0 grid-cols-[0px] grid-rows-[0px] place-items-center',
     spark: [
-      'col-start-1 row-start-1 h-6 w-[2.5px] rounded-pill opacity-0',
+      'col-start-1 row-start-1 h-[24px] w-[2.5px] rounded-pill opacity-0',
       'bg-[linear-gradient(to_top,transparent,var(--sk-rank-reveal-hue)_45%,var(--sk-rank-reveal-bone))]',
       '[--sk-rank-reveal-a:calc(var(--sk-rank-reveal-i)*36deg_+_18deg)]',
       '[--sk-rank-reveal-d:150px] even:[--sk-rank-reveal-d:116px]',
@@ -69,7 +74,7 @@ export const rankRevealStyles = tv({
       '[--sk-rank-reveal-t1:rotate(var(--sk-rank-reveal-a))_translateY(calc(var(--sk-rank-reveal-d)*-1))_scaleY(1)]',
       'animate-rank-reveal-spark motion-reduce:animate-none',
     ],
-    orbit: 'col-start-1 row-start-1 size-50 -rotate-90 overflow-visible fill-none',
+    orbit: 'col-start-1 row-start-1 size-[200px] -rotate-90 overflow-visible fill-none',
     orbitRing: [
       'stroke-[color-mix(in_oklab,var(--sk-rank-reveal-bone)_38%,transparent)] stroke-1',
       '[stroke-dasharray:1] [--sk-rank-reveal-o:1] [--sk-rank-reveal-dash:1]',
@@ -85,7 +90,7 @@ export const rankRevealStyles = tv({
     // --sk-surface, the stage it is designed on; on another background it shows as a faint ring.
     pip: [
       'col-start-1 row-start-1 size-[9px] bg-(--sk-rank-reveal-bone) [transform:rotate(45deg)]',
-      'even:size-1.5 even:bg-(--sk-rank-reveal-hue)',
+      'even:size-[6px] even:bg-(--sk-rank-reveal-hue)',
       '[--sk-rank-reveal-a:calc(var(--sk-rank-reveal-i)*45deg_-_90deg)]',
       '[translate:calc(cos(var(--sk-rank-reveal-a))*74px)_calc(sin(var(--sk-rank-reveal-a))*74px)]',
       'shadow-[0_0_0_3px_var(--sk-surface),0_0_14px_2px_var(--sk-rank-reveal-glow)]',
@@ -98,21 +103,21 @@ export const rankRevealStyles = tv({
     ],
     flash: 'grid place-items-center animate-rank-reveal-flash motion-reduce:animate-none',
     glint: [
-      'col-start-1 row-start-1 size-5.5 rotate-45 [scale:0] opacity-0 rank-reveal-glint [translate:44px_-50px]',
+      'col-start-1 row-start-1 size-[22px] rotate-45 [scale:0] opacity-0 rank-reveal-glint [translate:44px_-50px]',
       '[--sk-rank-reveal-r0:-45deg] animate-rank-reveal-glint motion-reduce:animate-none',
     ],
     glintAlt: [
-      'col-start-1 row-start-1 size-4 rotate-45 [scale:0] opacity-0 rank-reveal-glint [translate:-46px_34px]',
+      'col-start-1 row-start-1 size-[16px] rotate-45 [scale:0] opacity-0 rank-reveal-glint [translate:-46px_34px]',
       '[--sk-rank-reveal-r0:-45deg] animate-rank-reveal-glint-alt motion-reduce:animate-none',
     ],
 
     // Built-in crest: CSS layers in a 106×117 box (the mockup's 120×132 SVG, as percentages). Its
     // core is always dark, so the box pins data-theme="dark" (--sk-bg / --sk-text are the stage).
     crestArt: 'relative block h-[117px] w-[106px]',
+    // The face gradient (hue → deep) comes from the `tone` variant.
     crestFace: [
       'absolute top-[2.27%] left-[5.83%] h-[95.45%] w-[88.33%]',
       '[clip-path:polygon(50%_0%,100%_23.81%,100%_76.19%,50%_100%,0%_76.19%,0%_23.81%)]',
-      'bg-[linear-gradient(var(--sk-rank-reveal-hue),var(--sk-rank-reveal-deep))]',
     ],
     crestTop: [
       'absolute inset-0 bg-[color-mix(in_oklab,var(--sk-text)_20%,transparent)]',
@@ -157,19 +162,24 @@ export const rankRevealStyles = tv({
     ],
     eyebrowText: [
       'inline-block',
-      'before:mr-3 before:inline-block before:h-px before:w-5.5 before:bg-current before:align-middle before:opacity-50',
-      'after:ml-[calc(12px_-_var(--sk-tracking-eyebrow))] after:inline-block after:h-px after:w-5.5 after:bg-current after:align-middle after:opacity-50',
+      'before:mr-[12px] before:inline-block before:h-px before:w-[22px] before:bg-current before:align-middle before:opacity-50',
+      'after:ml-[calc(12px_-_var(--sk-tracking-eyebrow))] after:inline-block after:h-px after:w-[22px] after:bg-current after:align-middle after:opacity-50',
       '[--sk-rank-reveal-y:0_110%] animate-rank-reveal-eyebrow motion-reduce:animate-none',
     ],
+    // Fluid size: 42px on a wide stage, 9% of the root's content width below ~467px, so an
+    // 11-letter rank ("Grandmaster", ~10.65em wide in expanded Archivo black) still fits on one
+    // line at phone width. Longer single words wrap (`overflow-wrap:anywhere`) instead of clipping.
     title: [
-      'm-0 mt-1 pb-1.5 font-display text-[42px] leading-none font-black tracking-[.01em] uppercase',
-      'font-stretch-expanded @max-[420px]:text-3xl',
+      'm-0 mt-1 pb-1.5 font-display text-[length:clamp(20px,9cqi,42px)] leading-none',
+      'font-black tracking-[.01em] uppercase font-stretch-expanded',
       'animate-rank-reveal-slot motion-reduce:animate-none',
     ],
+    // Print drops background images, so the sheen-filled title falls back to plain `text-text`.
     titleText: [
-      'inline-block text-text',
+      'inline-block max-w-full text-text [overflow-wrap:anywhere]',
       'bg-[linear-gradient(100deg,var(--sk-text)_42%,var(--sk-rank-reveal-hue)_50%,var(--sk-text)_58%)] bg-[length:300%_100%]',
       'bg-clip-text [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]',
+      'print:bg-none print:[-webkit-text-fill-color:currentColor]',
       '[filter:drop-shadow(0_4px_20px_color-mix(in_oklab,var(--sk-rank-reveal-glow)_50%,transparent))]',
       '[--sk-rank-reveal-y:0_110%] animate-rank-reveal-title motion-reduce:animate-none',
     ],
@@ -193,12 +203,20 @@ export const rankRevealStyles = tv({
           '[--sk-rank-reveal-hue:var(--sk-accent)] [--sk-rank-reveal-deep:var(--sk-accent-deep)]',
           '[--sk-rank-reveal-glow:var(--sk-accent-glow)]',
         ],
+        crestFace: 'bg-[linear-gradient(var(--sk-rank-reveal-hue),var(--sk-rank-reveal-deep))]',
       },
       premium: {
         root: [
           '[--sk-rank-reveal-hue:var(--sk-premium)] [--sk-rank-reveal-deep:var(--sk-premium-dim)]',
           '[--sk-rank-reveal-glow:color-mix(in_oklab,var(--sk-premium)_55%,transparent)]',
         ],
+        // Light --sk-premium and --sk-premium-dim are near-identical, so the face's lower stop
+        // takes 30% of the crest's (pinned dark) --sk-bg for depth, in both themes.
+        crestFace:
+          'bg-[linear-gradient(var(--sk-rank-reveal-hue),color-mix(in_oklab,var(--sk-rank-reveal-deep)_70%,var(--sk-bg)))]',
+        // Premium's hue is nearly the bone itself, so the small pips take the darker premium-dim
+        // to keep the big-bone / small-color rhythm of the accent tone (both themes).
+        pip: 'even:bg-(--sk-rank-reveal-deep)',
       },
     },
   },

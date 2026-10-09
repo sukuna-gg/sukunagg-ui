@@ -129,6 +129,21 @@ describe('AvatarFrame', () => {
     expect(one(root, 'bg-gradient-accent').textContent).toBe('Live')
   })
 
+  it('sets the LIVE pill at line-height 1 in every combination (not the inherited one)', () => {
+    // tailwind-merge drops a `leading-*` placed before a `text-*` size; the pill must keep it.
+    for (const props of combos.filter((p) => p.live)) {
+      const { container, unmount } = render(
+        <AvatarFrame {...props}>
+          <Avatar fallback="RY" />
+        </AvatarFrame>,
+      )
+      const pill = one(container, 'bg-gradient-accent')
+      expect(pill.classList.contains('leading-none')).toBe(true)
+      expect(pill.classList.contains('text-[length:clamp(8px,11cqw,11px)]')).toBe(true)
+      unmount()
+    }
+  })
+
   it('takes a localised pill label', () => {
     const root = frame({ live: true, liveLabel: 'En vivo' })
     expect(one(root, 'bg-gradient-accent').textContent).toBe('En vivo')
@@ -167,7 +182,10 @@ describe('AvatarFrame', () => {
     const dot = one(online, 'avatar-frame-status')
     expect(dot.classList.contains('avatar-frame-online')).toBe(true)
     expect(dot.getAttribute('aria-hidden')).toBe('true')
-    one(online, 'avatar-frame-cutout')
+    // The mask clips at the cut box, so its bleed scales with the frame (room for glow + halo).
+    const cut = one(online, 'avatar-frame-cutout')
+    expect(cut.classList.contains('-inset-[max(24px,30cqw)]')).toBe(true)
+    expect(cut.firstElementChild?.classList.contains('inset-[max(24px,30cqw)]')).toBe(true)
     one(online, 'avatar-frame-cutout-avatar')
     expect(one(online, 'sr-only').textContent).toBe('Online')
   })
@@ -252,11 +270,12 @@ describe('AvatarFrame', () => {
   })
 
   it('merges a consumer className last', () => {
-    const root = frame({ className: 'p-[10px] align-top' })
-    expect(root.classList.contains('p-[10px]')).toBe(true)
-    expect(root.classList.contains('p-[6px]')).toBe(false)
+    // Non-geometric overrides only: the 6px pad is load-bearing for the status dot and cut-out.
+    const root = frame({ className: 'ml-2 align-top' })
+    expect(root.classList.contains('ml-2')).toBe(true)
     expect(root.classList.contains('align-top')).toBe(true)
     expect(root.classList.contains('align-middle')).toBe(false)
+    expect(root.classList.contains('p-[6px]')).toBe(true)
   })
 
   it('hydrates without warnings', async () => {

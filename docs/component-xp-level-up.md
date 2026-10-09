@@ -41,9 +41,9 @@ export interface XpLevelUpLabels {
 }
 
 interface XpLevelUpOwnProps {
-  level: number            // the level reached; the badge counts level − 1 → level (rounded)
+  level: number            // the level reached; the badge counts level − 1 → level (rounded, ≤ 99,999)
   progress: number         // 0–100 into `level`, where the bar settles (clamped; NaN → 0)
-  from?: number            // 0–100, where the fill starts (clamped). Default 0
+  from?: number            // 0–100, where the fill starts (clamped; a plain gain caps it at progress). Default 0
   levelUp?: boolean        // default true; false = plain XP gain (fill from → progress, no burst)
   title?: ReactNode        // eyebrow over the card (the season / pass name)
   headline?: ReactNode     // default 'Level up' — wiped in at the burst
@@ -62,8 +62,17 @@ export type XpLevelUpProps = XpLevelUpOwnProps &
   is on screen; it doesn't wait for visibility.
 - `title` replaces the native `title` tooltip attribute (it is the eyebrow node).
 - The root is a size container (`@container`): under 28rem wide the badge and headline shrink.
-  Give it a width in flex rows. It draws no surface: put it in a `Card` (or any `overflow-hidden`
-  box) — the glow and sparks reach ~160px past the badge and should be clipped by your surface.
+  A size container doesn't take its width from its content, so in a shrink-to-fit parent (a
+  `w-fit`/`w-max` dialog or popover, an `items-center` column, `inline-flex`, an absolutely
+  positioned toast, a grid `auto` column) it would collapse to 0. The root therefore carries an
+  intrinsic width (`[contain-intrinsic-inline-size:30rem] max-w-full`): 30rem there, capped at the
+  parent's width; in block flow it still stretches. Give it a width if you want another. It draws
+  no surface: put it in a `Card` (or any `overflow-hidden` box) — the glow and sparks reach
+  ~160px past the badge and should be clipped by your surface.
+- `level` up to five digits fits the badge: the number steps down to 28px at 1,000 and 22px at
+  10,000 (narrow: 22px / 18px). Six-digit levels overflow the hexagon.
+- `from` > `progress` is a level-up's normal shape (62% of the old level → 8% of the new). In a
+  plain gain (`levelUp={false}`) it would drain the bar, so `from` is capped at `progress` there.
 - **Timeline utilities for your own chrome.** `animate-xp-level-up-swap-out` (fades out at 1.2 s)
   and `animate-xp-level-up-swap-in` (fades in at 1.36 s) are the ones the meta row uses; put them
   on your own elements (a reward tier flipping "Locked" → "Unlocked") to sync with the burst. Pair
@@ -83,13 +92,16 @@ mono token exists: numbers use `font-sans tabular-nums`).
 | Variant | Values → effect |
 |---|---|
 | levelUp | `true` (default): fill → flash → burst → count → settle (timeline below). `false`: the bar fills `from` → `progress`, chip slides in; no burst layers are rendered. |
-| long (internal) | set when \|level\| ≥ 1000: badge number `text-[28px]` (narrow `text-[22px]`) instead of 40/32px. |
+| digits (internal) | `4` when \|level\| ≥ 1,000: badge number `text-[28px]` (narrow `text-[22px]`); `5` when ≥ 10,000: `text-[22px]` (narrow `text-xl`, 18px); otherwise 40/32px. Each restates `leading-none`, which tailwind-merge drops with the base size. |
 
 Every color is a `--sk-*` token: badge face `--sk-accent` → `--sk-accent-deep`, rim
 `--sk-premium`/`--sk-premium-dim` mixed with `--sk-on-accent`, glow/flash/ring `--sk-accent-glow` +
 `--sk-accent`, track `--sk-surface-2` + `--sk-line`/`--sk-line-soft`, headline sheen
 `--sk-text` → `--sk-accent` → `--sk-premium`, meta `--sk-text-faint`/`--sk-text`. No new color
-token. Sparks alternate `--sk-accent` and `--sk-accent` mixed 55% with `--sk-text` (§11).
+token. Sparks alternate `--sk-accent` and `--sk-premium` (§11). The face's highlight sits just
+above the top tip (`at 50% -4%`) so the LV caption clears 4.5:1 (§8). Forced colors: the track
+gets a `CanvasText` border and the fills `Highlight` (box-shadow rings and gradients are dropped);
+the LV caption is `forced-colors:relative` so it paints over the number's text backplate.
 
 Timeline (ms from mount): chip slides in 60 · fill + shine 250–1150 (pct readout counts `from` →
 100) · prelude out 960 · flash, ring, glow peak, badge pop 1000 · badge flare 1000–1400 · sparks 1000–1900 · level count
@@ -157,18 +169,21 @@ Every keyframe animates *from* the start state to the base styles, which are the
 ```ts
 export const xpLevelUpStyles = tv({
   slots: {
-    root: '@container relative isolate flex min-w-0 flex-col gap-5 font-sans text-text',
+    root: '@container relative isolate flex min-w-0 max-w-full flex-col gap-5 font-sans text-text [contain-intrinsic-inline-size:30rem]',
     eyebrow: '… font-display font-extrabold uppercase tracking-eyebrow before:rotate-45 before:bg-accent',
     badge: 'relative h-26 w-23 flex-none … @max-md:h-21.5 @max-md:w-19',
     glow / ring / sparks / spark / hexWrap (pop) / flare (filter) / hex / face / prefix / num,
     headline: '… bg-clip-text [-webkit-text-fill-color:transparent] text-text animate-xp-level-up-headline motion-reduce:animate-none',
     chip: '… rounded-pill bg-accent/11 ring-1 ring-inset ring-accent/36 animate-xp-level-up-chip motion-reduce:animate-none',
-    bar / track / barGlow / clip / fillOld / fillNew / flash, meta / targetOld / targetNew / pct / xp,
+    bar / track (+ forced-colors:border-[CanvasText]) / barGlow / clip / fillOld / fillNew
+      (+ forced-colors:bg-[Highlight]) / flash, meta / targetOld / targetNew / pct / xp,
   },
   variants: {
     levelUp: { true: { glow, hexWrap, flare, num, prelude, targetNew, xp, fillNew: 'animate-xp-level-up-refill …' },
-               false: { fillNew: '… animate-xp-level-up-gain …' } },
-    long: { true: { num: 'text-[28px] @max-md:text-[22px]' } },
+               false: { prelude: 'font-display text-[22px] leading-none … @max-md:text-xl',
+                        fillNew: '… animate-xp-level-up-gain …' } },
+    digits: { 4: { num: 'text-[28px] leading-none @max-md:text-[22px]' },
+              5: { num: 'text-[22px] leading-none @max-md:text-xl' } },
   },
   defaultVariants: { levelUp: true },
 })
@@ -189,8 +204,13 @@ scale; radii are `rounded-pill`.
       settled card shows at once; verified in `test/browser/xp-level-up.test.ts`.
 - [ ] WCAG 2.3.1: one flash, once (no repetition), well under 3 per second.
 - [ ] Contrast at rest: headline `--sk-text`, meta `--sk-text-faint`, chip `--sk-text-dim` on
-      `--sk-accent` 11% — all clear 4.5:1 in both themes; the badge number is white on the
-      accent face.
+      `--sk-accent` 11% — all clear 4.5:1 in both themes. The badge number is large white text on
+      the accent face (≥ 3:1). The 10px LV caption is full-strength white (no opacity) with a 1px
+      `--sk-accent-deep` shadow, over a face whose highlight sits above the top tip: measured
+      against the brightest pixel behind it, ≥ 4.6:1 in dark (wide and narrow) and ≥ 6:1 in light.
+- [ ] Forced colors: the track keeps a `CanvasText` border and the fills paint `Highlight` (the
+      ring is a box-shadow and the fills are gradients, both dropped), so the bar stays readable;
+      the LV caption is positioned there so the number's text backplate doesn't cover it.
 - [ ] Nothing is announced on mount (it is not a live region): apps that show it mid-session
       announce the level-up themselves (e.g. a toast or their own `role="status"`).
 
@@ -203,7 +223,11 @@ scale; radii are `rounded-pill`.
 - Inline vars: `--sk-xp-level-up-level/from/progress` (clamped, NaN → 0, rounded level); spark
   `--sk-xp-level-up-i` 0–15; consumer `style` wins.
 - Progressbar semantics (`aria-valuenow`, name, string `xp` → `aria-valuetext`, node `xp` → none).
-- `labels` override; `long` (≥ 1000) shrinks the number; `children` render.
+- `labels` override; `digits` (≥ 1,000 and ≥ 10,000) shrinks the number and keeps `leading-none`
+  (also on the gain prelude); `children` render.
+- Plain gain caps `from` at `progress`; a level-up keeps it.
+- Root carries the intrinsic width (`[contain-intrinsic-inline-size:30rem] max-w-full`); forced-colors
+  classes on the track and fills; odd sparks use `--sk-premium`; the LV caption has no opacity.
 - Own props don't leak; native props pass through; ref forwards; `className` wins.
 - Hydrates; axe clean in both themes.
 - Browser (`test/browser/xp-level-up.test.ts`): every story renders with no console errors; the
@@ -211,6 +235,9 @@ scale; radii are `rounded-pill`.
   `level − 1` and a partial pct, the flash and ring are up at the burst; finished, it lands on the
   final frame (bar at 8%, "LV 43", old layers at opacity 0); `XpGain` fills 8% → 31% with no
   burst; Replay restarts the timeline; reduced motion runs no animation and shows the settled card.
+  Layout: in a `max-content` parent the root keeps its intrinsic 480px; level 12,345 fits the face
+  with line-height = font-size; under forced colors the track has a 1px border and the fill a
+  background color.
   Passes in Chromium, Firefox and WebKit (CI runs Chromium).
 
 ## 10. Stories
@@ -243,8 +270,19 @@ reduced motion.
 - **No mono font** (brief decision 7): meta, chip and the LV caption use `font-sans tabular-nums`.
 - `// DECISION(open): Q39 spark colors` (`xp-level-up.styles.tsx`) — the mockup alternates
   accent/premium sparks through `light-dark()`, which needs `color-scheme` (the theme doesn't set
-  it). Odd sparks mix `--sk-accent` 45% with `--sk-text` 55% instead: a pale rose in dark (close to
-  the mockup's premium sparks), a deep red in light (the mockup's light sparks are all accent).
+  it). Odd sparks take `--sk-premium` in every theme: the mockup's cream in dark, and in light the
+  gold-brown of the badge rim (the mockup's light sparks are all accent). An earlier mix of
+  `--sk-accent` with 55% `--sk-text` turned near-black in light and read as soot; dropped.
+- **Root intrinsic width.** The root is an `@container` (inline-size containment), which zeroes
+  its content's contribution to its width; `[contain-intrinsic-inline-size:30rem] max-w-full`
+  keeps it at 30rem (the wide layout, above the 28rem query) inside shrink-to-fit parents.
+- **LV caption contrast.** The mockup draws the caption at 80% opacity over the face's highlight
+  (~2.8:1 in dark). The opacity is gone, the caption gets the number's 1px `--sk-accent-deep`
+  shadow, and the face's radial highlight moved from `at 50% 12%` to `at 50% -4%` (just above the
+  top tip; visually near-identical) so the brightest pixel behind the caption clears 4.5:1.
+- **Five-digit cap.** `digits` steps the number to 28px (4 digits) and 22px (5 digits); levels
+  ≥ 100,000 overflow the badge and aren't handled.
+- **Plain gain caps `from` at `progress`** so `levelUp={false}` never animates the bar backwards.
 - `// DECISION(open): Q39 timeline` (`scripts/motion/xp-level-up.ts`) — durations/easings are the
   mockup's values, literal inside the `@utility` blocks (the `sk-shine` precedent), tunable as a
   patch pre-1.0.

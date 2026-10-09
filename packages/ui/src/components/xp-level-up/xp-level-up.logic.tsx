@@ -47,7 +47,8 @@ export interface XpLevelUpProps
   extends Omit<ComponentPropsWithoutRef<'div'>, 'title' | 'children'> {
   /**
    * The level reached. The badge counts from `level - 1` up to it when `levelUp` is set; the bar
-   * then fills toward `level + 1`. Rounded to an integer.
+   * then fills toward `level + 1`. Rounded to an integer. The badge number steps down for four- and
+   * five-digit levels; up to 99,999 fits the hexagon.
    */
   level: number
   /**
@@ -57,7 +58,8 @@ export interface XpLevelUpProps
   progress: number
   /**
    * Where the fill starts, from 0 to 100 (clamped): progress through the previous level when
-   * `levelUp` is set, or through `level` for a plain gain.
+   * `levelUp` is set, or through `level` for a plain gain, where it is also capped at `progress`
+   * (a gain never drains the bar).
    * @default 0
    */
   from?: number
@@ -114,12 +116,16 @@ const SPARKS = Array.from({ length: 16 }, (_, i) => i)
  * - Accessibility: the badge art, glow, sparks, flash and the transient texts are `aria-hidden`;
  *   the level is `sr-only` text (`labels.level`). The bar is a `role="progressbar"` (0–100,
  *   `aria-valuenow={progress}`, named by `labels.bar(level + 1)`, `aria-valuetext` from a string
- *   `xp`). It is not a live region: announce a level-up that appears mid-session yourself.
+ *   `xp`). It is not a live region: announce a level-up that appears mid-session yourself. In
+ *   forced-colors mode the bar keeps a `CanvasText` outline and a `Highlight` fill.
  * - Variants: `levelUp`: `true` (default) | `false`. Under 28rem of width (a container query) the
  *   badge and headline shrink.
- * - Layout: the root draws no surface; place it in a `Card` or any `overflow-hidden` box, which
- *   clips the glow and sparks (they reach ~160px past the badge). Your own chrome can follow the
- *   timeline with the `animate-xp-level-up-swap-out` (1.2s) / `animate-xp-level-up-swap-in`
+ * - Layout: the root is a size container, so its content doesn't size it: it fills a block, and
+ *   in a shrink-to-fit parent (`w-fit` dialog, `items-center` column, `inline-flex`, an absolute
+ *   toast) it takes an intrinsic 30rem, capped at the parent's width. Give it a width there if
+ *   you want another. It draws no surface; place it in a `Card` or any `overflow-hidden` box,
+ *   which clips the glow and sparks (they reach ~160px past the badge). Your own chrome can follow
+ *   the timeline with the `animate-xp-level-up-swap-out` (1.2s) / `animate-xp-level-up-swap-in`
  *   (1.36s) utilities.
  * - The ref points at the root `<div>`; `className` merges last; `style` is spread after the
  *   internal `--sk-xp-level-up-*` custom properties.
@@ -166,8 +172,10 @@ export const XpLevelUp = forwardRef<HTMLDivElement, XpLevelUpProps>(function XpL
   const labels = { ...defaultLabels, ...labelsProp }
   const lvl = Math.round(level)
   const at = percent(progress)
-  const start = percent(from)
-  const s = xpLevelUpStyles({ levelUp, long: Math.abs(lvl) >= 1000 })
+  // A level-up starts in the previous level; a plain gain only fills forward.
+  const start = levelUp ? percent(from) : Math.min(percent(from), at)
+  const width = String(Math.abs(lvl)).length
+  const s = xpLevelUpStyles({ levelUp, digits: width >= 5 ? 5 : width === 4 ? 4 : undefined })
   const vars = {
     '--sk-xp-level-up-level': lvl,
     '--sk-xp-level-up-from': start,

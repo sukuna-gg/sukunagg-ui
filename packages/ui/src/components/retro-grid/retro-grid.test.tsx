@@ -111,6 +111,21 @@ describe('RetroGrid', () => {
     expect(right?.classList.contains('[--sk-retro-grid-delay:-4s]')).toBe(true)
   })
 
+  it('sizes the floor layers to the container so their side edges stay masked', () => {
+    const { container } = render(<RetroGrid />)
+    const root = container.firstElementChild as HTMLElement
+    // Far plane: a quarter-scale model of a max(6000px, 10x width) plane; near plane 4x; wave 10x.
+    const far = part(root, 'retro-grid-plane')
+    expect(far.classList.contains('w-[max(1500px,250%)]')).toBe(true)
+    expect(far.classList.contains('[--sk-retro-grid-zoom:4]')).toBe(true)
+    expect(part(root, 'retro-grid-plane-near').classList.contains('w-[max(6000px,400%)]')).toBe(
+      true,
+    )
+    expect(part(root, 'retro-grid-sweep').classList.contains('w-[max(6000px,1000%)]')).toBe(true)
+    // The content slot keeps tall copy off the top edge.
+    expect((root.lastElementChild as HTMLElement).classList.contains('pt-6')).toBe(true)
+  })
+
   it('does not leak `speed` and passes native props through', () => {
     render(
       <RetroGrid

@@ -52,33 +52,39 @@ export const css = String.raw`
   }
 }
 
-/* The rest angle lives in the animate utility, so motion-reduce:animate-none lands on it. */
+/* The rest angle lives in the animate utility, so motion-reduce:animate-none lands on it.
+   --sk-avatar-frame-delay (default 0s) shifts every loop of one frame: a negative value starts it
+   mid-cycle, so frames in a list don't turn in lockstep. */
 @utility animate-avatar-frame-spin {
   rotate: var(--sk-avatar-frame-phase, 0deg);
-  animation: sk-avatar-frame-turn 3.2s linear infinite;
+  animation: sk-avatar-frame-turn 3.2s linear var(--sk-avatar-frame-delay, 0s) infinite;
 }
 
 @utility animate-avatar-frame-sheen {
   rotate: var(--sk-avatar-frame-phase, 0deg);
-  animation: sk-avatar-frame-turn 5.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation: sk-avatar-frame-turn 5.5s cubic-bezier(0.45, 0, 0.55, 1)
+    var(--sk-avatar-frame-delay, 0s) infinite;
 }
 
 @utility animate-avatar-frame-orbit {
   rotate: var(--sk-avatar-frame-phase, 0deg);
-  animation: sk-avatar-frame-turn var(--sk-avatar-frame-t, 6s) linear infinite
-    var(--sk-avatar-frame-dir, normal);
+  animation: sk-avatar-frame-turn var(--sk-avatar-frame-t, 6s) linear
+    var(--sk-avatar-frame-delay, 0s) infinite var(--sk-avatar-frame-dir, normal);
 }
 
 @utility animate-avatar-frame-breathe {
-  animation: sk-avatar-frame-breathe 2.8s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+  animation: sk-avatar-frame-breathe 2.8s cubic-bezier(0.45, 0, 0.55, 1)
+    var(--sk-avatar-frame-delay, 0s) infinite alternate;
 }
 
 @utility animate-avatar-frame-ripple {
-  animation: sk-avatar-frame-ripple 3.2s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  animation: sk-avatar-frame-ripple 3.2s cubic-bezier(0.2, 0.6, 0.3, 1)
+    var(--sk-avatar-frame-delay, 0s) infinite;
 }
 
 @utility animate-avatar-frame-blink {
-  animation: sk-avatar-frame-blink 1.4s ease-in-out infinite alternate;
+  animation: sk-avatar-frame-blink 1.4s ease-in-out var(--sk-avatar-frame-delay, 0s) infinite
+    alternate;
 }
 
 /* A ring-shaped mask on the element's outer edge, --sk-avatar-frame-bw wide. */
@@ -113,22 +119,24 @@ export const css = String.raw`
   );
 }
 
-/* The comet's head: a small hot dot riding the ring's centre line, with its own glow. */
+/* The comet's head: a small hot dot riding the ring's centre line, with its own glow. It shrinks
+   with the frame below 100px (6px dot, 7px + 18px glow there) so on small avatars it stays a spark
+   on the ring, not a second dot; it never outgrows the fixed 3px ring on large ones. */
 @utility avatar-frame-head {
   &::after {
     content: '';
     position: absolute;
     left: 50%;
     top: 1.5px;
-    width: 6px;
-    height: 6px;
-    margin: -3px 0 0 -3px;
+    width: clamp(4px, 6cqw, 7px);
+    height: clamp(4px, 6cqw, 7px);
+    translate: -50% -50%;
     border-radius: 50%;
     background: color-mix(in oklab, var(--sk-accent) 55%, var(--sk-text));
     box-shadow:
       0 0 0 1px var(--sk-accent),
-      0 0 7px 2px var(--sk-accent),
-      0 0 18px 5px var(--sk-accent-glow);
+      0 0 min(7px, 7cqw) min(2px, 2cqw) var(--sk-accent),
+      0 0 min(18px, 18cqw) min(5px, 5cqw) var(--sk-accent-glow);
   }
 }
 

@@ -18,13 +18,13 @@ changes the layout, and is skipped entirely under `prefers-reduced-motion`.
 packages/ui/src/components/scramble-text/
 ├── scramble-text.styles.tsx    # tv() slot map → Tailwind utilities. Pure. Server-safe.
 ├── scramble-text.logic.tsx     # forwardRef, `as`, real sr-only text; NO 'use client' (RSC-safe).
-├── scramble-text.scramble.tsx  # 'use client' — the glyph island: rAF painter, seeded PRNG.
+├── scramble-text.scramble.tsx  # 'use client' — the visible line: unsplit real text + decode overlay.
 ├── scramble-text.test.tsx
 ├── scramble-text.stories.tsx
 └── index.tsx                   # export { ScrambleText } ; export type { ScrambleTextProps, ScrambleTextElement }
 
 packages/ui/scripts/motion/scramble-text.ts   # @keyframes sk-scramble-text-settle + @utility (→ theme.css)
-test/browser/scramble-text.test.ts            # Playwright: decode runs, lands on the text, reduced motion
+test/browser/scramble-text.test.ts            # Playwright: decode, geometry, re-show, gradient, reduced motion
 ```
 
 ## 3. API
@@ -43,9 +43,10 @@ interface ScrambleTextOwnProps {
   seed?: number                // noise PRNG seed; default derived from `text` (same text → same decode)
 }
 
-// `children` is omitted — `text` is the content (one string per instance).
-export type ScrambleTextProps =
-  ScrambleTextOwnProps & Omit<ComponentPropsWithoutRef<'span'>, 'children'>
+// `children` and `dangerouslySetInnerHTML` are omitted — `text` is the content (one string per
+// instance; React would throw if both were set).
+export type ScrambleTextProps = ScrambleTextOwnProps &
+  Omit<ComponentPropsWithoutRef<'span'>, 'children' | 'dangerouslySetInnerHTML'>
 ```
 
 **Replay** by changing `key` (`<ScrambleText key={round} text="MATCH FOUND" />`): the decode plays on
@@ -60,19 +61,39 @@ can't cross the server → client island boundary).
 ## 4. Variants → tokens
 
 No style variants — size, weight, font and color are inherited from the context (or `className`).
-Each glyph moves through four states, set by the island as `data-glyph` on the glyph's span:
 
-| Glyph state | Real character | Noise overlay | Tokens |
-|---|---|---|---|
-| (none) — server, no-JS, reduced motion | visible | hidden | inherited color |
-| `hidden` — before the noise front reaches it | `text-transparent` | hidden | — |
-| `noise` — cycling a noise glyph every 42–80 ms | `text-transparent` | visible | `--sk-text-faint` |
-| `lock` — the last 120 ms before it resolves | `text-transparent` | visible, tinted cell, glow | `--sk-accent`, `--sk-accent` 16% (`bg-accent/16`), `--sk-accent-glow` text-shadow |
-| `done` — resolved | visible, accent afterglow fading to the inherited color | hidden | `--sk-accent` → inherited, `--sk-accent-glow` → none |
+**At rest** — server, no-JS, reduced motion, and again once a decode has finished — the visible
+line is the real `text` as **one text node** (so kerning and wrapping are exactly those of plain
+text) next to an empty overlay. No `data-state` on the server; `data-state="done"` once the island
+has run.
 
-Each glyph keeps its **real** character in the layout (transparent while scrambling) and draws the
-noise in an absolutely positioned overlay centred on it, so the line never changes width — no
-layout shift and no jitter, even in proportional fonts (there is no mono token; see §11).
+**While decoding** the island sets `data-state="running"` on the layer, which hides the real text
+with `visibility: hidden` — it keeps its place, so nothing reflows, and a parent's gradient fill,
+`text-shadow` or `-webkit-text-stroke` can't show it early. It then draws one **cell** per grapheme
+in the overlay, placed over that glyph's measured box. Each cell moves through four island states
+(`data-glyph`):
+
+| Cell state | Draws | Tokens |
+|---|---|---|
+| `hidden` — before the noise front reaches it | nothing | — |
+| `noise` — cycling a noise glyph every 42–80 ms | a noise glyph, centred | `--sk-text-faint` |
+| `lock` — the last 120 ms before it resolves | a noise glyph, tinted cell, glow | `--sk-accent`, `--sk-accent` 16% (`bg-accent/16`), `--sk-accent-glow` text-shadow |
+| `done` — resolved | the real glyph at its pen position, accent afterglow fading to the inherited color | `--sk-accent` → inherited, `--sk-accent-glow` → none |
+
+When the last afterglow ends the island removes every cell and shows the real text again — the
+cells drew each glyph exactly where the real one sits, so that hand-off is invisible, and no
+animation is left on the subtree to restart when a hidden parent (Tabs, Accordion, `hidden md:block`)
+is shown again.
+
+**Noise fits its glyph.** A noise glyph is never more than 1.1× as wide as the glyph it covers
+(the alphabet is measured once per decode in the line's own font; the four narrowest characters are
+always allowed, for `i`, `.`, `1`), so in a proportional font a wide `#` never spills over a narrow
+`i` into its neighbours.
+
+Cells paint with `-webkit-text-fill-color: currentColor` and inherit everything else, so an
+inherited `text-shadow` or text-stroke styles the noise too. Under a gradient fill (`GradientText`,
+`ShinyText`) the cells draw in the inherited `color` and the gradient returns when the overlay is
+removed (positioned boxes aren't part of a `background-clip: text` mask).
 
 Motion CSS, in `packages/ui/scripts/motion/scramble-text.ts` (emitted into the generated
 `theme.css` by `scripts/build-tokens.ts`):
@@ -91,7 +112,8 @@ Motion CSS, in `packages/ui/scripts/motion/scramble-text.ts` (emitted into the g
 }
 ```
 
-No new color token. One keyframe, one utility, no `@property`. The decode itself is JS
+No new color token. One keyframe, one utility, no `@property`. The cell geometry is four inline
+custom properties (`--sk-scramble-text-x/y/w/h`) read by literal utilities. The decode itself is JS
 (`requestAnimationFrame` in the island) because it swaps characters; it is the documented Q39
 exception to `docs/motion.md` rule 1, like Counter.
 
@@ -99,19 +121,21 @@ exception to `docs/motion.md` rule 1, like Counter.
 
 | State | Behavior |
 |---|---|
-| server / no-JS | the real `text`, once in an `sr-only` span (for AT) and once in the `aria-hidden` glyph layer (what sighted users see). No `data-glyph`, no `data-state`. |
-| mount (motion OK) | the layer gets `data-state="running"`; every glyph is `hidden` until `delay` + its slot on the noise front (the first 30% of `duration`, left → right), then `noise`, then `lock` for its last 120 ms, then `done`. Lock times spread over the last 82% of `duration` with a seeded jitter, so the text resolves left to right with a ragged edge. The last glyph lands exactly at `delay + duration`; the layer becomes `data-state="done"`. |
-| prefers-reduced-motion | **no decode** — the real text shows immediately, no rAF is scheduled, `data-state="done"`. The afterglow keyframe is also guarded (`motion-reduce:…animate-none`). |
-| `duration <= 0` / empty `text` | same as reduced motion: final text, nothing scheduled. |
-| prop change (`text`, `delay`, `duration`, `seed`) | the running decode is cancelled and cleaned up; a new decode starts from the new values. |
+| server / no-JS | the real `text`, once in an `sr-only` span (for AT) and once, unsplit, in the `aria-hidden` visible line. Empty overlay, no `data-glyph`, no `data-state`. |
+| mount (motion OK) | the layer gets `data-state="running"` (real text hidden, still in the layout); every cell is `hidden` until `delay` + its slot on the noise front (the first 30% of `duration`, left → right), then `noise`, then `lock` for its last 120 ms, then `done` with a 600 ms afterglow. Lock times spread over the last 82% of `duration` with a seeded jitter, so the text resolves left to right with a ragged edge. The last glyph locks exactly at `delay + duration`; 600 ms later the cells are removed and the layer becomes `data-state="done"`. |
+| prefers-reduced-motion | **no decode** — the real text shows immediately, no cell is made, no rAF is scheduled, `data-state="done"`. The afterglow keyframe is also guarded (`motion-reduce:…animate-none`). |
+| `duration <= 0` / blank `text` / no layout box (a `display: none` ancestor at mount) | same as reduced motion: final text, nothing scheduled. |
+| resize / web font arriving mid-decode | the cells are re-measured (window `resize`, `document.fonts` `loadingdone`), so the noise follows the reflowed line. |
+| prop change (`text`, `delay`, `duration`, `seed`) | the running decode is cancelled and its cells removed; a new decode starts from the new values. |
 | replay | change `key` — the component remounts and plays again. |
 | hidden tab | rAF stops with the tab; the decode clock advances at most 64 ms per frame, so it resumes where it left off instead of skipping to the end. |
-| unmount | the frame is cancelled; nothing leaks. |
+| hidden → shown parent after settling | nothing replays: no cell, no `data-glyph` and no animation remain once the decode ends. |
+| unmount | the frame is cancelled, cells and listeners removed; nothing leaks. |
 
 > One-frame note (Counter precedent): the server and the first client render show the final text,
-> then the mount effect switches the glyphs to `hidden` before the first animation frame. We
-> optimize for no-JS/SEO/AT correctness over that sub-frame flash; it never happens under reduced
-> motion.
+> then the mount effect switches the line to its blank pre-state before the first animation frame.
+> We optimize for no-JS/SEO/AT correctness over that sub-frame flash (not observed in Chromium,
+> Firefox or WebKit); it never happens under reduced motion.
 
 ## 6. Logic (`scramble-text.logic.tsx`)
 
@@ -125,20 +149,28 @@ exception to `docs/motion.md` rule 1, like Counter.
 
 **Island (`scramble-text.scramble.tsx`, `'use client'`, `@internal`):**
 
-- Renders the `aria-hidden` glyph layer (`data-sk-scramble-text`). `text` is split into grapheme
-  clusters (`Intl.Segmenter`, code points where it is missing — so emoji and flags stay whole);
-  whitespace runs stay plain text (natural wrapping), every other grapheme becomes
-  `<span>{char}<span /></span>`: the React-owned real character plus an empty noise overlay.
-- Never replaces React-owned nodes: the effect only sets `data-glyph` on the glyph spans, appends one
-  island-owned text node to each (empty) overlay and writes its `nodeValue`. Cleanup removes both, so
-  React's view of the tree is intact for the next render.
-- Effect deps `[text, delay, duration, seed]`. `window.matchMedia('(prefers-reduced-motion: reduce)')`
-  is read inside the effect. Zero React re-renders per frame.
+- Renders the `aria-hidden` visible line (`data-sk-scramble-text`): an empty overlay `<span>` (an
+  inline, positioned box at the start of the line — the cells' containing block, inside the root so
+  the root's `overflow` clips them) and the real `text` as one text node in its own `<span>`. The
+  server and the first client render never split the text, so a different `Intl.Segmenter`/ICU
+  version on the client can't cause a hydration mismatch.
+- On mount (effect deps `[text, delay, duration, seed]`) it splits `text` into grapheme clusters
+  (`Intl.Segmenter`, code points where it is missing — emoji and flags stay whole; whitespace is
+  never drawn), creates one cell per grapheme in the overlay, and **measures**: each grapheme's box
+  with a `Range` over the real text node, relative to the overlay and divided by any ancestor
+  `transform: scale` (rect ÷ `offsetWidth`), written as `--sk-scramble-text-x/y/w/h`; and the noise
+  alphabet's widths with a throwaway invisible probe, giving each cell its own noise pool.
+- Never touches React-owned nodes beyond `data-state` on the layer: cells are island-owned children
+  of the (React-empty) overlay, and cleanup removes them, so React's view of the tree is intact for
+  the next render.
+- `window.matchMedia('(prefers-reduced-motion: reduce)')` and `getClientRects()` (no box → no
+  decode) are read inside the effect. Zero React re-renders per frame.
 - Seeded `mulberry32` PRNG (seed = `seed ?? fnv1a(text)`): per glyph a noise start, a lock time, a
-  42–80 ms change period and a hash; the glyph shown at step `k` is a pure function of (hash, k).
-  No `Math.random`/`Date.now` anywhere, so runs are reproducible and testable.
-- Clock: advances by the rAF delta, capped at 64 ms per frame. The first frame is painted inside
-  the effect, so the pre-state lands with the mount.
+  42–80 ms change period and a hash; the glyph shown at step `k` is a pure function of (hash, k,
+  pool). No `Math.random`/`Date.now` anywhere, so runs are reproducible and testable.
+- Clock: advances by the rAF delta, capped at 64 ms per frame, so it never runs ahead of real time
+  and the last CSS afterglow has always ended when the clock reaches the last lock + 600 ms. The
+  first frame is painted inside the effect, so the pre-state lands with the mount.
 
 ## 7. Styles (`scramble-text.styles.tsx`)
 
@@ -149,38 +181,42 @@ export const scrambleTextStyles = tv({
   slots: {
     root: '',
     label: 'sr-only select-none',
-    glyphs: '[font-variant-ligatures:none]',
-    glyph: [
-      'group relative',
-      'data-[glyph=hidden]:text-transparent data-[glyph=noise]:text-transparent',
-      'data-[glyph=lock]:text-transparent',
-      'data-[glyph=done]:animate-scramble-text-settle motion-reduce:data-[glyph=done]:animate-none',
+    glyphs: 'group/scramble-text [font-variant-ligatures:none]',
+    overlay: 'pointer-events-none relative select-none',
+    text: 'group-data-[state=running]/scramble-text:invisible',
+    cell: [
+      'absolute top-(--sk-scramble-text-y) left-(--sk-scramble-text-x)',
+      'h-(--sk-scramble-text-h) w-(--sk-scramble-text-w) leading-(--sk-scramble-text-h)',
+      'flex items-center justify-center whitespace-pre [-webkit-text-fill-color:currentColor]',
+      'data-[glyph=noise]:text-text-faint',
+      'data-[glyph=lock]:bg-accent/16 data-[glyph=lock]:text-accent',
+      'data-[glyph=lock]:[text-shadow:0_0_.5em_var(--sk-accent-glow),0_0_.1em_var(--sk-accent-glow)]',
+      'data-[glyph=done]:justify-start data-[glyph=done]:animate-scramble-text-settle',
+      'motion-reduce:data-[glyph=done]:animate-none',
     ],
-    noise: [
-      'pointer-events-none invisible absolute inset-0 flex items-center justify-center',
-      'whitespace-pre select-none forced-colors:hidden',
-      'group-data-[glyph=noise]:visible group-data-[glyph=noise]:text-text-faint',
-      'group-data-[glyph=lock]:visible group-data-[glyph=lock]:text-accent',
-      'group-data-[glyph=lock]:bg-accent/16',
-      'group-data-[glyph=lock]:[text-shadow:0_0_.5em_var(--sk-accent-glow),0_0_.1em_var(--sk-accent-glow)]',
-    ],
+    probe: 'invisible absolute whitespace-pre',
   },
 })
 export type ScrambleTextStyleProps = VariantProps<typeof scrambleTextStyles>
 ```
 
-- The overlay is a flex box centred on the glyph, so the noise glyph sits on the real glyph's
-  baseline whatever the line-height.
-- `select-none` on the `sr-only` copy and on the overlays: a copy/paste of the visible line yields
+- The real text is hidden with `visibility` (the named group `scramble-text`, so an unrelated
+  ancestor's `data-state` can't trigger it), never with `color`: a gradient fill, shadow or stroke
+  would otherwise keep drawing it.
+- The real text is never inside a positioned box of ours (only the empty overlay is), so a
+  `background-clip: text` parent still paints it in every engine.
+- A cell's line-height is its measured height, so what it draws sits on the real glyph's baseline;
+  a `done` cell is left-aligned, i.e. at the real glyph's pen position (kerning included).
+- `select-none` on the `sr-only` copy and on the overlay: a copy/paste of the visible line yields
   the real text exactly once.
-- `forced-colors:hidden`: Windows High Contrast forces the transparent real glyphs visible, so the
-  overlays are dropped there instead of drawing on top of them.
-- Ligatures are off in the glyph layer (each glyph is its own box).
+- Ligatures are off on the visible line, so the glyphs drawn one per cell are the glyphs of the line
+  at rest (kerning stays on).
 
 ## 8. Accessibility checklist
 
 - [ ] The real text is in the DOM once for assistive tech (`sr-only`, unsplit — VoiceOver reads it
-      as a word, not letter by letter); the visible per-glyph layer is `aria-hidden`.
+      as a word, not letter by letter); the visible line is `aria-hidden` (it is also
+      `visibility: hidden` while decoding, which would drop it from the tree).
 - [ ] Semantics via `as` (`h1`–`h6`, `p`, `strong`…): the heading's accessible name is the real text
       from the first paint, never noise.
 - [ ] `prefers-reduced-motion: reduce` shows the final text with no decode and no afterglow.
@@ -188,54 +224,79 @@ export type ScrambleTextStyleProps = VariantProps<typeof scrambleTextStyles>
       full-area luminance flash (WCAG 2.3.1 — under 3 flashes per second of the text block).
 - [ ] At rest the text uses the inherited color — contrast is the context's responsibility, exactly
       like plain text. The faint noise is transient and decorative.
-- [ ] No layout shift during the decode (each glyph keeps its real width).
+- [ ] No layout shift during the decode (the real text keeps its place while hidden).
 - [ ] Copy/paste of the visible line returns the real text once.
-- [ ] Windows High Contrast (`forced-colors`): overlays are hidden, the real text shows.
+- [ ] Windows High Contrast (`forced-colors`): nothing is hidden with color, so the decode runs in
+      system colors (noise in `CanvasText`, tints dropped) and lands on the real text.
 
 ## 9. Tests
 
 Harness in `docs/testing.md`; client mocks follow `counter.test.tsx`. Required cases:
 
-- Server render (`renderServer`) contains the real text twice (sr-only + glyph layer), each `as`.
-- Glyph layer is `aria-hidden`; whitespace stays text; graphemes stay whole (flag emoji), including
-  the code-point fallback when `Intl.Segmenter` is missing.
-- Reduced motion (`matchMedia` → `matches: true`): no rAF, no `data-glyph`, `data-state="done"`.
-- With motion: the mount paints the `hidden` pre-state; stepping frames walks glyphs through
-  `noise` → `lock` → `done` and lands on the real text with `data-state="done"`; `delay` holds the
-  glyphs hidden; noise text never stays behind.
+- Server render (`renderServer`) contains the real text twice (sr-only + visible line), each as one
+  unsplit text node, for each `as`; no `data-glyph`/`data-state`.
+- Visible line is `aria-hidden` with an empty overlay; graphemes keep their offsets and stay whole
+  (flag emoji), whitespace is skipped, including the code-point fallback without `Intl.Segmenter`.
+- Reduced motion (`matchMedia` → `matches: true`): no rAF, no cells, `data-state="done"`.
+- With motion: the mount paints the `hidden` pre-state; stepping frames walks cells through
+  `noise` → `lock` → `done` (drawing the real glyphs in the tail), then removes every cell and lands
+  on the real text with `data-state="done"`; `delay` holds the cells blank; settle is 600 ms after
+  the last lock.
+- Geometry (mocked rects): cells are placed at (glyph − overlay) ÷ ancestor scale; a narrow cell
+  only draws noise from its width-filtered pool; `noisePool` itself; a `resize` or `loadingdone`
+  re-measures and both listeners are gone once settled.
 - Deterministic: the same `seed` gives the same frames; a different `seed` differs.
-- `duration <= 0` and empty `text` settle immediately; the frame clock is capped at 64 ms.
+- `duration <= 0`, blank `text` and no layout box settle immediately; the frame clock is capped at
+  64 ms.
 - Zero React commits per frame (`<Profiler>`).
-- Prop change and unmount cancel the frame and remove island-owned nodes/attributes.
-- `as`/`text`/`delay`/`duration`/`seed` never leak to the DOM; native props pass through; `ref`
-  forwards; consumer `className` wins; animated slots carry their `motion-reduce:` guard.
-- `expectHydrates`; axe in both themes.
+- Prop change and unmount cancel the frame and remove island-owned cells and listeners.
+- `as`/`text`/`delay`/`duration`/`seed` never leak to the DOM; native props pass through;
+  `children`/`dangerouslySetInnerHTML` are type errors; `ref` forwards; consumer `className` wins;
+  the real text hides with `visibility`, cells fill with `currentColor`, the afterglow carries its
+  `motion-reduce:` guard.
+- `expectHydrates` (with emoji and Devanagari); axe in both themes.
 - Browser (`test/browser/scramble-text.test.ts`, Playwright): the `MatchLobby` decode runs (every
-  glyph walks `hidden` → `noise` → `lock` → `done`) and settles on the real text with the
-  `sk-scramble-text-settle` afterglow, then stops requesting frames; the title's width never changes
-  while it decodes; hovering a roster row replays it (the `key` pattern); reduced motion renders the
-  final text with no glyph state and no rAF; no console errors. Verified locally in Chromium,
-  Firefox and WebKit.
+  cell walks `hidden` → `noise` → `lock` → `done` with the `sk-scramble-text-settle` afterglow),
+  then no cell, `data-glyph` or settle animation remains and frames stop; replayed on loaded fonts,
+  the title's width never changes, every settled cell sits within 1 px of its real glyph and every
+  line at rest is as wide as the same plain text (kerning kept); no noise glyph is wider than 1.1×
+  its cell (+0.1 em); hiding and re-showing the settled card starts no animation; in the `Composed`
+  story the real text under a `GradientText` fill is `visibility: hidden` while noise fills with its
+  own color; hovering a roster row replays it (the `key` pattern); reduced motion renders the final
+  text with no cell and no rAF; no console errors. CI runs Chromium only (`playwright.config.ts`);
+  Firefox and WebKit were checked by hand with the same stories (decode, geometry, reduced motion,
+  gradient/shadow/stroke composition).
 
 ## 10. Stories
 
 `Playground` (controls), `Elements` (`as` h1/h2/p/span), `Staggered` (`delay` across lines),
+`Composed` (inside `GradientText`, under a glow `text-shadow`, with a text-stroke),
 `MatchLobby` (the mockup screen: title, eyebrow and a 5-player roster in a lobby card; Replay button
 and hover re-scramble use the `key` pattern — all of it story chrome), `MatchLobbyNarrow` (the
 same at phone width), `FinalFrame` (`duration={0}`: what no-JS and reduced-motion users see).
-Both themes via the toolbar.
+Both themes via the toolbar. The stories load Archivo (with its `wdth` axis) from Google Fonts like
+a consumer would — the library doesn't bundle it.
 
 ## 11. Decisions
 
 - Approved in **Q38/Q39** (`docs/questions.md`) as one of the nine `@sukunagg/ui` showpieces.
-- **RSC split**: logic stays a server component; only the glyph layer is a client island
+- **RSC split**: logic stays a server component; only the visible line is a client island
   (`scramble-text.scramble.tsx`, the Table `scroll` / Input `reveal` precedent).
-- **A11y pattern**: `sr-only` real text + `aria-hidden` glyph layer (not Counter's
+- **A11y pattern**: `sr-only` real text + `aria-hidden` visible line (not Counter's
   `role="img"` + `aria-label`, which would hide heading semantics).
 - **Plays on mount**; replay = change `key`. No hidden "armed" pre-state in CSS: the base styles are
   the final frame, so no-JS and reduced motion land on the real text.
-- **Overlay technique** (real glyph keeps the width, noise drawn over it) instead of the mockup's
-  fixed-width cells: no jitter in any font, natural kerning-width and wrapping preserved.
+- **Overlay technique** (the real text stays one unsplit text node, hidden with `visibility` while
+  island-owned cells measured from `Range` rects draw the decode over it) instead of the mockup's
+  fixed-width cells or one span per glyph: kerning, wrapping and width at rest are exactly plain
+  text's, there is no jitter in any font, nothing snaps when the overlay is removed, and server and
+  client never disagree about grapheme segmentation.
+- **Noise by width**: each cell picks from alphabet characters no wider than 1.1× its glyph (never
+  fewer than the four narrowest), measured in the line's own font — proportional fonts never
+  overlap their neighbours.
+- **Gradient parents**: the cells use the inherited `color` (a positioned box can't join a
+  `background-clip: text` mask), so under `GradientText` the decode is drawn in its fallback color
+  and the gradient returns when the overlay goes.
 - `// DECISION(open)`: timing — `duration` 800 ms default, noise front over the first 30%, 120 ms
   accent lock, 42–80 ms glyph period, 600 ms afterglow, 64 ms clock cap — ported from the approved
   mockup; tunable as a patch pre-1.0.
@@ -244,6 +305,7 @@ Both themes via the toolbar.
 - `// DECISION(open)`: lock highlight and afterglow use `--sk-accent` / `--sk-accent-glow`; noise
   uses `--sk-text-faint`. No new token.
 - **No mono token** (CLAUDE.md rule 8): the mockup's JetBrains Mono roster becomes inherited
-  `font-sans tabular-nums` in the story; the overlay technique makes the decode jitter-free anyway.
+  `font-sans tabular-nums` in the story; noise-by-width keeps the decode tidy in it anyway. The
+  story's title adds `tracking-[.06em]` to approximate the mockup's fixed-width title cells.
 - Hover re-scramble, play-on-view and multi-segment lines are story chrome in v1 (several instances
   + `key`); revisit as props if apps keep re-implementing them.

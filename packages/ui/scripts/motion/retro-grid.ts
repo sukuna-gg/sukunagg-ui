@@ -89,19 +89,34 @@ export const css = String.raw`
   mask-image: linear-gradient(to bottom, transparent 26%, black 82%);
 }
 
-/* The shared resting tilt of every floor layer (the scroll keyframes keep it). */
+/* The shared resting tilt of every floor layer (the keyframes keep it). A layer may be drawn as a
+   1/zoom scale model of its plane (--sk-retro-grid-zoom, default 1): the scale() restores its size
+   on the same plane, and the translations before it stay in full-size pixels. */
 @utility retro-grid-tilt {
   transform-origin: 50% 100%;
-  transform: rotateX(75deg);
+  transform: rotateX(75deg) scale(var(--sk-retro-grid-zoom, 1));
 }
 
 /* 3D layers get no mipmaps, so the long far plane carries only soft, wide line profiles (they
-   survive heavy minification near the horizon). */
+   survive heavy minification near the horizon). It is a quarter-scale model (zoom 4): its plane
+   must be about 10x the container's width so its side edges stay hidden by the floor mask, and the
+   soft lines lose nothing when the browser rasterizes them below full size. */
 @utility retro-grid-plane {
   background-image:
-    linear-gradient(90deg, transparent calc(50% - 7px), var(--sk-retro-grid-soft), transparent calc(50% + 7px)),
-    linear-gradient(0deg, transparent calc(50% - 12px), var(--sk-retro-grid-soft), transparent calc(50% + 12px));
-  background-size: var(--sk-retro-grid-cell) var(--sk-retro-grid-cell);
+    linear-gradient(
+      90deg,
+      transparent calc(50% - 7px / var(--sk-retro-grid-zoom, 1)),
+      var(--sk-retro-grid-soft),
+      transparent calc(50% + 7px / var(--sk-retro-grid-zoom, 1))
+    ),
+    linear-gradient(
+      0deg,
+      transparent calc(50% - 12px / var(--sk-retro-grid-zoom, 1)),
+      var(--sk-retro-grid-soft),
+      transparent calc(50% + 12px / var(--sk-retro-grid-zoom, 1))
+    );
+  background-size: calc(var(--sk-retro-grid-cell) / var(--sk-retro-grid-zoom, 1))
+    calc(var(--sk-retro-grid-cell) / var(--sk-retro-grid-zoom, 1));
   background-position: 50% 100%;
 }
 
@@ -154,28 +169,29 @@ export const css = String.raw`
 
 @keyframes sk-retro-grid-scroll {
   from {
-    transform: rotateX(75deg) translate3d(0, 0, 0);
+    transform: rotateX(75deg) translate3d(0, 0, 0) scale(var(--sk-retro-grid-zoom, 1));
   }
   to {
-    transform: rotateX(75deg) translate3d(0, var(--sk-retro-grid-cell), 0);
+    transform: rotateX(75deg) translate3d(0, var(--sk-retro-grid-cell), 0)
+      scale(var(--sk-retro-grid-zoom, 1));
   }
 }
 
 @keyframes sk-retro-grid-sweep {
   0% {
-    transform: rotateX(75deg) translate3d(0, -1300px, 0);
+    transform: rotateX(75deg) translate3d(0, -1300px, 0) scale(var(--sk-retro-grid-zoom, 1));
     opacity: 0;
   }
   12% {
     opacity: 1;
   }
   58% {
-    transform: rotateX(75deg) translate3d(0, 40px, 0);
+    transform: rotateX(75deg) translate3d(0, 40px, 0) scale(var(--sk-retro-grid-zoom, 1));
     opacity: 1;
   }
   64%,
   100% {
-    transform: rotateX(75deg) translate3d(0, 40px, 0);
+    transform: rotateX(75deg) translate3d(0, 40px, 0) scale(var(--sk-retro-grid-zoom, 1));
     opacity: 0;
   }
 }

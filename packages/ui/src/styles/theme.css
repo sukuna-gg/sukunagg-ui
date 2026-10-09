@@ -333,33 +333,39 @@
   }
 }
 
-/* The rest angle lives in the animate utility, so motion-reduce:animate-none lands on it. */
+/* The rest angle lives in the animate utility, so motion-reduce:animate-none lands on it.
+   --sk-avatar-frame-delay (default 0s) shifts every loop of one frame: a negative value starts it
+   mid-cycle, so frames in a list don't turn in lockstep. */
 @utility animate-avatar-frame-spin {
   rotate: var(--sk-avatar-frame-phase, 0deg);
-  animation: sk-avatar-frame-turn 3.2s linear infinite;
+  animation: sk-avatar-frame-turn 3.2s linear var(--sk-avatar-frame-delay, 0s) infinite;
 }
 
 @utility animate-avatar-frame-sheen {
   rotate: var(--sk-avatar-frame-phase, 0deg);
-  animation: sk-avatar-frame-turn 5.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation: sk-avatar-frame-turn 5.5s cubic-bezier(0.45, 0, 0.55, 1)
+    var(--sk-avatar-frame-delay, 0s) infinite;
 }
 
 @utility animate-avatar-frame-orbit {
   rotate: var(--sk-avatar-frame-phase, 0deg);
-  animation: sk-avatar-frame-turn var(--sk-avatar-frame-t, 6s) linear infinite
-    var(--sk-avatar-frame-dir, normal);
+  animation: sk-avatar-frame-turn var(--sk-avatar-frame-t, 6s) linear
+    var(--sk-avatar-frame-delay, 0s) infinite var(--sk-avatar-frame-dir, normal);
 }
 
 @utility animate-avatar-frame-breathe {
-  animation: sk-avatar-frame-breathe 2.8s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+  animation: sk-avatar-frame-breathe 2.8s cubic-bezier(0.45, 0, 0.55, 1)
+    var(--sk-avatar-frame-delay, 0s) infinite alternate;
 }
 
 @utility animate-avatar-frame-ripple {
-  animation: sk-avatar-frame-ripple 3.2s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  animation: sk-avatar-frame-ripple 3.2s cubic-bezier(0.2, 0.6, 0.3, 1)
+    var(--sk-avatar-frame-delay, 0s) infinite;
 }
 
 @utility animate-avatar-frame-blink {
-  animation: sk-avatar-frame-blink 1.4s ease-in-out infinite alternate;
+  animation: sk-avatar-frame-blink 1.4s ease-in-out var(--sk-avatar-frame-delay, 0s) infinite
+    alternate;
 }
 
 /* A ring-shaped mask on the element's outer edge, --sk-avatar-frame-bw wide. */
@@ -394,22 +400,24 @@
   );
 }
 
-/* The comet's head: a small hot dot riding the ring's centre line, with its own glow. */
+/* The comet's head: a small hot dot riding the ring's centre line, with its own glow. It shrinks
+   with the frame below 100px (6px dot, 7px + 18px glow there) so on small avatars it stays a spark
+   on the ring, not a second dot; it never outgrows the fixed 3px ring on large ones. */
 @utility avatar-frame-head {
   &::after {
     content: '';
     position: absolute;
     left: 50%;
     top: 1.5px;
-    width: 6px;
-    height: 6px;
-    margin: -3px 0 0 -3px;
+    width: clamp(4px, 6cqw, 7px);
+    height: clamp(4px, 6cqw, 7px);
+    translate: -50% -50%;
     border-radius: 50%;
     background: color-mix(in oklab, var(--sk-accent) 55%, var(--sk-text));
     box-shadow:
       0 0 0 1px var(--sk-accent),
-      0 0 7px 2px var(--sk-accent),
-      0 0 18px 5px var(--sk-accent-glow);
+      0 0 min(7px, 7cqw) min(2px, 2cqw) var(--sk-accent),
+      0 0 min(18px, 18cqw) min(5px, 5cqw) var(--sk-accent-glow);
   }
 }
 
@@ -746,31 +754,31 @@
     --sk-glitch-text-m: 1;
   }
   88.6% {
-    clip-path: inset(8% 0 66% 0);
+    clip-path: inset(8% -0.5em 66% -0.5em);
     --sk-glitch-text-m: 1.3;
   }
   90.1% {
-    clip-path: inset(56% 0 22% 0);
+    clip-path: inset(56% -0.5em 22% -0.5em);
     --sk-glitch-text-m: -1;
   }
   91.6% {
-    clip-path: inset(28% 0 50% 0);
+    clip-path: inset(28% -0.5em 50% -0.5em);
     --sk-glitch-text-m: 0.7;
   }
   93.1% {
-    clip-path: inset(70% 0 8% 0);
+    clip-path: inset(70% -0.5em 8% -0.5em);
     --sk-glitch-text-m: 1.3;
   }
   94.6% {
-    clip-path: inset(2% 0 78% 0);
+    clip-path: inset(2% -0.5em 78% -0.5em);
     --sk-glitch-text-m: -0.7;
   }
   96.1% {
-    clip-path: inset(42% 0 36% 0);
+    clip-path: inset(42% -0.5em 36% -0.5em);
     --sk-glitch-text-m: 1;
   }
   97.6% {
-    clip-path: inset(62% 0 14% 0);
+    clip-path: inset(62% -0.5em 14% -0.5em);
     --sk-glitch-text-m: 1.3;
   }
   99.1%,
@@ -859,25 +867,41 @@
   text-shadow: 0 0 0.45em color-mix(in oklab, var(--sk-accent-glow) 45%, transparent);
 }
 
+/* The copies are displaced with text-shadow, never translate. A shadow is ink overflow; a moved
+   box is scrollable overflow and would blink a scrollbar around a full-width root on every burst.
+   Fringe: transparent glyphs whose only paint is one shadow in an explicit tint (a currentColor
+   shadow on a transparent fill paints nothing in Firefox, which resolves it against the fill). */
 @utility glitch-text-fringe {
   clip-path: inset(50% 0 50% 0);
-  text-shadow: none;
-  translate: calc(var(--sk-glitch-text-side, 1) * var(--sk-glitch-text-m) * var(--sk-glitch-text-k) * -0.06em) 0;
+  -webkit-text-fill-color: transparent;
+  text-shadow: calc(var(--sk-glitch-text-side, 1) * var(--sk-glitch-text-m, 1) * var(--sk-glitch-text-k, 1) * -0.06em) 0 var(--sk-glitch-text-tint);
 }
 
+/* Shard: the cut band. A size container clipped on the block axis only, so the band's shadows
+   can spill sideways while its ink child (below) stays out of sight and out of the scroll area. */
 @utility glitch-text-shard {
-  clip-path: inset(var(--sk-glitch-text-y0) -0.5em calc(100% - var(--sk-glitch-text-y1)) -0.5em);
-  translate: calc(var(--sk-glitch-text-dx) * var(--sk-glitch-text-k)) 0;
-  text-shadow:
-    calc(var(--sk-glitch-text-k) * -0.06em) 0 var(--sk-accent),
-    calc(var(--sk-glitch-text-k) * 0.06em) 0 var(--sk-chart-2),
-    0 0 0.45em color-mix(in oklab, var(--sk-accent-glow) 45%, transparent);
+  container-type: size;
+  overflow-y: clip;
+  clip-path: inset(var(--sk-glitch-text-y0) -1em calc(100% - var(--sk-glitch-text-y1)) -1em);
 }
 
+/* The shard's glyphs keep the consumer's colour as their fill but sit one shard-height (100cqh)
+   below, clipped away; the shadows paint them back up into the band, moved by dx. */
+@utility glitch-text-shard-ink {
+  display: block;
+  translate: 0 100cqh;
+  text-shadow:
+    calc(var(--sk-glitch-text-dx) * var(--sk-glitch-text-k, 1)) -100cqh currentColor,
+    calc((var(--sk-glitch-text-dx) - 0.06em) * var(--sk-glitch-text-k, 1)) -100cqh var(--sk-accent),
+    calc((var(--sk-glitch-text-dx) + 0.06em) * var(--sk-glitch-text-k, 1)) -100cqh var(--sk-chart-2),
+    calc(var(--sk-glitch-text-dx) * var(--sk-glitch-text-k, 1)) -100cqh 0.45em color-mix(in oklab, var(--sk-accent-glow) 45%, transparent);
+}
+
+/* Full width of the frame, no bleed past it (a wider box would be scrollable overflow). */
 @utility glitch-text-edge {
   top: var(--sk-glitch-text-y1);
-  left: -8%;
-  right: -8%;
+  left: 0;
+  right: 0;
   height: min(max(1px, 0.04em), calc((var(--sk-glitch-text-y1) - var(--sk-glitch-text-y0)) * 99));
   opacity: 0.75;
   background-image: linear-gradient(
@@ -890,12 +914,10 @@
   );
 }
 
+/* Solid stops only: Firefox paints a color-mix() stop in a 3px repeating gradient as one flat
+   tint. The slot's opacity-30 fades the layer instead. */
 @utility glitch-text-scanlines {
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0 2px,
-    color-mix(in oklab, var(--sk-bg) 30%, transparent) 2px 3px
-  );
+  background-image: repeating-linear-gradient(to bottom, transparent 0 2px, var(--sk-bg) 2px 3px);
 }
 
 /* LootReveal (docs/component-loot-reveal.md \u00A74): 6 keyframes; the base classes are the reveal. */
@@ -1098,11 +1120,15 @@
   animation: sk-loot-reveal-bloom 700ms var(--sk-ease) calc(var(--sk-loot-reveal-at, 0ms) + 550ms);
 }
 
+/* The label rises in after the flip; like the face it stays visibility: hidden (out of the
+   accessibility tree) until its card turns over, so no "Legendary" is read before its name. */
 @utility animate-loot-reveal-label {
   --sk-loot-reveal-o1: 0.6;
   --sk-loot-reveal-y0: 0 4px;
-  animation: sk-loot-reveal-bloom 350ms var(--sk-ease) calc(var(--sk-loot-reveal-at, 0ms) + 300ms)
-    both;
+  --sk-loot-reveal-pre: hidden;
+  animation:
+    sk-loot-reveal-bloom 350ms var(--sk-ease) calc(var(--sk-loot-reveal-at, 0ms) + 300ms) both,
+    sk-loot-reveal-side 900ms linear var(--sk-loot-reveal-at, 0ms) both;
 }
 
 @utility animate-loot-reveal-hint {
@@ -1469,7 +1495,7 @@
   }
 }
 
-/* The timeline: one utility per part, literal timings (settles by ~2.3s). */
+/* The timeline: one utility per part, literal timings (settles by ~2.4s, when glint-alt ends). */
 @utility animate-rank-reveal-rays {
   animation:
     sk-rank-reveal-enter 1s var(--sk-ease) both,
@@ -1555,13 +1581,17 @@
 }
 
 /* Ray fields, interpolated "in srgb": Firefox draws a repeating conic gradient with non-legacy
-   (color-mix) stops as dotted hairlines under the default oklab interpolation. */
+   (color-mix) stops as dotted hairlines under the default oklab interpolation. A browser without
+   gradient interpolation methods (Firefox < 127, Safari < 16.2) drops the "in srgb" declaration
+   as invalid, so the plain one before it keeps the rays. */
 @utility rank-reveal-rays {
+  background-image: repeating-conic-gradient(transparent 0, var(--sk-rank-reveal-glow) 2.5deg 5deg, transparent 7.5deg 15deg);
   background-image: repeating-conic-gradient(in srgb, transparent 0, var(--sk-rank-reveal-glow) 2.5deg 5deg, transparent 7.5deg 15deg);
   mask-image: radial-gradient(closest-side, transparent 9%, black 20%, transparent 78%);
 }
 
 @utility rank-reveal-rays-alt {
+  background-image: repeating-conic-gradient(from 5deg, transparent 0, color-mix(in oklab, var(--sk-premium) 50%, var(--sk-rank-reveal-hue)) 1deg 2deg, transparent 3deg 20deg);
   background-image: repeating-conic-gradient(from 5deg in srgb, transparent 0, color-mix(in oklab, var(--sk-premium) 50%, var(--sk-rank-reveal-hue)) 1deg 2deg, transparent 3deg 20deg);
   mask-image: radial-gradient(closest-side, transparent 9%, black 20%, transparent 78%);
 }
@@ -1659,19 +1689,34 @@
   mask-image: linear-gradient(to bottom, transparent 26%, black 82%);
 }
 
-/* The shared resting tilt of every floor layer (the scroll keyframes keep it). */
+/* The shared resting tilt of every floor layer (the keyframes keep it). A layer may be drawn as a
+   1/zoom scale model of its plane (--sk-retro-grid-zoom, default 1): the scale() restores its size
+   on the same plane, and the translations before it stay in full-size pixels. */
 @utility retro-grid-tilt {
   transform-origin: 50% 100%;
-  transform: rotateX(75deg);
+  transform: rotateX(75deg) scale(var(--sk-retro-grid-zoom, 1));
 }
 
 /* 3D layers get no mipmaps, so the long far plane carries only soft, wide line profiles (they
-   survive heavy minification near the horizon). */
+   survive heavy minification near the horizon). It is a quarter-scale model (zoom 4): its plane
+   must be about 10x the container's width so its side edges stay hidden by the floor mask, and the
+   soft lines lose nothing when the browser rasterizes them below full size. */
 @utility retro-grid-plane {
   background-image:
-    linear-gradient(90deg, transparent calc(50% - 7px), var(--sk-retro-grid-soft), transparent calc(50% + 7px)),
-    linear-gradient(0deg, transparent calc(50% - 12px), var(--sk-retro-grid-soft), transparent calc(50% + 12px));
-  background-size: var(--sk-retro-grid-cell) var(--sk-retro-grid-cell);
+    linear-gradient(
+      90deg,
+      transparent calc(50% - 7px / var(--sk-retro-grid-zoom, 1)),
+      var(--sk-retro-grid-soft),
+      transparent calc(50% + 7px / var(--sk-retro-grid-zoom, 1))
+    ),
+    linear-gradient(
+      0deg,
+      transparent calc(50% - 12px / var(--sk-retro-grid-zoom, 1)),
+      var(--sk-retro-grid-soft),
+      transparent calc(50% + 12px / var(--sk-retro-grid-zoom, 1))
+    );
+  background-size: calc(var(--sk-retro-grid-cell) / var(--sk-retro-grid-zoom, 1))
+    calc(var(--sk-retro-grid-cell) / var(--sk-retro-grid-zoom, 1));
   background-position: 50% 100%;
 }
 
@@ -1724,28 +1769,29 @@
 
 @keyframes sk-retro-grid-scroll {
   from {
-    transform: rotateX(75deg) translate3d(0, 0, 0);
+    transform: rotateX(75deg) translate3d(0, 0, 0) scale(var(--sk-retro-grid-zoom, 1));
   }
   to {
-    transform: rotateX(75deg) translate3d(0, var(--sk-retro-grid-cell), 0);
+    transform: rotateX(75deg) translate3d(0, var(--sk-retro-grid-cell), 0)
+      scale(var(--sk-retro-grid-zoom, 1));
   }
 }
 
 @keyframes sk-retro-grid-sweep {
   0% {
-    transform: rotateX(75deg) translate3d(0, -1300px, 0);
+    transform: rotateX(75deg) translate3d(0, -1300px, 0) scale(var(--sk-retro-grid-zoom, 1));
     opacity: 0;
   }
   12% {
     opacity: 1;
   }
   58% {
-    transform: rotateX(75deg) translate3d(0, 40px, 0);
+    transform: rotateX(75deg) translate3d(0, 40px, 0) scale(var(--sk-retro-grid-zoom, 1));
     opacity: 1;
   }
   64%,
   100% {
-    transform: rotateX(75deg) translate3d(0, 40px, 0);
+    transform: rotateX(75deg) translate3d(0, 40px, 0) scale(var(--sk-retro-grid-zoom, 1));
     opacity: 0;
   }
 }

@@ -106,7 +106,10 @@ function DeathScreen() {
       <div
         className={`absolute inset-x-0 bottom-6 flex items-center justify-center gap-2.5 delay-[760ms] ${rise}`}
       >
-        <span className="relative inline-flex items-center gap-2 overflow-hidden rounded-[4px] border border-[color-mix(in_oklab,var(--sk-accent)_45%,transparent)] bg-[color-mix(in_oklab,var(--sk-accent)_9%,var(--sk-surface-2))] py-1.5 pr-[11px] pl-[9px] font-sans text-[10px] font-semibold uppercase leading-none tracking-eyebrow before:absolute before:inset-0 before:bg-[repeating-linear-gradient(180deg,color-mix(in_oklab,var(--sk-text)_7%,transparent)_0_1px,transparent_1px_3px)] before:content-[''] after:absolute after:inset-x-0 after:top-0 after:h-[70%] after:translate-y-[40%] after:bg-[linear-gradient(transparent_30%,color-mix(in_oklab,var(--sk-accent)_30%,transparent)_48%,color-mix(in_oklab,var(--sk-text)_35%,transparent)_50%,transparent_62%)] after:content-['']">
+        {/* Scanlines: a solid stop faded by opacity (Firefox paints a color-mix stop in a 3px
+            repeating gradient as a flat tint). The mockup's sweeping highlight band needs a
+            keyframe of its own, so the story leaves it out rather than show it parked. */}
+        <span className="relative inline-flex items-center gap-2 overflow-hidden rounded-[4px] border border-[color-mix(in_oklab,var(--sk-accent)_45%,transparent)] bg-[color-mix(in_oklab,var(--sk-accent)_9%,var(--sk-surface-2))] py-1.5 pr-[11px] pl-[9px] font-sans text-[10px] font-semibold uppercase leading-none tracking-eyebrow before:absolute before:inset-0 before:bg-[repeating-linear-gradient(180deg,var(--sk-text)_0_1px,transparent_1px_3px)] before:opacity-7 before:content-['']">
           <span
             aria-hidden="true"
             className="relative size-1.5 rounded-pill bg-accent shadow-[0_0_8px_var(--sk-accent-glow)] after:absolute after:inset-0 after:rounded-pill after:border after:border-accent after:content-[''] motion-safe:after:animate-ping"

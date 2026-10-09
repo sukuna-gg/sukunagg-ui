@@ -10,8 +10,9 @@ import { rankRevealStyles } from './rank-reveal.styles'
 export interface RankRevealProps
   extends Omit<ComponentPropsWithoutRef<'div'>, 'title' | 'children'> {
   /**
-   * The new rank, e.g. "Master". Rendered in a real heading (see `headingLevel`), so the rank is
-   * never only in the crest.
+   * The new rank, e.g. "Master". Rendered as real text in a heading (see `headingLevel`) unless
+   * `headingLevel` is `'p'`, so the rank is never only in the crest. Its size scales with the
+   * component's width, so an 11-letter rank ("Grandmaster") stays on one line at phone width.
    */
   title: ReactNode
   /** Division or tier numeral shown after the title in the tone color: "I", "III", "2". */
@@ -61,17 +62,24 @@ const i = (n: number) => ({ '--sk-rank-reveal-i': n }) as CSSProperties
  *   reveal.
  * - Accessibility: the whole effect layer (and a custom `emblem`) is `aria-hidden`; the eyebrow,
  *   the title (a real heading, `headingLevel`) and the description are real text in reading order.
- *   It is not a live region — pass `role="status"` if the reveal appears after an action and should
- *   be announced. Only one crest brighten and two small glints flash (WCAG 2.3.1).
+ *   It is not a live region, and it mounts already filled (replay remounts it), so a
+ *   `role="status"` on it is not announced reliably: announce the promotion from the app's own
+ *   persistent live region (one that exists before its text changes). Only one crest brighten and
+ *   two small glints flash (WCAG 2.3.1).
  * - Reduced motion: every part carries `motion-reduce:animate-none`, so the settled frame shows at
  *   once and the decorative loops (ray spin, halo breathe) stop.
  * - Variants: `tone`: 'accent' (default) | 'premium'.
  * - Layout: fills its container's width, clips the ray field, and centers itself vertically; give
- *   it a stage about 320px tall (a card, a dialog). It paints only a soft tone glow behind the
- *   crest (no background of its own), so it sits seamlessly inside a bigger card. The title steps
- *   down to `text-3xl` below 420px. The pips' knock-out ring is `--sk-surface`, the stage it is
- *   designed on. Load Archivo with its `wdth` axis for the expanded title (the library does not
- *   bundle the font).
+ *   it a stage about 320px tall (a card, a dialog). It is a size container (inline-size
+ *   containment), so its width comes from the container, not its content: give the stage a
+ *   definite width. A shrink-to-fit parent (`width: fit-content`, inline-block, an unsized
+ *   absolute box or `<dialog>`) gets the 320px phone layout instead of collapsing. The effect
+ *   layer is sized in px, so it lines up at any root font size. It paints only a soft tone glow
+ *   behind the crest (no background of its own), so it sits seamlessly inside a bigger card. The
+ *   title scales with its width (`clamp(20px, 9cqi, 42px)`, so 42px from a ~500px-wide root), and
+ *   a longer single word wraps rather than clipping. The pips' knock-out ring is `--sk-surface`,
+ *   the stage it is designed on. Load Archivo with its `wdth` axis for the expanded title (the
+ *   library does not bundle the font). The sheen-filled title prints as plain `--sk-text`.
  * - The ref points at the root `<div>` (`data-sk-rank-reveal`); `className` merges last.
  *
  * @example

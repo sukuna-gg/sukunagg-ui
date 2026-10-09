@@ -4,8 +4,10 @@
  * fixed by `./index.ts`). Names: `--sk-scramble-text-*`, `sk-scramble-text-*`, `animate-scramble-text-*`.
  *
  * The decode itself is JS (the `scramble-text.scramble.tsx` island swaps characters with rAF); the
- * only CSS motion is the afterglow a glyph keeps after it locks. The keyframe has no `to`, so it
- * fades into whatever color the text inherits.
+ * only CSS motion is the afterglow a glyph's overlay cell keeps after it locks. The keyframe has no
+ * `to`, so it fades into whatever color the text inherits. Its 600 ms is mirrored by `SETTLE` in
+ * the island, which removes every cell once the last afterglow has ended (so nothing is left to
+ * restart when a hidden parent is shown again).
  */
 export const css = String.raw`
 /* ScrambleText (Q39): the afterglow a glyph keeps for a beat after it locks to its real character. */
