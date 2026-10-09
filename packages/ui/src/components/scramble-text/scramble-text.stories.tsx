@@ -120,9 +120,10 @@ export const Staggered: Story = {
 
 /**
  * Inherited text styling composes: under a gradient fill (GradientText) the decode draws in the
- * inherited `color` and the gradient returns when it ends; a glow `text-shadow` or a text-stroke
- * styles the noise too. The real text is hidden with `visibility` while it decodes, so none of
- * them shows the answer early.
+ * inherited `color` and the gradient returns when it ends; a bare `bg-clip-text text-transparent`
+ * parent has no real `color`, so its settling glyphs draw in `--sk-text` instead; a glow
+ * `text-shadow` or a text-stroke styles the noise too. The real text is hidden with `visibility`
+ * while it decodes, so none of them shows the answer early.
  */
 export const Composed: Story = {
   render: () => (
@@ -133,6 +134,11 @@ export const Composed: Story = {
             <GradientText>
               <ScrambleText text="VICTORY ROYALE" delay={300} duration={900} />
             </GradientText>
+          </h2>
+          <h2 className={`${display} text-[48px] leading-[.9]`}>
+            <span className="inline-block bg-[linear-gradient(90deg,var(--sk-premium),var(--sk-accent))] bg-clip-text text-transparent">
+              <ScrambleText text="FLAWLESS" delay={380} duration={900} />
+            </span>
           </h2>
           <ScrambleText
             as="h2"

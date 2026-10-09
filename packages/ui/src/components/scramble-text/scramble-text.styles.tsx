@@ -25,7 +25,9 @@ import { tv, type VariantProps } from '../../utils/tv'
  *   is the real glyph's measured box and its line-height is that box's height, so what it draws
  *   sits on the real baseline; noise is centred in it, the locked glyph sits at its left edge (the
  *   real glyph's pen position). The text fill follows `color`, so noise shows under a parent's
- *   `-webkit-text-fill-color: transparent` (GradientText, ShinyText).
+ *   `-webkit-text-fill-color: transparent` (GradientText, ShinyText). The island sets `data-clear`
+ *   on the cells when the inherited `color` itself is transparent and nothing strokes the text
+ *   (`bg-clip-text text-transparent`); a settled cell then draws in `--sk-text`, not in nothing.
  * - `probe`: a throwaway invisible row the island measures the noise alphabet with.
  */
 export const scrambleTextStyles = tv({
@@ -47,6 +49,9 @@ export const scrambleTextStyles = tv({
       // The variant chain repeats on the reduce override, or `[data-glyph]` would outrank it.
       'data-[glyph=done]:justify-start data-[glyph=done]:animate-scramble-text-settle',
       'motion-reduce:data-[glyph=done]:animate-none',
+      // `data-clear`: the inherited color is transparent (`bg-clip-text text-transparent`) with no
+      // stroke, so a settled glyph would fade to nothing — it lands on --sk-text instead.
+      'data-clear:data-[glyph=done]:text-text',
     ],
     probe: 'invisible absolute whitespace-pre',
   },

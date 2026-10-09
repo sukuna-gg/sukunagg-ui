@@ -228,7 +228,9 @@ test.describe('ScrambleText', () => {
 
     test('hides the real text under a gradient fill and draws visible noise', async ({ page }) => {
       await page.goto(story(COMPOSED))
-      const layer = page.locator('h2 span[class*="bg-clip-text"] [data-sk-scramble-text]')
+      const layer = page
+        .getByRole('heading', { name: 'VICTORY ROYALE' })
+        .locator('[data-sk-scramble-text]')
       await expect(layer).toHaveAttribute('data-state', 'running')
       // `visibility` (not color) hides it, so the parent's background-clip: text can't show it.
       expect(
@@ -246,6 +248,49 @@ test.describe('ScrambleText', () => {
       expect(
         await layer.locator('> :last-child').evaluate((el) => getComputedStyle(el).visibility),
       ).toBe('visible')
+    })
+
+    test('never lets a settled glyph fade into a transparent color (bg-clip-text text-transparent)', async ({
+      page,
+    }) => {
+      await page.goto(story(COMPOSED))
+      const layer = page
+        .getByRole('heading', { name: 'FLAWLESS' })
+        .locator('[data-sk-scramble-text]')
+      await expect(layer).toHaveAttribute('data-state', 'running')
+      // The parent's `color` is transparent and nothing strokes it: the cells are flagged…
+      await expect(layer.locator('[data-clear]').first()).toBeAttached()
+      // …while the stroked line (transparent `color` + text-stroke) is left alone.
+      const stroked = page.getByRole('heading', { name: 'ROUND 12' }).locator('[data-glyph]')
+      expect(await stroked.count()).toBeGreaterThan(0)
+      expect(await stroked.and(page.locator('[data-clear]')).count()).toBe(0)
+      // Sample every frame until the line settles: the lowest alpha any `done` cell's color or fill
+      // computes to. Before the fix they faded into `transparent` and the word went blank.
+      const seen = await layer.evaluate(
+        (el) =>
+          new Promise<{ done: number; min: number }>((resolve) => {
+            const alpha = (c: string) => {
+              if (c === 'transparent') return 0
+              const m =
+                /^rgba\((?:[^,]+,){3}\s*([\d.]+)\)$/.exec(c) ?? /\/\s*([\d.]+)(%?)\s*\)$/.exec(c)
+              return m ? Number(m[1]) / (m[2] ? 100 : 1) : 1
+            }
+            let done = 0
+            let min = 1
+            const sample = () => {
+              for (const cell of el.querySelectorAll('[data-glyph="done"]')) {
+                const cs = getComputedStyle(cell)
+                done++
+                min = Math.min(min, alpha(cs.color), alpha(cs.webkitTextFillColor))
+              }
+              if (el.getAttribute('data-state') === 'done') resolve({ done, min })
+              else requestAnimationFrame(sample)
+            }
+            sample()
+          }),
+      )
+      expect(seen.done).toBeGreaterThan(0)
+      expect(seen.min).toBeGreaterThan(0.5)
     })
 
     test('replays when its key changes (hovering a roster row)', async ({ page }) => {

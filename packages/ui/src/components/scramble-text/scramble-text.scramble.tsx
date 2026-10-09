@@ -17,6 +17,39 @@ const FIT = 1.1
 /** …but every cell can always pick from at least this many (the alphabet's narrowest). */
 const MIN_POOL = 4
 const REDUCE = '(prefers-reduced-motion: reduce)'
+/** The computed properties that change how wide the noise alphabet sets: the width-cache key. */
+const FONT = [
+  'font-family',
+  'font-size',
+  'font-weight',
+  'font-style',
+  'font-stretch',
+  'font-variant-caps',
+  'font-variant-numeric',
+  'font-feature-settings',
+  'font-variation-settings',
+  'letter-spacing',
+  'text-transform',
+]
+/** A fully transparent computed color: `transparent`, `rgba(…, 0)` or `…/ 0)`. */
+const CLEAR = /^transparent$|^rgba\((?:[^,]+,){3}\s*0(?:\.0*)?\)$|\/\s*0(?:\.0*)?%?\s*\)$/
+
+/**
+ * The noise alphabet's measured widths (layout px, alphabet order) per computed font, so the probe
+ * runs once per font rather than once per instance and resize. Emptied when a web font arrives.
+ * @internal
+ */
+export const alphabetWidths = new Map<string, number[]>()
+/** The `loadingdone` event that last emptied {@link alphabetWidths} (every running line hears it). */
+let refonted: Event | undefined
+
+/**
+ * Whether glyphs drawn in the inherited paint would be invisible: a fully transparent `color` (the
+ * `bg-clip-text text-transparent` gradient pattern) and no text-stroke to draw them instead.
+ * @internal
+ */
+export const isClearFill = (color: string, strokeWidth: string): boolean =>
+  CLEAR.test(color) && !(Number.parseFloat(strokeWidth) > 0)
 
 /**
  * mulberry32: a tiny seeded PRNG returning floats in [0, 1).
@@ -147,12 +180,13 @@ export function ScrambleGlyphs({ text, delay, duration, seed }: ScrambleGlyphsPr
     const overlay = layer.firstElementChild as HTMLElement
     const real = layer.lastElementChild as HTMLElement
     const glyphs = splitGlyphs(text)
+    const motion = window.matchMedia(REDUCE)
     if (
       duration <= 0 ||
       glyphs.length === 0 ||
       // No layout box (a `display: none` ancestor): nothing to see, nothing to measure.
       layer.getClientRects().length === 0 ||
-      window.matchMedia(REDUCE).matches
+      motion.matches
     ) {
       layer.setAttribute('data-state', 'done')
       return
@@ -188,38 +222,63 @@ export function ScrambleGlyphs({ text, delay, duration, seed }: ScrambleGlyphsPr
       }
     })
 
+    const fonts = document.fonts as FontFaceSet | undefined
+
     /**
      * Places every cell over its real glyph and picks its noise pool by width. Positions are taken
      * relative to the overlay and divided by any ancestor scale, so they are layout coordinates.
-     * Runs at the start, and again on a resize or a web font arriving mid-decode.
+     * Every read comes before any write (one layout per instance), and the alphabet is probed only
+     * on a width-cache miss. Runs at the start, and again on a resize or a web font arriving.
      */
     const measure = (): void => {
       const origin = overlay.getBoundingClientRect()
       const box = real.getBoundingClientRect()
       const sx = ratio(box.width, real.offsetWidth)
       const sy = ratio(box.height, real.offsetHeight)
-      const probe = document.createElement('span')
-      probe.className = s.probe()
-      for (const ch of NOISE) {
-        const span = document.createElement('span')
-        span.textContent = ch
-        probe.append(span)
-      }
-      overlay.append(probe)
-      const widths = Array.from(probe.children, (c) => c.getBoundingClientRect().width / sx)
-      probe.remove()
       const range = document.createRange()
-      for (const c of cells) {
+      const rects = cells.map((c) => {
         range.setStart(node, c.glyph.index)
         range.setEnd(node, c.glyph.index + c.glyph.value.length)
-        const r = range.getBoundingClientRect()
+        return range.getBoundingClientRect()
+      })
+      const cs = getComputedStyle(overlay)
+      // Under a transparent `color` a settled cell would fade out with the inherited paint (the
+      // real text stays hidden until the last afterglow ends), so it draws in `--sk-text` instead.
+      const clear = isClearFill(cs.color, cs.getPropertyValue('-webkit-text-stroke-width'))
+      const key = FONT.map((p) => cs.getPropertyValue(p)).join('|')
+      let widths = alphabetWidths.get(key)
+      if (!widths) {
+        const probe = document.createElement('span')
+        probe.className = s.probe()
+        for (const ch of NOISE) {
+          const span = document.createElement('span')
+          span.textContent = ch
+          probe.append(span)
+        }
+        overlay.append(probe)
+        widths = Array.from(probe.children, (c) => c.getBoundingClientRect().width / sx)
+        probe.remove()
+        // A font still loading may be measured as its fallback: use it, but don't keep it.
+        if (fonts?.status !== 'loading') alphabetWidths.set(key, widths)
+      }
+      cells.forEach((c, i) => {
+        const r = rects[i] as DOMRect
         const w = r.width / sx
         c.el.style.setProperty('--sk-scramble-text-x', `${(r.left - origin.left) / sx}px`)
         c.el.style.setProperty('--sk-scramble-text-y', `${(r.top - origin.top) / sy}px`)
         c.el.style.setProperty('--sk-scramble-text-w', `${w}px`)
         c.el.style.setProperty('--sk-scramble-text-h', `${r.height / sy}px`)
+        c.el.toggleAttribute('data-clear', clear)
         c.pool = noisePool(w, widths)
+      })
+    }
+    /** A web font arrived: any cached width may be a fallback's — the first line to hear it empties the cache. */
+    const refont = (e: Event): void => {
+      if (e !== refonted) {
+        refonted = e
+        alphabetWidths.clear()
       }
+      measure()
     }
 
     const paint = (c: Cell, state: GlyphState, shown: string): void => {
@@ -255,19 +314,29 @@ export function ScrambleGlyphs({ text, delay, duration, seed }: ScrambleGlyphsPr
       return busy || clock < settled
     }
 
-    const fonts = document.fonts as FontFaceSet | undefined
-    window.addEventListener('resize', measure)
-    fonts?.addEventListener('loadingdone', measure)
-    /** Back to the base final frame: the real text, no cells, nothing animated left to replay. */
-    const settle = (): void => {
-      window.removeEventListener('resize', measure)
-      fonts?.removeEventListener('loadingdone', measure)
-      overlay.replaceChildren()
-    }
-
     let clock = 0
     let prev = -1
     let raf = 0
+    /** Back to the base final frame: the real text, no cells, nothing animated left to replay. */
+    const settle = (): void => {
+      window.removeEventListener('resize', measure)
+      fonts?.removeEventListener('loadingdone', refont)
+      motion.removeEventListener('change', reduce)
+      overlay.replaceChildren()
+    }
+    const finish = (): void => {
+      settle()
+      layer.setAttribute('data-state', 'done')
+    }
+    /** Reduced motion switched on mid-decode (it only fires on a change, and it was off): stop now. */
+    const reduce = (): void => {
+      cancelAnimationFrame(raf)
+      finish()
+    }
+    window.addEventListener('resize', measure)
+    fonts?.addEventListener('loadingdone', refont)
+    motion.addEventListener('change', reduce)
+
     const tick = (now: number): void => {
       // Capped step: a stalled or hidden tab resumes the decode instead of jumping to the end.
       clock += prev < 0 ? 0 : Math.min(MAX_STEP, Math.max(0, now - prev))
@@ -275,10 +344,7 @@ export function ScrambleGlyphs({ text, delay, duration, seed }: ScrambleGlyphsPr
       // The JS clock never runs ahead of real time, so once it is 600 ms past the last cell's turn
       // to `done`, that cell's CSS afterglow has ended too.
       if (draw(clock)) raf = requestAnimationFrame(tick)
-      else {
-        settle()
-        layer.setAttribute('data-state', 'done')
-      }
+      else finish()
     }
     measure()
     layer.setAttribute('data-state', 'running')

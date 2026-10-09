@@ -5,7 +5,15 @@ import { createRef, Profiler } from 'react'
 import { expectAccessible } from '../../../../../test/axe'
 import { expectHydrates, renderServer } from '../../../../../test/ssr'
 import { ScrambleText, type ScrambleTextProps } from './index'
-import { hashText, mulberry32, noiseAt, noisePool, splitGlyphs } from './scramble-text.scramble'
+import {
+  alphabetWidths,
+  hashText,
+  isClearFill,
+  mulberry32,
+  noiseAt,
+  noisePool,
+  splitGlyphs,
+} from './scramble-text.scramble'
 import { scrambleTextStyles } from './scramble-text.styles'
 
 const NOISE = '!<>-_\\/[]{}=+*^?#0123456789ABCDEF'
@@ -13,14 +21,19 @@ const NOISE = '!<>-_\\/[]{}=+*^?#0123456789ABCDEF'
 // Default every test to reduced motion, so a mount that doesn't opt into the decode schedules
 // nothing (Counter's harness).
 let mm: ReturnType<typeof spyOn>
+/** The reduced-motion query a motion-on mount subscribes to (`change` switches reduce on). */
+let motion: EventTarget & { matches: boolean }
 beforeEach(() => {
   mm = spyOn(window, 'matchMedia').mockReturnValue({ matches: true } as MediaQueryList)
+  // Each test measures its own alphabet (the width cache is module-level).
+  alphabetWidths.clear()
 })
 afterEach(() => mm.mockRestore())
 
 /** Turn motion on and capture the rAF callback so frames can be stepped by hand. */
 function mockRaf() {
-  mm.mockReturnValue({ matches: false } as MediaQueryList)
+  motion = Object.assign(new EventTarget(), { matches: false })
+  mm.mockReturnValue(motion as unknown as MediaQueryList)
   let cb: FrameRequestCallback | null = null
   let now = 0
   const raf = spyOn(globalThis, 'requestAnimationFrame').mockImplementation((fn) => {
@@ -173,7 +186,7 @@ describe('ScrambleText', () => {
     expect(textOf(root).textContent).toBe('AB CD')
   })
 
-  it('locks the last glyph at delay + duration, holds blank during the delay, settles 600 ms later', () => {
+  it('locks every glyph by delay + duration, holds blank during the delay, settles 600 ms later', () => {
     const r = mockRaf()
     render(<ScrambleText text="GLHF" delay={300} duration={200} data-testid="s" />)
     const root = screen.getByTestId('s')
@@ -346,6 +359,118 @@ describe('ScrambleText', () => {
       delete (document as { fonts?: unknown }).fonts
       r.restore()
     }
+  })
+
+  it('probes the noise alphabet once per font, never keeps a loading font, re-probes once on arrival', () => {
+    mockRaf()
+    const fonts = Object.assign(new EventTarget(), { status: 'loaded' })
+    Object.defineProperty(document, 'fonts', { configurable: true, value: fonts })
+    const probe = scrambleTextStyles().probe()
+    const original = Element.prototype.getBoundingClientRect
+    let probed = 0
+    const el = spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (
+      this: Element,
+    ) {
+      if (this.parentElement?.className === probe) probed++
+      return original.call(this)
+    })
+    try {
+      // Three lines in the same font: one probe, cached.
+      render(<ScrambleText text="GG" duration={400} />)
+      render(<ScrambleText text="WP" duration={400} />)
+      render(<ScrambleText text="GLHF" duration={400} />)
+      expect(probed).toBe(NOISE.length)
+      expect(alphabetWidths.size).toBe(1)
+      // A web font arrives: the first line to hear it empties the cache and re-probes; the others
+      // reuse that fresh measurement.
+      act(() => fonts.dispatchEvent(new Event('loadingdone')))
+      expect(probed).toBe(2 * NOISE.length)
+      expect(alphabetWidths.size).toBe(1)
+      // Measured while a font is still loading (maybe as its fallback): used, never cached.
+      alphabetWidths.clear()
+      fonts.status = 'loading'
+      render(<ScrambleText text="EZ" duration={400} />)
+      expect(probed).toBe(3 * NOISE.length)
+      expect(alphabetWidths.size).toBe(0)
+    } finally {
+      el.mockRestore()
+      delete (document as { fonts?: unknown }).fonts
+    }
+  })
+
+  it('draws settled glyphs in --sk-text when the inherited color is transparent and unstroked', () => {
+    mockRaf()
+    // happy-dom inherits `color` but has no `-webkit-text-stroke`: stub it for the stroked line.
+    const real = globalThis.getComputedStyle
+    const gcs = spyOn(globalThis, 'getComputedStyle').mockImplementation((el: Element) =>
+      el.closest('[data-testid="stroked"]')
+        ? ({
+            color: 'transparent',
+            getPropertyValue: (p: string) => (p === '-webkit-text-stroke-width' ? '1px' : ''),
+          } as CSSStyleDeclaration)
+        : real(el),
+    )
+    try {
+      render(
+        <>
+          <span style={{ color: 'transparent' }}>
+            <ScrambleText text="GG" duration={300} data-testid="clear" />
+          </span>
+          <ScrambleText text="GG" duration={300} data-testid="stroked" />
+          <span style={{ color: 'red' }}>
+            <ScrambleText text="GG" duration={300} data-testid="colored" />
+          </span>
+        </>,
+      )
+    } finally {
+      gcs.mockRestore()
+    }
+    const flags = (id: string) =>
+      cellsOf(screen.getByTestId(id)).map((c) => c.hasAttribute('data-clear'))
+    expect(flags('clear')).toEqual([true, true])
+    expect(flags('stroked')).toEqual([false, false]) // the stroke still draws the glyphs
+    expect(flags('colored')).toEqual([false, false])
+    expect(scrambleTextStyles().cell().split(' ')).toContain(
+      'data-clear:data-[glyph=done]:text-text',
+    )
+  })
+
+  it('recognises a fully transparent computed color', () => {
+    for (const color of [
+      'transparent',
+      'rgba(0, 0, 0, 0)',
+      'rgba(9,9,9,0.0)',
+      'oklch(0.7 0.1 30 / 0)',
+    ])
+      expect(isClearFill(color, '0px')).toBe(true)
+    expect(isClearFill('oklab(0.5 0 0 / 0%)', '')).toBe(true)
+    for (const color of [
+      'rgb(255, 0, 0)', // an opaque color whose last channel is 0
+      'rgba(255, 0, 0, 0.5)',
+      'rgba(255, 0, 0, 0.05)',
+      'color(srgb 1 0 0 / 0.4)',
+    ])
+      expect(isClearFill(color, '0px')).toBe(false)
+    expect(isClearFill('rgba(0, 0, 0, 0)', '1px')).toBe(false) // stroked
+  })
+
+  it('ends the decode at once when reduced motion switches on mid-decode', () => {
+    const r = mockRaf()
+    render(<ScrambleText text="MATCH FOUND" duration={800} data-testid="s" />)
+    const root = screen.getByTestId('s')
+    const off = spyOn(motion, 'removeEventListener')
+    r.advance(160)
+    expect(cellsOf(root).length).toBeGreaterThan(0)
+    act(() => {
+      motion.matches = true
+      motion.dispatchEvent(new Event('change'))
+    })
+    expect(r.caf).toHaveBeenCalledWith(7)
+    expect(cellsOf(root)).toHaveLength(0)
+    expect(layerOf(root).getAttribute('data-state')).toBe('done')
+    expect(textOf(root).textContent).toBe('MATCH FOUND')
+    expect(off.mock.calls.some(([type]) => type === 'change')).toBe(true)
+    r.restore()
   })
 
   it('shows the text immediately when duration <= 0, the text is blank, or there is no layout box', () => {

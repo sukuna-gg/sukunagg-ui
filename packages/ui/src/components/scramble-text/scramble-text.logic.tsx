@@ -38,8 +38,8 @@ export interface ScrambleTextProps
    */
   delay?: number
   /**
-   * Milliseconds the decode lasts once it starts; the last glyph locks exactly at
-   * `delay + duration`. Values `<= 0` show the text immediately.
+   * Milliseconds the decode lasts once it starts: every glyph has locked by `delay + duration`
+   * (a 600 ms afterglow follows). Values `<= 0` show the text immediately.
    * @default 800
    */
   duration?: number
@@ -64,7 +64,10 @@ export interface ScrambleTextProps
  *   restarts it.
  * - Accessibility: the real text is in the DOM once, unsplit, in an `sr-only` span (so screen
  *   readers never read noise or spell it letter by letter); the visible line is `aria-hidden`.
- *   Use `as` for headings. `prefers-reduced-motion: reduce` shows the final text with no decode.
+ *   Use `as` for headings. `prefers-reduced-motion: reduce` shows the final text with no decode,
+ *   and switching it on mid-decode ends the decode at once. The element's `textContent` holds the
+ *   text twice (sr-only + visible copy), so in tests query it by role
+ *   (`getByRole('heading', { name })`), not `getByText`.
  * - Layout: at rest (server, no-JS, reduced motion, and once the decode ends) the visible line is
  *   the real text as one text node, so kerning and wrapping are exactly those of plain text
  *   (ligatures are off). While decoding, that text keeps its place but is hidden with
@@ -73,8 +76,12 @@ export interface ScrambleTextProps
  *   weight, font and color are inherited — style it with `className` or the surrounding text.
  * - Colors: noise in `--sk-text-faint`, the locking edge in `--sk-accent` with an
  *   `--sk-accent-glow` afterglow that fades into the inherited color. An inherited text-shadow or
- *   text-stroke styles the noise too; under a gradient fill (`GradientText`) the decode draws in
- *   the inherited `color` and the gradient returns when it ends.
+ *   text-stroke styles the noise too. Under a gradient fill the decode draws in the inherited
+ *   `color` and the gradient returns when it ends: `GradientText` and ShinyText keep a real
+ *   fallback `color` for that; a bare `bg-clip-text text-transparent` parent has none, so there the
+ *   settling glyphs draw in `--sk-text` (unless a text-stroke already draws them).
+ * - Tuned for Latin and other non-joining text: each glyph is drawn on its own while decoding, so
+ *   joining scripts (Arabic, Devanagari) show unjoined forms until the decode ends.
  * - One string per instance. Stagger lines (or the cells of a row) by rendering several instances
  *   with increasing `delay`. The ref points at the rendered element; `className` merges last.
  *
