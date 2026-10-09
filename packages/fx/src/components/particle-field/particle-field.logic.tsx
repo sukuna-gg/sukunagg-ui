@@ -47,7 +47,9 @@ export interface ParticleFieldProps extends Omit<ComponentPropsWithoutRef<'div'>
  * - Variants: `tone`: 'accent' (default) | 'premium'; `density`: 'low' | 'medium' (default) |
  *   'high'.
  * - Composition: the plume rises on the end side (right, or left under `dir="rtl"`) and a scrim
- *   shades the start side, so start-aligned copy stays legible.
+ *   shades the start side, so start-aligned copy stays legible. The canvas reads the direction
+ *   once, at mount (the CSS layers follow `dir` live): if your app flips `dir` without
+ *   remounting, key the stage on it (`<ParticleField key={dir} …>`).
  * - The root `<div>` gets the ref; give it a height and a radius through `className`, which
  *   merges last. The shared loop owns its `data-state` (`running`, `paused`, `still`, `off`).
  *

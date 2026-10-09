@@ -9,6 +9,8 @@ import { tv } from '../../utils/tv'
  *   normal flow. It carries `--sk-lightning-x`, which the poster SVGs and the WebGL renderer read.
  * - `glow`/`bolt` are the server-rendered poster bolt (two HTML-level SVGs, blurred with CSS
  *   `filter`); `lightning-glow` (packages/fx/src/styles/lightning.css) is its sky glow.
+ * - `glowBranch`/`boltBranch` drop the frozen route's fork below 400 px of effect width: there it
+ *   would reach into a phone card's title. The renderer drops it at the same width (`NARROW`).
  * - `canvas` uses the shared loop's crossfade strings (packages/fx/BUILDERS.md § 3). The canvas is
  *   opaque, so the poster under it never needs fading; with `lost`/`off` the canvas fades back out.
  */
@@ -24,13 +26,13 @@ export const lightningStyles = tv({
       'overflow-visible fill-none [stroke-linecap:round] [stroke-linejoin:round]',
       'stroke-accent [stroke-width:12] opacity-80 blur-[2px] drop-shadow-[0_0_5px_var(--sk-accent),0_0_12px_var(--sk-accent)]',
     ],
-    glowBranch: '[stroke-width:7.2]',
+    glowBranch: '[stroke-width:7.2] @max-[400px]:hidden',
     bolt: [
       'absolute top-0 left-[calc(var(--sk-lightning-x)*100%)] h-full w-auto aspect-square -translate-x-1/2',
       'overflow-visible fill-none [stroke-linecap:round] [stroke-linejoin:round]',
       'stroke-[color-mix(in_srgb,var(--sk-text)_90%,var(--sk-accent))] [stroke-width:4]',
     ],
-    boltBranch: '[stroke-width:2.4]',
+    boltBranch: '[stroke-width:2.4] @max-[400px]:hidden',
     canvas:
       'absolute inset-0 block size-full opacity-0 transition-opacity duration-slow ease-sukuna motion-reduce:transition-none group-data-[state=running]/fx:opacity-100 group-data-[state=paused]/fx:opacity-100 group-data-[state=still]/fx:opacity-100',
   },

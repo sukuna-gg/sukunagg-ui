@@ -27,7 +27,7 @@ packages/fx/src/components/particle-field/
 ├── particle-field.stories.tsx      # title 'FX/ParticleField'; the hero chrome lives here, not in the component
 └── index.tsx                       # export { ParticleField } ; export type { ParticleFieldProps }
 packages/fx/src/styles/particle-field.css   # @keyframes sk-particle-field-haze + 5 @utility (§4)
-test/browser/particle-field.test.ts         # Playwright: draws, pauses, reduced-motion still frame, no errors
+test/browser/particle-field.test.ts         # Playwright: draws, pauses (hidden tab, off-screen), reduced motion (load + live), no errors
 ```
 
 ## 3. API
@@ -57,6 +57,9 @@ export type ParticleFieldProps = ParticleFieldOwnProps &
 - The shared loop owns `data-state` on the root (`running | paused | still | off`). Never pass one.
 - Composition: the plume rises on the **end** side (right in LTR, left under `dir="rtl"`) and a
   scrim darkens the **start** side, so start-aligned overlay copy stays legible.
+- The canvas reads the text direction once, at mount; the CSS layers (haze, poster, scrim) follow
+  `dir` live. An app that flips `dir` at runtime without remounting (a language switch) should key
+  the stage on it, `<ParticleField key={dir} …>`, or the embers keep rising on the old side.
 - Changing `tone` or `density` restarts the scene (the island is keyed on them); `paused` applies
   live.
 
@@ -125,7 +128,7 @@ One keyframe and five utilities. `animate-particle-field-haze` is registered wit
 | server / no-JS / first paint | the CSS poster: haze (breathing) + eight still embers; empty transparent canvas; no `data-state` |
 | `running` | canvas faded in, poster embers faded out; the loop draws every frame; the haze breathes |
 | `paused` | off-screen, hidden tab, or `paused` prop: the last frame holds, no frames are requested, the haze animation pauses too |
-| `still` (`prefers-reduced-motion: reduce`) | one seeded still frame of the full field, repainted only on resize; no haze animation, no fades; follows the OS setting live |
+| `still` (`prefers-reduced-motion: reduce`) | one seeded still frame of the full field, repainted only on resize or a theme change; no haze animation, no fades; follows the OS setting live |
 | `off` | no 2D context (or a hook threw): the poster stays as is |
 | `tone="premium"` | amber/bone haze, poster and embers |
 | `dir="rtl"` | plume, poster and scrim mirror |
@@ -182,9 +185,9 @@ The crossfade keeps the BUILDERS.md `group-data-[state=…]/fx:` strings and swa
 - [ ] Every effect layer (haze, poster embers, canvas wrapper, scrim) is `aria-hidden`; the canvas
       sits inside an `aria-hidden` wrapper (not on the `<canvas>` itself).
 - [ ] `children` stay ordinary DOM: headings, links and buttons keep their roles and tab order.
-- [ ] Contrast at rest: overlay text on the start side sits on ≥ 78% `--sk-well` shade; `text-text`
-      and `text-text-dim` meet 4.5:1 against the dark stage in both page themes (the stage pins
-      `data-theme="dark"`).
+- [ ] Contrast at rest: overlay text on the start side sits on ≥ 78% `--sk-well` shade (≥ 70% below
+      500 px); `text-text` and `text-text-dim` meet 4.5:1 against the dark stage in both page
+      themes (the stage pins `data-theme="dark"`).
 - [ ] Reduced motion: one still frame, no haze loop, no fades; follows the OS setting live.
 - [ ] WCAG 2.3.1: no flashing. Embers twinkle at ≤ 1.2 Hz with ≤ 16% amplitude; nothing strobes.
 - [ ] WCAG 2.2.2 (pause, stop, hide): decorative motion pauses off-screen and in hidden tabs, and
@@ -215,9 +218,11 @@ skip), both palettes and the sprite stops, `mix`/`lum`.
 
 `test/browser/particle-field.test.ts` (Playwright on Storybook): the story renders and draws
 (`running`, rAF count > 0, two `toDataURL()` differ, canvas faded in, poster embers faded out,
-haze animating), pauses in a hidden tab (no frames, haze paused) and resumes, stays dark under
-the light theme, mirrors under `dir="rtl"` and widens the shade on the narrow story, reduced
-motion → `still` with 0 frames, a non-blank canvas and no haze animation; no console errors.
+haze animating), pauses in a hidden tab and off-screen (no frames, haze paused) and resumes,
+stays dark under the light theme, mirrors under `dir="rtl"` and widens the shade on the narrow
+story, reduced motion → `still` with 0 frames, a non-blank canvas and no haze animation; a live
+reduced-motion switch both ways (`running` → `still` with 0 frames → `running`, and from a
+`still` load → `running` → `still`); no console errors.
 
 ## 10. Stories
 

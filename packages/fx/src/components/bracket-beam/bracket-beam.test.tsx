@@ -148,9 +148,9 @@ describe('BracketBeam (server)', () => {
     expect(wires[0]?.className).toContain('before:border-accent')
     expect(wires[1]?.className).toContain('before:border-line')
     expect(all(host, '[data-trail]').map((row) => row.textContent)).toEqual([
-      '1Crimson Vow2, winner',
-      'Crimson Vow2, winner',
-      'Crimson Vow3, winner',
+      'seed 1Crimson Vowscore 2, winner',
+      'Crimson Vowscore 2, winner', // unseeded in a seeded bracket: no "seed" word
+      'Crimson Vowscore 3, winner',
     ])
     expect(host.querySelector('[data-state], [data-dim]')).toBeNull()
     expect(q(host, '[data-sk-fx]').style.getPropertyValue('--sk-bracket-beam-rounds')).toBe('3')
@@ -163,7 +163,7 @@ describe('BracketBeam (server)', () => {
     expect(lit.className).toContain('before:bracket-beam-glow')
     expect(lit.className).toContain('motion-reduce:before:transition-none')
     const winner = q(host, '[data-match="0-1"] [data-winner]')
-    expect(winner.className).toContain('font-[750]')
+    expect(winner.className).toContain('font-bold')
     expect(winner.className).not.toContain('bracket-beam-glow')
     const card = q(host, '[data-match="champion"]')
     expect(card.className).toContain('after:animate-bracket-beam-shock')
@@ -440,10 +440,15 @@ describe('BracketBeam (props)', () => {
       championLabel: 'Campeón',
       trophyLabel: 'Trofeo',
       winnerLabel: 'ganador',
+      seedLabel: 'cabeza de serie',
+      scoreLabel: 'marcador',
     })
     expect(container.textContent).toContain('Campeón')
     expect(container.textContent).toContain('Trofeo')
     expect(container.textContent).toContain(', ganador')
+    expect(q(container, '[data-match="0-0"] [data-row="1"]').textContent).toBe(
+      'cabeza de serie 8Paper Tigersmarcador 0', // a 0 score is still read
+    )
   })
 
   it('handles undecided matches, missing scores and no seeds', () => {

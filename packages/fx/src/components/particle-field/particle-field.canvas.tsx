@@ -72,7 +72,8 @@ export function ParticleFieldCanvas({ density, tone, paused }: ParticleFieldCanv
       const field: Field = {
         width: 0,
         height: 0,
-        // Read once at mount: create() runs in the mount effect, after the ref is attached.
+        // Read once at mount: create() runs in the mount effect, after the ref is attached. A
+        // runtime `dir` flip needs a remount (documented on ParticleField and in its doc §3).
         rtl: (canvas.current as HTMLCanvasElement).closest('[dir]')?.getAttribute('dir') === 'rtl',
         rand: mulberry32(SEED),
       }

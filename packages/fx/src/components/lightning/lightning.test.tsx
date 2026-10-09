@@ -219,7 +219,7 @@ describe('Lightning — loop', () => {
   })
 
   it('holds one still frame under reduced motion and schedules nothing', () => {
-    env = installFxEnv({ reducedMotion: true })
+    env = installFxEnv({ reducedMotion: true, size: { width: 1100, height: 380 } })
     const { container } = render(<Lightning intensity="storm" />)
     env.intersect(true)
     expect(rootOf(container).dataset.state).toBe('still')
@@ -228,6 +228,25 @@ describe('Lightning — loop', () => {
     expect(f.I).toBeCloseTo(FROZEN.I)
     expect(f.B).toBe(1)
     expect(f.F).toBe(0)
+  })
+
+  it("drops the frozen route's fork below 400 px, like the poster, but not a re-routed one", () => {
+    env = installFxEnv({ size: { width: 360, height: 380 } })
+    const { container } = render(<Lightning intensity="storm" />)
+    expect(lastFrame(env).B).toBe(0) // the first frame: the poster's bolt, no fork
+    expect(container.querySelectorAll('path[class*="@max-[400px]:hidden"]')).toHaveLength(2)
+    env.intersect(true)
+    env.frame(0)
+    env.frame(16) // the first strike keeps the frozen route: still no fork
+    expect(lastFrame(env).S).toBe(FROZEN.S)
+    expect(lastFrame(env).B).toBe(0)
+    env.resize(canvasOf(container), 400, 380) // 400 px and up: the fork is back
+    expect(lastFrame(env).B).toBeGreaterThan(0)
+    env.resize(canvasOf(container), 360, 380)
+    // Run until a later strike re-routes (storm: within 1.7 s of the first).
+    for (let t = 32; t < 3000 && lastFrame(env).S === FROZEN.S; t += 16) env.frame(t)
+    expect(lastFrame(env).S).not.toBe(FROZEN.S)
+    expect(lastFrame(env).B).toBe(1) // the seeded re-route forks: narrow cards keep those branches
   })
 
   it('switches to the still frame when reduced motion turns on while running', () => {
@@ -257,7 +276,15 @@ describe('Lightning — loop', () => {
     env = installFxEnv()
     const { container, rerender } = render(<Lightning intensity="calm" />)
     const canvas = canvasOf(container)
+    env.intersect(true)
+    // Past the first strike's flash and echo (calm waits >= 2.6 s for the next one): resting I is
+    // the preset's base ± 0.05 wobble (calm 0.72, storm 0.86).
+    let t = 0
+    for (; t < 1000; t += 16) env.frame(t)
+    expect(lastFrame(env).I).toBeLessThan(0.78)
     rerender(<Lightning intensity="storm" />)
+    env.frame(t)
+    expect(lastFrame(env).I).toBeGreaterThan(0.8)
     expect(canvasOf(container)).toBe(canvas)
     expect(env.callsTo('linkProgram')).toHaveLength(1)
     rerender(<Lightning intensity="storm" position={0.3} />)

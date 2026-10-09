@@ -8,19 +8,25 @@ export interface LightningProps extends ComponentPropsWithoutRef<'div'> {
   /**
    * How often and how hard the bolt strikes: `'calm'` (every 2.6–5 s, softer), `'normal'`
    * (every 1.2–2.7 s) or `'storm'` (every 1–1.7 s, brighter, more branches). Every setting stays at
-   * or under three flashes a second. Applies live, from the next strike.
+   * or under three flashes a second. Applies live, without a remount: the resting brightness and
+   * flash strength change at once; the strike cadence and branch odds change from the next strike.
    * @default 'normal'
    */
   intensity?: LightningIntensity
   /**
    * Where the bolt stands, as a fraction of the width (0 = left edge, 1 = right edge; clamped).
    * Leave it unset for the responsive default, or set it to keep the bolt clear of your copy.
+   *
+   * A layout setting, not something to animate: each new value restarts the effect (a fresh WebGL
+   * context and shader, a crossfade from the poster and a new storm that strikes at once). Set it
+   * once per layout; don't drive it from a slider, a scroll position or a tween.
    * @default 0.66, or 0.8 when the effect is narrower than 720 px
    */
   position?: number
   /**
    * Hold the current frame. Wire it to a pause control when the banner sits beside content people
-   * read (WCAG 2.2.2). The effect already pauses off-screen, in hidden tabs and under reduced motion.
+   * read (WCAG 2.2.2); the `WithPauseControl` story is a copy-pasteable toggle. The effect already
+   * pauses off-screen, in hidden tabs and under reduced motion.
    * @default false
    */
   paused?: boolean
@@ -52,10 +58,13 @@ const BRANCH =
  *   a lost GPU context (`"lost"`) show the poster.
  * - Always dark: `data-theme="dark"` is pinned on the root (like VideoPlayer), so the stage and the
  *   inherited `text-text` resolve dark in every page theme. Colors come from `--sk-text`,
- *   `--sk-accent`, `--sk-accent-deep` and `--sk-bg`.
+ *   `--sk-accent`, `--sk-accent-deep` and `--sk-bg`. Token utilities passed in `className`
+ *   (shadows, borders, rings) resolve in the dark palette too, so put page-themed chrome such as
+ *   `shadow-card` on a wrapper element.
  * - Layout: `children` render in normal flow above the effect and give the root its height (or size
  *   it with `className`, e.g. `h-96`). The root is a `@container`, so overlay chrome can use
- *   `@max-[720px]:` variants against the effect's width.
+ *   `@max-[720px]:` variants against the effect's width. Below 400 px the frozen bolt (poster,
+ *   still frame, first strike) drops its fork, which would otherwise reach into a phone card's copy.
  * - Accessibility: the effect is `aria-hidden` and not focusable; `children` stay real, readable
  *   DOM. At most three flashes in any second (WCAG 2.3.1): strikes are at least 1 s apart, each one
  *   flash plus one echo. Keep copy off the bolt (`position`) or add a scrim behind it.
@@ -105,7 +114,8 @@ export const Lightning = forwardRef<HTMLDivElement, LightningProps>(function Lig
             <path className={s.boltBranch()} d={BRANCH} />
           </svg>
         </div>
-        {/* A new position remounts the island, so the still and paused frames pick it up too. */}
+        {/* A new position remounts the island, so the still and paused frames pick it up too
+            (the loop has no repaint hook yet; until it does, `position` is a layout setting). */}
         <LightningCanvas
           key={x ?? 'auto'}
           intensity={intensity}

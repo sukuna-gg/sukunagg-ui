@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { useState } from 'react'
 import { Lightning, type LightningProps } from './index'
 
 /*
@@ -42,13 +43,43 @@ function GrandFinalCopy() {
 const word =
   'block bg-[linear-gradient(var(--sk-text)_48%,color-mix(in_srgb,var(--sk-text)_62%,var(--sk-accent)))] bg-clip-text [-webkit-text-fill-color:transparent]'
 
+// The shadow sits on the wrapper, in the page theme: utilities on the root resolve in the pinned
+// dark palette, which would put the heavy dark-theme shadow on a light page.
 const banner = (args: LightningProps, width: number | string) => (
-  <div style={{ width, maxWidth: '100%' }}>
-    <Lightning {...args} className="rounded-lg shadow-card">
+  <div style={{ width, maxWidth: '100%' }} className="rounded-lg shadow-card">
+    <Lightning {...args} className="rounded-lg">
       <GrandFinalCopy />
     </Lightning>
   </div>
 )
+
+/*
+ * Story chrome: a WCAG 2.2.2 pause control. The bolt loops for as long as the banner is on screen,
+ * so a banner that sits beside content people read needs a way to stop it. The component exposes
+ * `paused`; the app owns the button. The label says what a press will do (no `aria-pressed`, which
+ * would contradict a changing label).
+ */
+function PausableBanner(args: LightningProps) {
+  const [paused, setPaused] = useState(false)
+  return (
+    <div style={{ width: 1100, maxWidth: '100%' }} className="rounded-lg shadow-card">
+      <Lightning {...args} paused={paused} className="rounded-lg">
+        <GrandFinalCopy />
+        <button
+          type="button"
+          onClick={() => setPaused((p) => !p)}
+          className="absolute top-4 right-4 inline-flex cursor-pointer items-center gap-2 rounded-pill bg-[color-mix(in_srgb,var(--sk-bg)_70%,transparent)] py-[7px] pr-3 pl-2.5 font-sans text-xs leading-none font-semibold tracking-eyebrow text-text uppercase shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--sk-text)_22%,transparent)] transition-shadow duration-base ease-sukuna hover:shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--sk-accent)_70%,transparent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring motion-reduce:transition-none @max-[720px]:top-3 @max-[720px]:right-3"
+        >
+          <svg aria-hidden="true" viewBox="0 0 12 12" className="size-3 fill-current">
+            <path d={paused ? 'M3 1.5v9l7.5-4.5z' : 'M2.5 1.5h2.5v9H2.5zM7 1.5h2.5v9H7z'} />
+          </svg>
+          {paused ? 'Play' : 'Pause'}
+          <span className="sr-only"> the lightning</span>
+        </button>
+      </Lightning>
+    </div>
+  )
+}
 
 const meta = {
   title: 'FX/Lightning',
@@ -57,7 +88,8 @@ const meta = {
   args: { intensity: 'normal', paused: false },
   argTypes: {
     intensity: { control: 'inline-radio', options: ['calm', 'normal', 'storm'] },
-    position: { control: { type: 'range', min: 0, max: 1, step: 0.01 } },
+    // A number field, not a range: every new position restarts the effect (a layout setting).
+    position: { control: { type: 'number', min: 0, max: 1, step: 0.05 } },
     paused: { control: 'boolean' },
     children: { control: false },
   },
@@ -93,7 +125,20 @@ export const Intensities: Story = {
   ),
 }
 
-/** A 360 px card: under 720 px the bolt moves to 0.8 and the copy drops to the bottom. */
+/**
+ * A 360 px card: under 720 px the bolt moves to 0.8 and the copy drops to the bottom; under 400 px
+ * the frozen bolt drops its fork, which would reach into the title.
+ */
 export const Narrow: Story = {
   render: (args) => banner(args, 360),
+}
+
+/**
+ * WCAG 2.2.2 reference: the banner loops beside readable copy, so the app offers a Pause/Play
+ * toggle bound to `paused`. Copy the button from this story.
+ */
+export const WithPauseControl: Story = {
+  name: 'With pause control',
+  argTypes: { paused: { control: false } },
+  render: (args) => <PausableBanner {...args} />,
 }

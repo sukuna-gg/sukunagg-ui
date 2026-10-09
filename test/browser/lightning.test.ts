@@ -111,6 +111,49 @@ test.describe('Lightning', () => {
       await expect(page.locator(root)).toHaveAttribute('data-state', 'running')
     })
 
+    test('pauses while scrolled off-screen, and resumes in view', async ({ page }) => {
+      await page.goto(story(GRAND_FINAL))
+      await expect(page.locator(root)).toHaveAttribute('data-state', 'running')
+      await page.evaluate(() => {
+        const spacer = document.createElement('div')
+        spacer.style.height = '4000px'
+        document.body.append(spacer)
+        window.scrollTo(0, 3000)
+      })
+      await expect(page.locator(root)).toHaveAttribute('data-state', 'paused')
+      await expect.poll(() => framesIn(page, 300)).toBe(0)
+      await page.evaluate(() => window.scrollTo(0, 0))
+      await expect(page.locator(root)).toHaveAttribute('data-state', 'running')
+      await expect.poll(() => framesIn(page, 300)).toBeGreaterThan(0)
+    })
+
+    // Live switching, not only "loaded with reduce": a loop that reads `.matches` every frame
+    // never gets the `change` event in Chromium, so the shader would keep repainting a still frame.
+    test('follows the reduced-motion setting live, both ways', async ({ page }) => {
+      await page.goto(story(GRAND_FINAL))
+      await expect(page.locator(root)).toHaveAttribute('data-state', 'running')
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await expect(page.locator(root)).toHaveAttribute('data-state', 'still')
+      await expect.poll(() => framesIn(page, 300)).toBe(0)
+      const still = await pixels(page)
+      await page.waitForTimeout(200)
+      expect(await pixels(page)).toBe(still)
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      await expect(page.locator(root)).toHaveAttribute('data-state', 'running')
+      await expect.poll(() => framesIn(page, 300)).toBeGreaterThan(0)
+    })
+
+    test('the pause-control story stops and restarts the loop (WCAG 2.2.2)', async ({ page }) => {
+      await page.goto(story('fx-lightning--with-pause-control'))
+      await expect(page.locator(root)).toHaveAttribute('data-state', 'running')
+      await page.getByRole('button', { name: 'Pause the lightning' }).click()
+      await expect(page.locator(root)).toHaveAttribute('data-state', 'paused')
+      await expect.poll(() => framesIn(page, 300)).toBe(0)
+      await page.getByRole('button', { name: 'Play the lightning' }).click()
+      await expect(page.locator(root)).toHaveAttribute('data-state', 'running')
+      await expect.poll(() => framesIn(page, 300)).toBeGreaterThan(0)
+    })
+
     test('falls back to the poster on context loss, and rebuilds on restore', async ({ page }) => {
       const errors = watchErrors(page)
       await page.goto(story(GRAND_FINAL))
@@ -152,15 +195,17 @@ test.describe('Lightning', () => {
 
   test.describe('without WebGL', () => {
     test.use({ reducedMotion: 'no-preference' })
-
-    test('keeps the server-rendered poster and reports `off`', async ({ page }) => {
-      const errors = watchErrors(page)
-      await page.addInitScript(() => {
+    test.beforeEach(({ page }) =>
+      page.addInitScript(() => {
         const get = HTMLCanvasElement.prototype.getContext
         HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement, ...a) {
           return /webgl/.test(String(a[0])) ? null : Reflect.apply(get, this, a)
         } as typeof get
-      })
+      }),
+    )
+
+    test('keeps the server-rendered poster and reports `off`', async ({ page }) => {
+      const errors = watchErrors(page)
       await page.goto(story(GRAND_FINAL))
       await expect(page.locator(root)).toHaveAttribute('data-state', 'off')
       await expect(page.locator(canvas)).toHaveCSS('opacity', '0')
@@ -169,6 +214,19 @@ test.describe('Lightning', () => {
       await page.waitForTimeout(300) // let page-load frames (not ours) drain first
       expect(await framesIn(page, 300)).toBe(0)
       expect(errors).toEqual([])
+    })
+
+    test("drops the poster bolt's fork on a card narrower than 400 px", async ({ page }) => {
+      const forks = () =>
+        page
+          .locator(`${root} svg path:nth-child(2)`)
+          .evaluateAll((paths) => paths.map((p) => getComputedStyle(p).display))
+      await page.goto(story('fx-lightning--narrow'))
+      await expect(page.locator(root)).toHaveAttribute('data-state', 'off')
+      expect(await forks()).toEqual(['none', 'none'])
+      await page.goto(story(GRAND_FINAL))
+      await expect(page.locator(root)).toHaveAttribute('data-state', 'off')
+      expect(await forks()).toEqual(['inline', 'inline'])
     })
   })
 })

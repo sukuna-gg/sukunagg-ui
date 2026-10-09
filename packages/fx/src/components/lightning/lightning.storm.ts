@@ -105,6 +105,7 @@ export function createStorm(seed: number): Storm {
       time += dt
       if (dt > 0 && time >= next) {
         if (!first) {
+          // k / 97 is never FROZEN.S (41.3): the renderer reads `S === FROZEN.S` as "frozen route".
           frame.S = Math.floor(rand() * 9000) / 97
           frame.Q = [rand() * 0.34 - 0.1, 0.2 + rand() * 0.14, rand() < 0.6 ? -1 : 1]
           branch = rand() < p.branch

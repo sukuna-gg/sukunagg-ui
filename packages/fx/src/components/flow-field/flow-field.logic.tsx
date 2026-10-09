@@ -41,8 +41,11 @@ export interface FlowFieldProps extends ComponentPropsWithoutRef<'div'> {
  *   pre-advanced frame and never loops; information you render (a queue timer) is yours to keep
  *   updating. The loop mirrors its state on the root as `data-state`
  *   (`running | paused | still | off`), absent in the server HTML.
- * - Layout: a flex column that centres `children`, at least 320px tall; size it with `className`
- *   (`h-dvh`, `aspect-video`). The ref points at the root `<div>`; `className` merges last.
+ * - Performance: the trails canvas keeps a 1x backing store on any display (its cost follows the
+ *   store's pixels) and a resize rescales the painted trails instead of re-simulating them.
+ * - Layout: a flex column that centres `children`, at least 320px tall (`min-h-80`); size it with
+ *   `className` (`h-dvh`, or `aspect-video min-h-0`), and add `min-h-0` for any stage shorter than
+ *   320px. The ref points at the root `<div>`; `className` merges last.
  * - Replay: the field is continuous; remount it with a new `key` to restart from its opening.
  *
  * @example

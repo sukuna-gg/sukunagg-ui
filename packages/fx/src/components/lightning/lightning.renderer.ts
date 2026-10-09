@@ -1,13 +1,19 @@
 import { cssColor, type Rgb } from '../../internal/color'
 import type { FxRenderer } from '../../internal/loop'
 import { FRAGMENT, type LightningUniform, UNIFORMS, VERTEX } from './lightning.shaders'
-import { createStorm, type LightningIntensity } from './lightning.storm'
+import { createStorm, FROZEN, type LightningIntensity } from './lightning.storm'
 
 /** The storm seed: every Lightning plays the same, reproducible storm. */
 const SEED = 0x5c0a
 
 /** Default bolt position (fraction of the width) when `--sk-lightning-x` can't be read. */
 export const DEFAULT_X = 0.66
+
+/**
+ * Below this width (CSS px) the frozen route draws without its fork: on a phone card the fork
+ * reaches into the title. Matches the poster's `@max-[400px]:hidden` branch paths.
+ */
+export const NARROW = 400
 
 /** Read the bolt position from a computed style, clamped to 0–1. */
 export function readPosition(style: CSSStyleDeclaration): number {
@@ -29,6 +35,8 @@ const unit = (palette: Palette): Palette =>
  *   returns `false`, so the loop reports `off` and the poster stays.
  * - `theme` reads `--sk-text`, `--sk-accent`, `--sk-accent-deep` and `--sk-bg` from the root.
  * - `resize` reads the bolt position, `--sk-lightning-x`, from the canvas's computed style.
+ * - `draw` drops the frozen route's fork below {@link NARROW} px, as the poster does, so the still
+ *   frame and the first live frames match the poster; re-routed strikes keep their branches.
  * - `dispose` frees the program and buffer and, once the canvas has really left the page (not a
  *   StrictMode remount, which keeps the same canvas attached), releases the context itself.
  *
@@ -106,7 +114,8 @@ export function createLightningRenderer(
       context.uniform1f(u.T, s.T)
       context.uniform1f(u.S, s.S)
       context.uniform1f(u.I, s.I)
-      context.uniform1f(u.B, s.B)
+      // The frozen route (poster, still frame, first strike) loses its fork on narrow cards.
+      context.uniform1f(u.B, width < NARROW && s.S === FROZEN.S ? 0 : s.B)
       context.uniform1f(u.F, s.F)
       context.uniform3f(u.Q, ...s.Q)
       context.uniform3f(u.C0, ...rgb[0])

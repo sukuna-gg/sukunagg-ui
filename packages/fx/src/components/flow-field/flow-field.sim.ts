@@ -18,13 +18,29 @@ const BASE_AREA = 540 * 320
 /**
  * Per density: [particles at BASE_AREA, minimum, maximum].
  * DECISION(open): FlowField density clamps — 'medium' matches the mockup (600 on 540 × 320); the
- * area scaling and the clamps are agent-picked for full-screen stages (60 fps at 1280 × 720 'high'
- * in headless Chromium). docs/component-flow-field.md § 11.
+ * area scaling and the clamps are agent-picked for full-screen stages (GPU headless Chromium, a
+ * 1872 × 1032 stage at device-pixel-ratio 2 with the 1x trails store: 'medium' about 110 fps,
+ * 'high' about 80 fps). docs/component-flow-field.md § 11.
  */
 const DENSITY: Record<FlowFieldDensity, readonly [number, number, number]> = {
   low: [300, 80, 900],
   medium: [600, 160, 1800],
   high: [960, 240, 3000],
+}
+
+/** Particles on the approved stage ('medium' on 540 × 320): the cost a rebuild is budgeted at. */
+const BASE_COUNT = 600
+
+/**
+ * How many steps a synchronous rebuild (the warm-up, the reduced-motion still frame) of `count`
+ * particles splits `frames` 60 Hz frames into: one step per frame up to the approved stage's 600
+ * particles, proportionally fewer and longer steps above, so a rebuild never costs more
+ * particle-steps than it does there. A full-screen 'medium' field of 1800 particles covers the
+ * same time in a third of the steps, three frames each (what a 20 fps display draws). Always at
+ * least one step.
+ */
+export function rebuildSteps(count: number, frames: number): number {
+  return Math.max(1, Math.min(frames, Math.floor((frames * BASE_COUNT) / count)))
 }
 
 /** The seed of the approved opening (mockup `mulberry32(0x5c0a37)`). */

@@ -155,12 +155,15 @@ export const MatchmakingQueue: Story = {
   argTypes: { calm: { table: { disable: true } } },
 }
 
-/** The three densities on equal stages: the count scales with the area. */
+/**
+ * The three densities on equal 224px stages (`min-h-0` lifts the 320px floor): the count scales
+ * with the area.
+ */
 export const Densities: Story = {
   render: (args) => (
     <div className="grid gap-4 sm:grid-cols-3">
       {(['low', 'medium', 'high'] as const).map((density) => (
-        <FlowField key={density} {...args} density={density} className="h-56 rounded-lg">
+        <FlowField key={density} {...args} density={density} className="h-56 min-h-0 rounded-lg">
           <Label>{density}</Label>
         </FlowField>
       ))}

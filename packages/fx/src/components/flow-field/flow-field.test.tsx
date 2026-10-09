@@ -1,9 +1,10 @@
 import { afterEach, describe, expect, it } from 'bun:test'
 import { render } from '@testing-library/react'
-import { type CSSProperties, createRef, Profiler } from 'react'
+import { type CSSProperties, createRef, Profiler, StrictMode } from 'react'
 import { expectAccessible } from '../../../../../test/axe'
 import { type FxEnv, flushEffects, installFxEnv } from '../../../../../test/fx'
 import { expectHydrates, renderServer } from '../../../../../test/ssr'
+import { particleCount, rebuildSteps } from './flow-field.sim'
 import { FlowField } from './index'
 
 let env: FxEnv | undefined
@@ -17,10 +18,19 @@ const rootOf = (container: HTMLElement) =>
 const canvasesOf = (container: HTMLElement) =>
   [...container.querySelectorAll('canvas')] as [HTMLCanvasElement, HTMLCanvasElement]
 
-// fillRect calls per rebuild: one opaque fill, one fade per step, and on a black stage a
-// residue-clearing color-burn every 4th step (see BURN in flow-field.canvas.tsx).
-const WARM_FILLS = 1 + 60 + 15
-const STILL_FILLS = 1 + 120 + 30
+// fillRect calls per rebuild of `frames` 60 Hz frames in `steps` steps: one opaque fill, one fade
+// per step, and on a black stage a residue-clearing color-burn every 4 frames (see BURN in
+// flow-field.canvas.tsx). The default 300 × 150 canvas holds 160 particles, under the approved
+// stage's 600: one step per frame.
+const fills = (frames: number, steps = frames) => 1 + steps + Math.floor(frames / 4)
+const WARM_FILLS = fills(60)
+const STILL_FILLS = fills(120)
+
+/** `prefers-reduced-motion` flipped without its `change` event (a read the browser swallowed). */
+const motionQuery = () =>
+  matchMedia('(prefers-reduced-motion: reduce)') as unknown as { matches: boolean }
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 /** Count calls to `method` made while `run` executes. */
 function during(fx: FxEnv, method: string, run: () => void): number {
@@ -162,16 +172,124 @@ describe('FlowField — on the shared loop', () => {
     expect(during(fx, 'fillRect', () => fx.frame(32))).toBeGreaterThan(0)
   })
 
-  it('rebuilds the trails at the new size on resize', () => {
+  it('scales the old trails onto the new size on resize, without re-simulating', () => {
     env = installFxEnv()
     const { container } = render(<FlowField />)
     const [trails, glow] = canvasesOf(container)
+    const root = rootOf(container)
     env.intersect(true)
     const fx = env
-    expect(during(fx, 'fillRect', () => fx.resize(trails, 600, 360))).toBe(WARM_FILLS)
+    fx.frame(16)
+    fx.frame(32)
+    const images = fx.callsTo('drawImage').length
+    expect(during(fx, 'fillRect', () => fx.resize(trails, 600, 360))).toBe(0)
     expect(trails.width).toBe(600)
     expect(glow.width).toBe(200)
     expect(glow.height).toBe(120)
+    // A copy of the old store (taken before the loop blanked it), scaled up, then the glow.
+    const [copy, scaled, glowCopy] = fx.callsTo('drawImage').slice(images)
+    expect(copy?.[0]).toBe(trails)
+    const snapshot = scaled?.[0] as HTMLCanvasElement
+    expect(scaled?.slice(1)).toEqual([0, 0, 600, 360])
+    expect(snapshot).not.toBe(trails)
+    expect(snapshot.width).toBe(0) // released at once
+    expect(glowCopy?.[0]).toBe(trails)
+    // Streaming continues from the scaled trails, at the new size.
+    expect(root.dataset.state).toBe('running')
+    expect(during(fx, 'fillRect', () => fx.frame(48))).toBeGreaterThan(0)
+    expect(fx.callsTo('fillRect').at(-1)).toEqual([0, 0, 600, 360])
+  })
+
+  it('copies nothing when the observer reports no size change', () => {
+    env = installFxEnv()
+    const { container } = render(<FlowField />)
+    const [trails] = canvasesOf(container)
+    const fx = env
+    expect(during(fx, 'drawImage', () => fx.resize(trails, 300, 150))).toBe(0)
+  })
+
+  it('holds the still frame through a resize and rebuilds it once, after the resizing settles', async () => {
+    env = installFxEnv({ reducedMotion: true })
+    const { container } = render(<FlowField />)
+    const [trails] = canvasesOf(container)
+    const fx = env
+    expect(during(fx, 'fillRect', () => fx.resize(trails, 600, 360))).toBe(0)
+    expect(during(fx, 'fillRect', () => fx.resize(trails, 640, 380))).toBe(0)
+    expect(during(fx, 'drawImage', () => fx.resize(trails, 660, 390))).toBe(3)
+    const before = fx.callsTo('fillRect').length
+    await wait(200)
+    // 894 particles, over the approved stage's 600: the same 120 frames in 80 steps of 1.5.
+    const steps = rebuildSteps(particleCount(660, 390, 'medium'), 120)
+    expect(steps).toBe(80)
+    expect(fx.callsTo('fillRect').length - before).toBe(fills(120, steps))
+    expect(fx.pendingFrames()).toBe(0)
+  })
+
+  it('costs nothing per frame when the loop keeps asking for the same still frame', () => {
+    env = installFxEnv()
+    const { container } = render(<FlowField />)
+    const root = rootOf(container)
+    env.intersect(true)
+    const fx = env
+    fx.frame(16)
+    // Reduced motion reported per frame without a `change` event: the loop stays `running`.
+    motionQuery().matches = true
+    expect(during(fx, 'fillRect', () => fx.frame(32))).toBe(STILL_FILLS)
+    expect(during(fx, 'fillRect', () => fx.frame(48))).toBe(0)
+    expect(during(fx, 'drawImage', () => fx.frame(64))).toBe(0)
+    expect(root.dataset.state).toBe('running')
+    // A theme flip repaints it once in the new colors; then it holds again.
+    expect(during(fx, 'fillRect', () => fx.colorScheme('light'))).toBe(0)
+    expect(during(fx, 'fillRect', () => fx.frame(80))).toBe(STILL_FILLS)
+    expect(during(fx, 'fillRect', () => fx.frame(96))).toBe(0)
+    motionQuery().matches = false
+    expect(during(fx, 'fillRect', () => fx.frame(112))).toBeGreaterThan(0)
+  })
+
+  it('redraws a still frame in the new colors when the theme flips', () => {
+    env = installFxEnv({ reducedMotion: true })
+    render(<FlowField />)
+    const fx = env
+    expect(during(fx, 'fillRect', () => fx.colorScheme('light'))).toBe(STILL_FILLS)
+  })
+
+  it('fades at most once per 60 Hz frame and burns every 4, at any refresh rate', () => {
+    /** Stage fills and residue burns during one second of frames `ms` apart. */
+    const perSecond = (ms: number) => {
+      env?.restore()
+      env = installFxEnv()
+      const { container } = render(<FlowField />)
+      const fx = env
+      const ctx = fx.contextOf(canvasesOf(container)[0]) as Record<string, unknown>
+      const fillRect = ctx.fillRect as (...args: number[]) => void
+      const fills = { fade: 0, burn: 0 }
+      ctx.fillRect = (...args: number[]) => {
+        if (ctx.globalCompositeOperation === 'color-burn') fills.burn++
+        else fills.fade++
+        fillRect(...args)
+      }
+      fx.intersect(true)
+      fx.frame(0) // the first frame after a start holds
+      for (let t = ms; t <= 1000; t += ms) fx.frame(t)
+      return fills
+    }
+    for (const ms of [6, 16, 50]) {
+      const { burn } = perSecond(ms)
+      expect(burn).toBeGreaterThanOrEqual(14)
+      expect(burn).toBeLessThanOrEqual(15)
+    }
+    // 166 refreshes at ~165 Hz: one fill per three, each fading 1.08 frames' worth.
+    expect(perSecond(6).fade).toBe(55)
+    expect(perSecond(16).fade).toBe(62) // every refresh at 60 Hz
+    expect(perSecond(50).fade).toBe(20) // every refresh at 20 Hz, three frames' worth
+  })
+
+  it('keeps the trails store at 1x on a high-DPR display (the glow at a third)', () => {
+    env = installFxEnv({ dpr: 3, size: { width: 540, height: 320 } })
+    const { container } = render(<FlowField />)
+    const [trails, glow] = canvasesOf(container)
+    expect([trails.width, trails.height]).toEqual([540, 320])
+    expect([glow.width, glow.height]).toEqual([180, 107])
   })
 
   it('applies density and calm changes live, without remounting', () => {
@@ -213,6 +331,39 @@ describe('FlowField — on the shared loop', () => {
     const after = commits
     for (let t = 16; t < 200; t += 16) env.frame(t)
     expect(commits).toBe(after)
+  })
+
+  it('mounts once under StrictMode: one pending frame, none after unmount', () => {
+    env = installFxEnv()
+    const { container, unmount } = render(
+      <StrictMode>
+        <FlowField />
+      </StrictMode>,
+    )
+    env.intersect(true)
+    expect(rootOf(container).dataset.state).toBe('running')
+    expect(env.pendingFrames()).toBe(1)
+    unmount()
+    expect(env.pendingFrames()).toBe(0)
+  })
+
+  it('redraws the still frame on a calm change under StrictMode', () => {
+    env = installFxEnv({ reducedMotion: true })
+    const fx = env
+    const { rerender } = render(
+      <StrictMode>
+        <FlowField />
+      </StrictMode>,
+    )
+    const redraw = during(fx, 'fillRect', () =>
+      rerender(
+        <StrictMode>
+          <FlowField calm />
+        </StrictMode>,
+      ),
+    )
+    expect(redraw).toBe(STILL_FILLS)
+    expect(fx.pendingFrames()).toBe(0)
   })
 
   it('leaves no pending frame after unmount', () => {

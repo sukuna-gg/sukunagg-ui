@@ -46,6 +46,17 @@ export interface BracketBeamProps extends Omit<ComponentPropsWithoutRef<'div'>, 
    */
   winnerLabel?: string
   /**
+   * Read by screen readers before each seed ("seed 1"), so seed and score aren't two bare
+   * numbers. Localize it.
+   * @default 'seed'
+   */
+  seedLabel?: string
+  /**
+   * Read by screen readers before each score ("score 2"). Localize it.
+   * @default 'score'
+   */
+  scoreLabel?: string
+  /**
    * Hold the current frame of the beam. Toggling it never restarts the animation.
    * @default false
    */
@@ -71,7 +82,8 @@ export interface BracketBeamProps extends Omit<ComponentPropsWithoutRef<'div'>, 
  *   name, backwards from the last-round match `champion` won. New data remounts the beams; change
  *   `key` to replay from the start.
  * - Accessibility: a region (`aria-label`, default 'Tournament bracket') holding one `<ol>` per
- *   round; every name and score is text, winners add an `sr-only` ", winner" (`winnerLabel`).
+ *   round; every name, seed and score is text, a row reads "seed 1 Crimson Vow score 2, winner"
+ *   (`sr-only` words, localized by `seedLabel`, `scoreLabel` and `winnerLabel`).
  *   Wires, beams and sparks are `aria-hidden`. The region is a tab stop only while it overflows.
  * - Reduced motion: one still frame, the champion's path and the trophy lit, no loops; an
  *   overflowing bracket scrolls to the trophy once.
@@ -114,6 +126,8 @@ export const BracketBeam = forwardRef<HTMLDivElement, BracketBeamProps>(function
     trophyLabel = 'Trophy',
     trophyMeta,
     winnerLabel = 'winner',
+    seedLabel = 'seed',
+    scoreLabel = 'score',
     paused = false,
     'aria-label': ariaLabel = 'Tournament bracket',
     'aria-labelledby': labelledBy,
@@ -169,6 +183,8 @@ export const BracketBeam = forwardRef<HTMLDivElement, BracketBeamProps>(function
                       {match.teams.map((team, k) => {
                         const won = match.winner === k
                         const trail = model.trailRows.has(`${id}-${k}`)
+                        const seed = teamSeed(team)
+                        const score = match.scores?.[k]
                         return (
                           <div
                             // biome-ignore lint/suspicious/noArrayIndexKey: two fixed rows.
@@ -178,10 +194,20 @@ export const BracketBeam = forwardRef<HTMLDivElement, BracketBeamProps>(function
                             data-trail={trail || undefined}
                             className={s.row({ winner: won, trail })}
                           >
-                            {seeded && <span className={s.seed({ trail })}>{teamSeed(team)}</span>}
+                            {seeded && (
+                              <span className={s.seed({ trail })}>
+                                {seed !== undefined && (
+                                  <span className="sr-only">{seedLabel} </span>
+                                )}
+                                {seed}
+                              </span>
+                            )}
                             <span className={s.name()}>{teamName(team)}</span>
                             <span className={s.score({ winner: won, trail })}>
-                              {match.scores?.[k]}
+                              {score !== undefined && (
+                                <span className="sr-only">{scoreLabel} </span>
+                              )}
+                              {score}
                             </span>
                             {won && <span className="sr-only">, {winnerLabel}</span>}
                           </div>

@@ -25,7 +25,7 @@ packages/fx/src/components/bracket-beam/
 ├── bracket-beam.stories.tsx
 └── index.tsx                   # export { BracketBeam } ; export type { BracketBeamProps, BracketRound, … }
 packages/fx/src/styles/bracket-beam.css   # @keyframes sk-bracket-beam-* + @utility (breathe, shock, glow, bloom)
-test/browser/bracket-beam.test.ts         # Playwright: beams run, layout follows resize, reduced motion, no errors
+test/browser/bracket-beam.test.ts         # Playwright: beams run, layout follows resize, pause/still lifecycle, no overflow
 ```
 
 ## 3. API
@@ -60,6 +60,8 @@ interface BracketBeamOwnProps {
   trophyLabel?: string // trophy column heading. Default 'Trophy'
   trophyMeta?: string // right of the trophy heading, e.g. 'S04'
   winnerLabel?: string // screen-reader suffix on winning rows. Default 'winner'
+  seedLabel?: string // screen-reader word before each seed ("seed 1"). Default 'seed'
+  scoreLabel?: string // screen-reader word before each score ("score 2"). Default 'score'
   paused?: boolean // hold the current frame. Default false
 }
 
@@ -86,7 +88,7 @@ No new color token. Everything resolves through `--sk-*` tokens (`@sukunagg/ui/t
 | Part | Tokens |
 |---|---|
 | Match box | bg `--sk-surface-2`, border `--sk-line`, divider `--sk-line-soft`, radius `--sk-radius-sm` |
-| Row text | name `--sk-font-display` 13px, `--sk-text-dim` (winner `--sk-text`, weight 750); seed and score `--sk-text-faint`, `font-sans tabular-nums` |
+| Row text | name `--sk-font-display` 13px, `--sk-text-dim` (winner `--sk-text`, bold); seed and score `--sk-text-faint`, `font-sans tabular-nums` |
 | Lit row (champion's path) | `bracket-beam-glow` wash (`--sk-accent` 28% → 6% → 10%), 2px `--sk-accent` bar, score in `--sk-bracket-beam-ink`, seed `--sk-text` at 70% |
 | Heading | 10px uppercase, `--sk-tracking-eyebrow`, `--sk-text-faint` (meta `--sk-text-dim`), rule `--sk-line-soft` |
 | Wires | `--sk-line` 1.5px; lit path `--sk-accent` (SVG 2px through a blur glow filter; CSS poster 1.5px with `drop-shadow` in `--sk-accent` / `--sk-accent-glow`) |
@@ -105,10 +107,14 @@ Component-scoped colors, set on the root from tokens (no new token):
 - `--sk-bracket-beam-gap: clamp(36px, 6cqi, 64px)` (36px under 640px): the column gap, shared by
   the grid and the poster wires.
 
-Layout: `grid-template-columns: repeat(<rounds>, minmax(146px, 1fr)) minmax(184px, 1.15fr)`
-(`--sk-bracket-beam-rounds` inline), `min-width: max-content`, so the bracket fills its container
-and scrolls sideways when it can't fit. Under a 640px container (`@container bracket-beam`) the
-columns are fixed (146px, trophy 176px) and the padding tightens.
+Layout: `grid-template-columns: repeat(<rounds>, minmax(min-content, 1fr)) minmax(min-content, 1.15fr)`
+(`--sk-bracket-beam-rounds` inline) with `min-width: min-content`, so the bracket fills its
+container, its columns shrink to their floor first, and only then does it scroll sideways. A round
+column's floor is 146px or its heading, whichever is wider; the trophy column's is 184px or the
+champion's name. Team names never widen a column (`contain: inline-size`): they truncate. Padding 14px 24px 16px 18px: the inline end is
+wider than the shock ring's 22px outset, so the ring never widens the scroller (no scrollbar flash
+on classic-scrollbar desktops). Under a 640px container (`@container bracket-beam`) the columns
+are fixed (146px, trophy 176px) and the padding tightens (12px, start 14px; the end stays 24px).
 
 CSS module `packages/fx/src/styles/bracket-beam.css` (two keyframes):
 
@@ -213,8 +219,9 @@ and poster classes plus the island's beam, comet and spark code.
 
 - [ ] The bracket is a named region (`aria-label`, default 'Tournament bracket'); each round is an
       `<ol>` named by the round; headings are visual duplicates and `aria-hidden`.
-- [ ] Every team name and score is real text; winning rows add an `sr-only` ", winner"
-      (`winnerLabel`); the champion card reads "Champion, <name>, <meta>".
+- [ ] Every team name, seed and score is real text, and a row reads as a sentence, not bare
+      numbers: "seed 1 Crimson Vow score 2, winner" (`sr-only` words from `seedLabel`,
+      `scoreLabel`, `winnerLabel`); the champion card reads "Champion, <name>, <meta>".
 - [ ] Wires, beams, sparks, the bloom and the placeholders are `aria-hidden`; the SVG lives in an
       `aria-hidden` wrapper.
 - [ ] The scroller is a keyboard tab stop with a visible focus ring only while it overflows
@@ -240,14 +247,19 @@ and poster classes plus the island's beam, comet and spark code.
   an empty SVG and no `data-dim`.
 - Layout from stubbed rects: wire `d` strings, the tab stop toggles with overflow, the scroller
   follows the beam until touched.
-- Forwards `ref`, merges `className`, passes native props, `aria-label` override.
+- Forwards `ref`, merges `className`, passes native props, `aria-label` override; localized
+  labels (`championLabel`, `trophyLabel`, `winnerLabel`, `seedLabel`, `scoreLabel`).
 - axe in dark and light.
 - Geometry: model (links, rows by name, champion path, poster directions), wire paths and lengths,
   timeline, head easing, perimeter, sparks.
 
 Browser (`test/browser/bracket-beam.test.ts`): runs and ticks; trail and rows animate; a wire's
-`d` changes after a viewport resize; the Phone story overflows and becomes a tab stop; reduced
-motion is `still`, lit and frame-free; no console errors.
+`d` changes after a viewport resize; hidden tab and off-screen (a 4000px spacer) report `paused`
+with no frames and resume; reduced motion switched live goes `still` with no frames and back to
+`running`; the scroller never widens across a full loop (shock ring) and a bracket that fits
+(SixteenTeams at 1240px, Playground at 900px) neither scrolls nor becomes a tab stop; the Phone
+story overflows, becomes a tab stop, follows the beam and truncates no winner name; reduced
+motion on load is `still`, lit and frame-free; no console errors.
 
 ## 10. Stories
 
@@ -277,3 +289,11 @@ device frame: the bracket scrolls and follows the beam), `SixteenTeams` (four ro
 - Size budget 8 kB (measured 7.6 kB) against the 3 kB proposed in `BUILDERS.md`: BracketBeam
   ships a whole data-driven bracket (markup, CSS poster wires, trophy card) besides the island.
 - No mono token: headings, seeds, scores and meta use `font-sans tabular-nums` (build brief §7).
+- Winner rows are bold (700), not the mockup's 750: when Archivo isn't loaded, a fallback family
+  without a 750 face resolves to its 900 face under the CSS font-matching rules (Arial Black in
+  Firefox on Windows), which truncated the winners in the Phone story's 146px columns.
+- Review round 1 layout fixes against the mockup: the grid's inline-end padding is 24px (the
+  mockup's 18px let the 22px shock ring widen the scroller on every ignition), and the grid is
+  `min-width: min-content` over min-content tracks with 146px / 184px floors. The mockup's
+  `max-content` grid with a fixed `minmax(184px, 1.15fr)` trophy track held every round column
+  at 160px or more (184 / 1.15), so brackets that fit still scrolled by a few px.

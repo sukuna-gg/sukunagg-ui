@@ -97,14 +97,25 @@ describe('HoloCard', () => {
       expect(parts(container).root.classList.contains('[--sk-holo-card-tilt:1]')).toBe(true)
     })
 
-    it('guards the idle drift for reduced motion and pauses it with the loop', () => {
+    it('drifts and sways only on compositor layers, guarded for reduced motion and paused with the loop', () => {
       const { container } = render(<Card />)
-      const { scene } = parts(container)
-      expect(scene.classList.contains('animate-holo-card-drift')).toBe(true)
-      expect(scene.classList.contains('motion-reduce:animate-none')).toBe(true)
-      expect(scene.classList.contains('data-[state=paused]:[animation-play-state:paused]')).toBe(
-        true,
-      )
+      const { root, scene } = parts(container)
+      // The scene animates nothing itself: it hands the loop's pause to every moving layer.
+      expect(scene.className).not.toContain('animate-')
+      expect(scene.classList.contains('data-[state=paused]:[--sk-holo-card-play:paused]')).toBe(true)
+      const sway = root.querySelector('.holo-card-sway') as HTMLElement
+      expect(sway.classList.contains('animate-holo-card-sway')).toBe(true)
+      const drifting = ['.holo-card-band', '.holo-card-dots', '.holo-card-glare']
+      for (const layer of drifting) {
+        expect(root.querySelector(layer)?.classList.contains('animate-holo-card-drift')).toBe(true)
+      }
+      const moving = root.querySelectorAll('[class*="animate-holo-card-"]')
+      expect(moving).toHaveLength(4)
+      for (const el of moving) expect(el.classList.contains('motion-reduce:animate-none')).toBe(true)
+      // The aura and floor rest still (their sway share was a few px), the foil mask follows the tilt.
+      for (const still of ['.holo-card-foil', '.holo-card-edge']) {
+        expect(root.querySelector(still)?.className).not.toContain('animate-')
+      }
     })
 
     it('passes native props through, merges className and forwards the ref', () => {
@@ -119,6 +130,7 @@ describe('HoloCard', () => {
           aria-roledescription="reward card"
           tabIndex={-1}
           intensity="subtle"
+          paused
         >
           art
         </HoloCard>,
@@ -133,6 +145,7 @@ describe('HoloCard', () => {
       expect(root.getAttribute('aria-roledescription')).toBe('reward card')
       expect(root.tabIndex).toBe(-1)
       expect(root.hasAttribute('intensity')).toBe(false)
+      expect(root.hasAttribute('paused')).toBe(false)
     })
 
     it('hydrates without warnings', async () => {

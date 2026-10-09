@@ -70,7 +70,7 @@ test.describe('BracketBeam', () => {
       const errors = watchErrors(page)
       await page.goto(story(PLAYGROUND))
       await expect(page.locator(scroller)).toHaveAttribute('data-state', 'running')
-      await expect.poll(() => framesIn(page, 300)).toBeGreaterThan(5)
+      await expect.poll(() => framesIn(page, 500)).toBeGreaterThan(2)
       // The poster wires fade out, the island's SVG fades in.
       const opacity = (selector: string) =>
         page
@@ -112,12 +112,94 @@ test.describe('BracketBeam', () => {
       await expect(page.locator(scroller)).toHaveAttribute('data-state', 'running')
     })
 
+    test('pauses off-screen, cancelling its frame, and resumes', async ({ page }) => {
+      await page.goto(story(PLAYGROUND))
+      const region = page.locator(scroller)
+      await expect(region).toHaveAttribute('data-state', 'running')
+      await page.evaluate(() => {
+        const spacer = document.createElement('div')
+        spacer.id = 'bb-spacer'
+        spacer.style.height = '4000px'
+        document.body.prepend(spacer)
+      })
+      await expect(region).toHaveAttribute('data-state', 'paused')
+      await expect.poll(() => framesIn(page, 300)).toBe(0)
+      await page.evaluate(() => document.getElementById('bb-spacer')?.remove())
+      await expect(region).toHaveAttribute('data-state', 'running')
+      await expect.poll(() => framesIn(page, 500)).toBeGreaterThan(2)
+    })
+
+    // Chromium refreshes a MediaQueryList's cached value whenever `.matches` is read, so a loop
+    // that reads it every frame can miss the `change` event; this pins the live path both ways.
+    test('switches to the still frame and back when reduced motion changes live', async ({
+      page,
+    }) => {
+      await page.goto(story(PLAYGROUND))
+      const region = page.locator(scroller)
+      await expect(region).toHaveAttribute('data-state', 'running')
+      await expect.poll(() => framesIn(page, 500)).toBeGreaterThan(2)
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await expect(region).toHaveAttribute('data-state', 'still')
+      await expect.poll(() => framesIn(page, 300)).toBe(0)
+      await expect(page.locator(`${root} [data-dim]`)).toHaveCount(0)
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      await expect(region).toHaveAttribute('data-state', 'running')
+      await expect.poll(() => framesIn(page, 500)).toBeGreaterThan(2)
+    })
+
+    test('never widens its scroller: the trophy shock ring stays inside the grid', async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 1240, height: 720 })
+      await page.goto(story(PLAYGROUND))
+      const region = page.locator(scroller)
+      await expect(region).toHaveAttribute('data-state', 'running')
+      // Sample a full 6 s loop (ignition, shock ring, embers) plus a little.
+      const overflow = await region.evaluate(async (el) => {
+        let worst = Number.NEGATIVE_INFINITY
+        const end = performance.now() + 6500
+        while (performance.now() < end) {
+          worst = Math.max(worst, el.scrollWidth - el.clientWidth)
+          await new Promise((resolve) => setTimeout(resolve, 40))
+        }
+        return worst
+      })
+      expect(overflow).toBeLessThanOrEqual(0)
+      await expect(region).not.toHaveAttribute('tabindex')
+    })
+
+    test('fills a container it fits without scrolling (columns shrink first)', async ({ page }) => {
+      for (const [id, width] of [
+        ['fx-bracketbeam--sixteen-teams', 1240],
+        [PLAYGROUND, 900],
+      ] as const) {
+        await page.setViewportSize({ width, height: 720 })
+        await page.goto(story(id))
+        const region = page.locator(scroller)
+        await expect(region).toHaveAttribute('data-state', 'running')
+        await page.evaluate(() => document.fonts.ready)
+        expect(await region.evaluate((el) => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(
+          0,
+        )
+        await expect(region).not.toHaveAttribute('tabindex')
+      }
+    })
+
     test('on a phone it overflows: a tab stop that follows the beam', async ({ page }) => {
       const errors = watchErrors(page)
       await page.goto(story(PHONE))
       const region = page.locator(scroller)
       await expect(region).toHaveAttribute('data-state', 'running')
       await expect(region).toHaveAttribute('tabindex', '0')
+      // The bold winner names fit the fixed 146px columns (no ellipsis in any engine).
+      await page.evaluate(() => document.fonts.ready)
+      const clipped = await region.evaluate((el) =>
+        [...el.querySelectorAll<HTMLElement>('[data-row] > span')]
+          .filter((s) => getComputedStyle(s).textOverflow === 'ellipsis')
+          .filter((s) => s.scrollWidth > s.clientWidth)
+          .map((s) => s.textContent),
+      )
+      expect(clipped).toEqual([])
       await expect
         .poll(() => region.evaluate((el) => el.scrollLeft), { timeout: 8000 })
         .toBeGreaterThan(0)

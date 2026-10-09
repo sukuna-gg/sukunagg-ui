@@ -23,13 +23,18 @@ export const bracketBeamStyles = tv({
       '[scrollbar-color:var(--sk-line)_transparent] [scrollbar-width:thin]',
       'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring',
     ],
+    // `min-w-min` + min-content tracks: the grid fills its container, its columns shrink to their
+    // floor (146px or the heading, whichever is wider; 184px or the champion's name for the
+    // trophy), and only then does it scroll. Team names never widen a column: they truncate.
+    // The end padding (24px at every size) is wider than the trophy's shock ring outset (22px,
+    // bracket-beam.css), so the ring never grows the scroller's width (no scrollbar flash).
     grid: [
-      'relative isolate grid min-h-full min-w-max gap-x-(--sk-bracket-beam-gap) px-4.5 pt-3.5 pb-4',
+      'relative isolate grid min-h-full min-w-min gap-x-(--sk-bracket-beam-gap) ps-4.5 pe-6 pt-3.5 pb-4',
       '[--sk-bracket-beam-gap:clamp(36px,6cqi,64px)]',
-      '@max-[640px]/bracket-beam:w-max @max-[640px]/bracket-beam:px-3.5 @max-[640px]/bracket-beam:py-3',
+      '@max-[640px]/bracket-beam:w-max @max-[640px]/bracket-beam:ps-3.5 @max-[640px]/bracket-beam:py-3',
       '@max-[640px]/bracket-beam:[--sk-bracket-beam-gap:36px]',
     ],
-    column: 'flex min-w-0 flex-col',
+    column: 'flex min-w-[146px] flex-col',
     heading: [
       'mb-2 box-border flex h-[21px] shrink-0 justify-between gap-1.5 overflow-hidden',
       'border-b border-line-soft pb-1.5 font-sans text-[10px] leading-[14px] font-medium',
@@ -46,7 +51,8 @@ export const bracketBeamStyles = tv({
       'font-display text-[13px] leading-none font-medium [font-stretch:94%] text-text-dim',
     ],
     seed: 'w-3 shrink-0 font-sans text-[10px] leading-none font-medium tabular-nums text-text-faint',
-    name: 'min-w-0 flex-1 truncate',
+    // `contain-inline-size`: a long name truncates instead of widening its column.
+    name: 'min-w-0 flex-1 truncate contain-inline-size',
     score: [
       'font-sans text-[13px] leading-none font-semibold tabular-nums text-text-faint',
       'transition-colors duration-slow motion-reduce:transition-none',
@@ -62,7 +68,9 @@ export const bracketBeamStyles = tv({
       'transition-opacity duration-slow ease-sukuna motion-reduce:transition-none group-data-[state=running]/fx:opacity-0 group-data-[state=paused]/fx:opacity-0 group-data-[state=still]/fx:opacity-0',
     ],
     // A column flexbox, so the card stretches to the trophy column's width (centred vertically).
-    trophy: 'relative flex flex-1 flex-col justify-center py-3',
+    // The trophy column's 184px floor (its track is min-content: a longer name widens it).
+    trophy:
+      'relative flex min-w-46 flex-1 flex-col justify-center py-3 @max-[640px]/bracket-beam:min-w-0',
     card: [
       'group/card relative rounded-md border border-accent bg-surface-2 px-4 py-3.5',
       'shadow-[0_0_0_1px_color-mix(in_oklab,var(--sk-accent)_35%,transparent),0_0_40px_-8px_var(--sk-accent-glow),inset_0_0_28px_-14px_var(--sk-accent-glow)]',
@@ -120,19 +128,22 @@ export const bracketBeamStyles = tv({
     champion: {
       true: {
         grid: [
-          'grid-cols-[repeat(var(--sk-bracket-beam-rounds),minmax(146px,1fr))_minmax(184px,1.15fr)]',
+          'grid-cols-[repeat(var(--sk-bracket-beam-rounds),minmax(min-content,1fr))_minmax(min-content,1.15fr)]',
           '@max-[640px]/bracket-beam:grid-cols-[repeat(var(--sk-bracket-beam-rounds),146px)_176px]',
         ],
       },
       false: {
         grid: [
-          'grid-cols-[repeat(var(--sk-bracket-beam-rounds),minmax(146px,1fr))]',
+          'grid-cols-[repeat(var(--sk-bracket-beam-rounds),minmax(min-content,1fr))]',
           '@max-[640px]/bracket-beam:grid-cols-[repeat(var(--sk-bracket-beam-rounds),146px)]',
         ],
       },
     },
     winner: {
-      true: { row: 'font-[750] text-text', score: 'text-text' },
+      // Bold, not the mockup's 750: without Archivo, a fallback family with no 750 face resolves
+      // to its 900 face by the CSS matching rules (Arial Black in Firefox on Windows), which
+      // truncates names in the 146px columns.
+      true: { row: 'font-bold text-text', score: 'text-text' },
     },
     // A row on the champion's path: lit by default (the poster), dimmed by the island's data-dim.
     // DECISION(open): bracket-beam lit row contrast — ink score, lifted seed and a 10% wash end

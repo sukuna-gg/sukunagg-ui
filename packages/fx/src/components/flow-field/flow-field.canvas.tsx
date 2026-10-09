@@ -12,20 +12,38 @@ import {
   GROUP_WIDTH,
   LEVEL_ALPHA,
   particleCount,
+  rebuildSteps,
 } from './flow-field.sim'
 import { flowFieldStyles } from './flow-field.styles'
 
-/** Steps that rebuild the trails after a resize (and before the first frame). */
-const WARM_STEPS = 60
-/** Steps the reduced-motion still frame is pre-advanced from the seeded opening. */
-const STILL_STEPS = 120
+/** 60 Hz frames the first paint is warmed up by (in fewer, longer steps on a large field). */
+const WARM_FRAMES = 60
+/** 60 Hz frames the reduced-motion still frame is pre-advanced from the seeded opening. */
+const STILL_FRAMES = 120
+/** After the last resize, wait this long (ms) before rebuilding the still frame at the new size. */
+const STILL_SETTLE = 150
 /** The glow canvas renders at this fraction of the CSS size, then CSS blurs and scales it. */
 const GLOW_SCALE = 3
 /**
- * WebKit rounds each small-alpha fade to the nearest level, so on its canvas the trails stall about
- * ten levels above black and leave a grey haze. On a black stage, a color-burn with near-white
- * (a blend operand, not a palette color) every few steps lowers dark pixels by about one level and
- * leaves bright ones untouched, so every engine fades to true black.
+ * Backing-store pixels per CSS pixel. Every frame fades the whole store and strokes it additively,
+ * so the cost follows the store's pixels, not the particles: a full-screen field on a 2x display
+ * runs at about half the frame rate of a 1x store. The trails are soft and the glow is already a
+ * third of the size, so a 1x store looks the same.
+ */
+const MAX_DPR = 1
+/**
+ * Canvas colors are 8-bit: a fade too faint to move a dark pixel by half a level rounds to nothing,
+ * so trail tails stall above black, and the fainter the fade, the higher they stall. A 165 Hz
+ * display would fade by a third of a 60 Hz frame on every refresh and leave a grey haze. Instead
+ * the fades accumulate, and the stage fill is drawn once at least this many 60 Hz frames are due:
+ * every refresh rate fades, and stalls, like 60 Hz (and fills the store less often).
+ */
+const FADE_EVERY = 0.75
+/**
+ * Even at 60 Hz, WebKit's trails stall about ten levels above black. On a black stage, a
+ * color-burn with near-white (a blend operand, not a palette color) every 4 60 Hz frames lowers
+ * dark pixels by about one level and leaves bright ones untouched, so every engine fades to true
+ * black. The cadence counts time, not steps, so the trails are as long at 165 Hz as at 60 Hz.
  */
 const BURN = 'rgb(254,254,254)'
 const BURN_EVERY = 4
@@ -63,17 +81,26 @@ export function FlowFieldCanvas({ density, calm, paused }: FlowFieldCanvasProps)
       let glowCanvas: HTMLCanvasElement | null = null
       let glow: CanvasRenderingContext2D | null = null
       let main: CanvasRenderingContext2D | null = null
+      // The old trails, copied just before the loop resizes (and so blanks) the backing store.
+      let snapshot: HTMLCanvasElement | null = null
+      let observer: ResizeObserver | null = null
       let width = 0
       let height = 0
-      let stale = true
+      let stale = true // the trails canvas holds no painted frame
       let stage = '0,0,0'
       let black = true
-      let steps = 0
+      let keep = 1 // the share of the trails the fades due since the last stage fill keep
+      let due = 0 // 60 Hz frames since the last stage fill
+      let burn = 0 // 60 Hz frames since the last residue burn
       let styles: string[] = []
-      // The props the current still frame was drawn with (null: the last frame was not still).
-      let still: LiveProps | null = null
+      let reduced = false // the canvas holds the reduced-motion still frame
+      // What that still frame was drawn with ('' = redraw it): its size and props.
+      let stillKey = ''
+      let settle: ReturnType<typeof setTimeout> | undefined // the pending still rebuild
 
       const count = () => particleCount(width, height, live.current.density)
+      const keyOf = ({ density, calm }: LiveProps = live.current) =>
+        `${width}x${height} ${density} ${calm}`
 
       const fill = (ctx: CanvasRenderingContext2D, alpha: number) => {
         ctx.globalCompositeOperation = 'source-over'
@@ -81,13 +108,24 @@ export function FlowFieldCanvas({ density, calm, paused }: FlowFieldCanvasProps)
         ctx.fillRect(0, 0, width, height)
       }
 
-      // One step: fade the old trails toward the stage, then stroke each bucket additively.
+      // One step of `dt` 60 Hz frames: fade the old trails toward the stage (see FADE_EVERY),
+      // then stroke each bucket additively.
       const step = (ctx: CanvasRenderingContext2D, dt: number) => {
-        fill(ctx, flow.step(dt, target()))
-        if (black && ++steps % BURN_EVERY === 0) {
-          ctx.globalCompositeOperation = 'color-burn'
-          ctx.fillStyle = BURN
-          ctx.fillRect(0, 0, width, height)
+        keep *= 1 - flow.step(dt, target())
+        due += dt
+        if (due >= FADE_EVERY) {
+          fill(ctx, 1 - keep)
+          keep = 1
+          due = 0
+        }
+        burn += dt
+        if (burn >= BURN_EVERY) {
+          burn -= BURN_EVERY
+          if (black) {
+            ctx.globalCompositeOperation = 'color-burn'
+            ctx.fillStyle = BURN
+            ctx.fillRect(0, 0, width, height)
+          }
         }
         ctx.globalCompositeOperation = 'lighter'
         flow.buckets.forEach((segments, k) => {
@@ -109,11 +147,17 @@ export function FlowFieldCanvas({ density, calm, paused }: FlowFieldCanvasProps)
         glow.drawImage(ctx.canvas, 0, 0, glowCanvas.width, glowCanvas.height)
       }
 
-      // Repaint from an opaque stage, `depth` frames deep (butt caps: round ones bead the trails).
-      const rebuild = (ctx: CanvasRenderingContext2D, depth: number) => {
+      // Repaint from an opaque stage, `frames` 60 Hz frames deep (butt caps: round ones bead the
+      // trails). A large field covers the same time in fewer, longer steps (`rebuildSteps`), so
+      // the trails look the same and the work stays within the approved stage's budget.
+      const rebuild = (ctx: CanvasRenderingContext2D, frames: number) => {
         fill(ctx, 1)
-        steps = 0 // the same burn cadence every time: the still frame stays reproducible
-        for (let i = 0; i < depth; i++) step(ctx, 1)
+        // The same fade and burn cadence every time: the still frame stays reproducible.
+        keep = 1
+        due = 0
+        burn = 0
+        const steps = rebuildSteps(count(), frames)
+        for (let i = 0; i < steps; i++) step(ctx, frames / steps)
         copyGlow(ctx)
         stale = false
       }
@@ -122,20 +166,45 @@ export function FlowFieldCanvas({ density, calm, paused }: FlowFieldCanvasProps)
         flow = createFlow(FLOW_SEED)
         flow.resize(width, height, count())
         flow.energy = target()
-        still = { ...live.current }
-        rebuild(ctx, STILL_STEPS)
+        reduced = true
+        stillKey = keyOf()
+        rebuild(ctx, STILL_FRAMES)
       }
 
-      restill.current = (next) => {
-        if (main && still && (still.calm !== next.calm || still.density !== next.density)) {
-          drawStill(main)
+      // Copy the trails before the loop's own observer resizes the canvas (see `setup`).
+      const copyTrails = (trails: HTMLCanvasElement) => {
+        const box = trails.getBoundingClientRect()
+        if (stale || (box.width === width && box.height === height)) return
+        snapshot ??= trails.ownerDocument.createElement('canvas')
+        snapshot.width = trails.width
+        snapshot.height = trails.height
+        snapshot.getContext('2d')?.drawImage(trails, 0, 0)
+      }
+
+      const release = () => {
+        if (snapshot?.width) {
+          snapshot.width = 0
+          snapshot.height = 0
         }
       }
 
+      const redraw = (next?: LiveProps) => {
+        if (main && reduced && !settle && stillKey !== keyOf(next)) drawStill(main)
+      }
+      restill.current = redraw
+
       return {
-        setup() {
+        setup(ctx) {
+          main = ctx
           glowCanvas = glowRef.current
           glow = glowCanvas?.getContext('2d') ?? null
+          // `setup` runs before the loop creates its ResizeObserver, and observers are notified in
+          // creation order, so this one copies the old trails before the loop blanks the store.
+          if (typeof ResizeObserver === 'function') {
+            const trails = ctx.canvas
+            observer = new ResizeObserver(() => copyTrails(trails))
+            observer.observe(trails)
+          }
         },
         theme(style) {
           const accent = cssColor(style, '--sk-accent', [255, 59, 78])
@@ -149,6 +218,7 @@ export function FlowFieldCanvas({ density, calm, paused }: FlowFieldCanvasProps)
           styles = [deep, mid, accent, premium].flatMap((rgb) =>
             LEVEL_ALPHA.map((alpha) => `rgba(${rgb.join(',')},${alpha})`),
           )
+          stillKey = '' // a still frame is redrawn in the new colors
         },
         resize(frame) {
           width = frame.width
@@ -158,24 +228,50 @@ export function FlowFieldCanvas({ density, calm, paused }: FlowFieldCanvasProps)
             glowCanvas.width = Math.ceil(width / GLOW_SCALE)
             glowCanvas.height = Math.ceil(height / GLOW_SCALE)
           }
-          stale = true
+          if (!main || !snapshot?.width) {
+            stale = true // first paint: the next draw warms the field up
+            return
+          }
+          // Scale the old trails onto the new store: no re-simulation, no jump forward in time.
+          main.globalCompositeOperation = 'source-over'
+          main.drawImage(snapshot, 0, 0, width, height)
+          release()
+          copyGlow(main)
+          if (!reduced) return
+          // A still frame is rebuilt at the new size once the resizing settles.
+          clearTimeout(settle)
+          settle = setTimeout(() => {
+            settle = undefined
+            redraw()
+          }, STILL_SETTLE)
         },
-        draw(ctx, { dt, still: reduced }) {
-          main = ctx
-          if (reduced) return drawStill(ctx)
-          still = null
-          // dt = 0: hold the frame (a resume), unless a resize blanked it.
+        draw(ctx, { dt, still }) {
+          release()
+          if (still) {
+            // Idempotent: a held still frame costs nothing, however often the loop asks for it.
+            if (!settle && stillKey !== keyOf()) drawStill(ctx)
+            return
+          }
+          reduced = false
+          stillKey = ''
+          // dt = 0: hold the frame (a resume, a resize), unless nothing is painted yet.
           if (dt === 0) {
-            if (stale) rebuild(ctx, WARM_STEPS)
+            if (stale) rebuild(ctx, WARM_FRAMES)
             return
           }
           flow.setCount(count())
           step(ctx, dt * 60)
           copyGlow(ctx)
         },
+        dispose() {
+          observer?.disconnect()
+          clearTimeout(settle)
+          release()
+          if (restill.current === redraw) restill.current = null
+        },
       }
     },
-    { paused },
+    { paused, maxDpr: MAX_DPR },
   )
 
   useEffect(() => {

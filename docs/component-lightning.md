@@ -29,7 +29,7 @@ packages/fx/src/components/lightning/
 ├── lightning.stories.tsx     # FX/Lightning — banner chrome lives here, not in the component
 └── index.tsx                 # export { Lightning } ; export type { LightningProps }
 packages/fx/src/styles/lightning.css   # @utility lightning-glow (the poster's radial sky glow)
-test/browser/lightning.test.ts         # Playwright: runs, still under reduced motion, context loss → poster
+test/browser/lightning.test.ts         # Playwright: runs, pauses, live reduced motion, context loss → poster
 ```
 
 ## 3. API
@@ -48,12 +48,24 @@ export type LightningProps = LightningOwnProps & ComponentPropsWithoutRef<'div'>
 // they also give the root its height (or size it with className, e.g. `h-96`).
 ```
 
-- **`intensity`** changes apply on the next strike, without remounting the WebGL context.
+- **`intensity`** applies live, without remounting the WebGL context: the resting brightness and
+  the flash/echo strength change at once (the storm reads the preset every frame); the gap to the
+  next strike and the branch odds change from the next strike (the strike already scheduled keeps
+  its time).
 - **`position`** is clamped to 0–1 and set as `--sk-lightning-x` on the stage. Omitted, the bolt sits
   at **0.66**, moving to **0.8** when the effect is narrower than 720 px (a container query on the
   root), as in the approved mockup. Changing it remounts the island (a fresh canvas), so the still
-  and paused frames pick it up too.
+  and paused frames pick it up too. That makes it a **layout setting, not something to animate**:
+  every new value restarts the effect (a new WebGL context and shader, a crossfade from the poster,
+  and a new storm whose first strike lands at once). Set it once per layout; never drive it from a
+  slider, scroll position or tween. (Reading it live needs a repaint hook from the shared loop.)
+- **Narrow cards:** below **400 px** of effect width the frozen bolt (the poster, the reduced-motion
+  still frame and the live bolt until its first re-route) draws without its fork, which would
+  otherwise reach into a phone card's title. Re-routed strikes keep their branches.
 - **`paused`** is the hook for a WCAG 2.2.2 pause control; reduced motion stops the loop on its own.
+- **`className`** merges onto the always-dark root, so its token utilities (shadows, borders,
+  rings) resolve in the **dark** palette on every page. Put page-themed chrome such as
+  `shadow-card` on a wrapper element, as the stories do.
 - Replay is not a concept here (the bolt loops); the root is a `@container`, so overlay chrome can
   use `@max-[720px]:` variants against the effect's own width.
 
@@ -98,10 +110,10 @@ The loop owns `data-state` on the root (absent on the server).
 
 | State | Rendering |
 |---|---|
-| server / no-JS | The SVG poster: a radial crimson sky glow plus the bolt traced from the shader's frozen route (glow layer + hot core). `children` on top. |
+| server / no-JS | The SVG poster: a radial crimson sky glow plus the bolt traced from the shader's frozen route (glow layer + hot core; the fork is hidden below 400 px). `children` on top. |
 | `running` | The canvas has faded in over the poster (opaque, same route on its first frame). Strikes: a hard flash then a 150 ms echo; the route crawls and re-routes on every later strike; a branch forks off on most strikes. |
 | `paused` | Off-screen, hidden tab or `paused`: the last frame holds, no rAF. |
-| `still` (`prefers-reduced-motion: reduce`) | One still frame of the frozen route (lit branch, no flash), repainted only on resize. Follows the OS setting live. |
+| `still` (`prefers-reduced-motion: reduce`) | One still frame of the frozen route (lit branch, none below 400 px; no flash), repainted only on resize. Follows the OS setting live. |
 | `lost` | WebGL context lost: the canvas fades out, the poster shows; `webglcontextrestored` rebuilds the program and resumes. |
 | `off` | No WebGL (or the shader failed to link): the poster stays. Never throws. |
 
@@ -119,7 +131,8 @@ The loop owns `data-state` on the root (absent on the server).
   WebKit) and `powerPreference: 'low-power'`. Intensity is read through a ref (no remount).
 - The renderer (`lightning.renderer.ts`) compiles one fragment shader on a full-screen triangle,
   reads `--sk-lightning-x` from the canvas's computed style on resize, the colors on theme, and
-  drives the uniforms from `lightning.storm.ts`. `dispose` deletes the program and buffer and, once
+  drives the uniforms from `lightning.storm.ts`. Below `NARROW` (400 px) it zeroes the branch
+  uniform while the storm is on the frozen route (`S === FROZEN.S`), matching the poster. `dispose` deletes the program and buffer and, once
   the canvas has really left the page (not a StrictMode remount), releases the context with
   `WEBGL_lose_context`.
 - Nothing touches `window`/`document` outside effects; the scene is seeded (`mulberry32`), never
@@ -138,13 +151,13 @@ export const lightningStyles = tv({
       'overflow-visible fill-none [stroke-linecap:round] [stroke-linejoin:round]',
       'stroke-accent [stroke-width:12] opacity-80 blur-[2px] drop-shadow-[0_0_5px_var(--sk-accent),0_0_12px_var(--sk-accent)]',
     ],
-    glowBranch: '[stroke-width:7.2]',
+    glowBranch: '[stroke-width:7.2] @max-[400px]:hidden',
     bolt: [
       'absolute top-0 left-[calc(var(--sk-lightning-x)*100%)] h-full w-auto aspect-square -translate-x-1/2',
       'overflow-visible fill-none [stroke-linecap:round] [stroke-linejoin:round]',
       'stroke-[color-mix(in_srgb,var(--sk-text)_90%,var(--sk-accent))] [stroke-width:4]',
     ],
-    boltBranch: '[stroke-width:2.4]',
+    boltBranch: '[stroke-width:2.4] @max-[400px]:hidden',
     canvas: 'absolute inset-0 block size-full opacity-0 transition-opacity duration-slow ease-sukuna motion-reduce:transition-none group-data-[state=running]/fx:opacity-100 group-data-[state=paused]/fx:opacity-100 group-data-[state=still]/fx:opacity-100',
   },
 })
@@ -154,7 +167,8 @@ Stroke widths are SVG user units (the viewBox is 1000 units tall), so the poster
 the banner's height. The poster is two HTML-level `<svg>` layers (glow, hot core) sharing one
 route, blurred with CSS `filter` rather than an id-referenced SVG `<filter>`: a server component
 can't mint unique ids (`useId` is a hook), and duplicate ids across two instances are fragile. The
-canvas is opaque, so the poster underneath never needs fading.
+canvas is opaque, so the poster underneath never needs fading. The branch paths hide below 400 px
+of the root's container width (`@max-[400px]:hidden`), the same threshold as the renderer's `NARROW`.
 
 ## 8. Accessibility checklist
 
@@ -167,7 +181,9 @@ canvas is opaque, so the poster underneath never needs fading.
 - [ ] **Reduced motion:** one still frame, no rAF (asserted in unit and browser tests); the poster
       is the same frozen bolt for no-JS/no-WebGL.
 - [ ] **WCAG 2.2.2 (pause):** the loop pauses off-screen and in hidden tabs; `paused` lets the app
-      offer a pause control when the banner sits beside content people read.
+      offer a pause control when the banner sits beside content people read. The control is app
+      chrome: the `WithPauseControl` story is the reference (a Pause/Play button whose label says
+      what a press will do, bound to `paused`).
 - [ ] Contrast: the stage is always dark (`data-theme="dark"`); overlay copy inherits `text-text`
       (#F4F1EC on #0A0A0B, 17:1). Keep copy off the bolt (`position`) or add a scrim, as the
       `GrandFinal` story does.
@@ -188,24 +204,36 @@ canvas is opaque, so the poster underneath never needs fading.
   `still` under reduced motion with no pending frames; `paused` prop holds; unmount leaves no frames
   and releases the context once the canvas is detached.
 - Context loss → `lost`, restore → rebuilt program, running again; link failure → `off`.
-- `intensity` change keeps the same canvas; `position` change mounts a new one.
+- `intensity` change keeps the same canvas and takes effect live (resting `I` moves from the calm
+  base to the storm base); `position` change mounts a new one.
+- Below 400 px the frozen route draws with `B = 0` (first frame, first strike), the poster's branch
+  paths carry `@max-[400px]:hidden`, 400 px brings the fork back, and re-routed strikes still fork.
 - Storm: frozen still state; the first strike keeps the poster's route, later ones re-route; `dt = 0`
   repaints without advancing; at most 3 flashes in any 1 s window for every intensity over
   10 simulated minutes; noise time wraps.
 - axe in both page themes.
 
 Browser (`test/browser/lightning.test.ts`): the story renders and runs (`running`, rAF > 0, two
-canvas reads differ), reduced motion → `still` + 0 frames, hidden tab → `paused`, context loss →
-`lost` with the poster back and restore → `running`, no WebGL → `off` with the poster, no console
+canvas reads differ); `position` moves the bolt; hidden tab → `paused` + 0 frames → `running`;
+scrolled off-screen (IntersectionObserver) → `paused` + 0 frames, back in view → `running`;
+reduced motion switched **live** after load → `still` + 0 frames + a stable frame, and back →
+`running` with frames; the `WithPauseControl` button → `paused` + 0 frames → `running`; loaded under
+reduced motion → `still` + 0 frames + a stable, non-blank frame; context loss → `lost` with the
+poster back and restore → `running`; no WebGL → `off` with the poster and 0 frames; no console
 errors.
 
 ## 10. Stories
 
-`FX/Lightning`: `Playground` (controls, Grand Final banner chrome), `GrandFinal` (the approved
+`FX/Lightning`: `Playground` (controls, Grand Final banner chrome; `position` is a number field,
+not a range, since every new value restarts the effect), `GrandFinal` (the approved
 mockup banner: Live pill, title, teams, map; scrim in the story), `Intensities` (calm / normal /
-storm side by side), `Narrow` (360 px card: the bolt moves to 0.8, copy drops to the bottom).
-Ids: `fx-lightning--playground`, `fx-lightning--grand-final`, `fx-lightning--intensities`,
-`fx-lightning--narrow`. The banner chrome (pill, title, meta, scrim) lives only in the stories.
+storm side by side), `Narrow` (360 px card: the bolt moves to 0.8, copy drops to the bottom, the
+frozen bolt has no fork),
+`WithPauseControl` (the Grand Final banner plus a Pause/Play button bound to `paused`: the WCAG
+2.2.2 reference). Ids: `fx-lightning--playground`, `fx-lightning--grand-final`,
+`fx-lightning--intensities`, `fx-lightning--narrow`, `fx-lightning--with-pause-control`. The banner
+chrome (pill, title, meta, scrim, pause button) lives only in the stories, and `shadow-card` sits on
+the wrapper `div` so it follows the page theme (on the root it would resolve dark).
 
 ## 11. Decisions
 
@@ -225,3 +253,8 @@ Ids: `fx-lightning--playground`, `fx-lightning--grand-final`, `fx-lightning--int
 - Unmount releases the WebGL context (`WEBGL_lose_context`) after a tick, only when the canvas is
   detached, so StrictMode's remount keeps a live context (browsers cap live contexts at ~16).
 - Mono labels in the story use `font-sans tabular-nums` (no mono token; build brief §7).
+- Narrow cards (< 400 px) drop the frozen route's fork (poster + renderer), a deliberate departure
+  from the mockup, whose `tight` mode is off at that size: there the fork crosses the title's last
+  letter in the poster, the still frame and the first live frame.
+- `position` remounts the island (no repaint hook in the shared loop yet), so it is documented as a
+  layout setting rather than an animatable value.

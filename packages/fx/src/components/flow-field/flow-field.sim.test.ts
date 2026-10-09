@@ -9,6 +9,7 @@ import {
   gradientNoise,
   LEVEL_ALPHA,
   particleCount,
+  rebuildSteps,
 } from './flow-field.sim'
 
 /** A flow fitted to the approved 540 × 320 stage. */
@@ -35,6 +36,21 @@ describe('particleCount', () => {
     expect(particleCount(3840, 2160, 'low')).toBe(900)
     expect(particleCount(3840, 2160, 'medium')).toBe(1800)
     expect(particleCount(3840, 2160, 'high')).toBe(3000)
+  })
+})
+
+describe('rebuildSteps', () => {
+  it('takes every step up to the approved stage, then fewer, within its particle-step budget', () => {
+    expect(rebuildSteps(160, 120)).toBe(120)
+    expect(rebuildSteps(600, 120)).toBe(120)
+    expect(rebuildSteps(600, 60)).toBe(60)
+    expect(rebuildSteps(1800, 120)).toBe(40)
+    expect(rebuildSteps(1800, 60)).toBe(20)
+    expect(rebuildSteps(3000, 120)).toBe(24)
+    for (const count of [160, 600, 961, 1800, 3000]) {
+      expect(count * rebuildSteps(count, 120)).toBeLessThanOrEqual(600 * 120)
+    }
+    expect(rebuildSteps(1e9, 60)).toBe(1)
   })
 })
 
