@@ -93,14 +93,15 @@ export function FlowFieldCanvas({ density, calm, paused }: FlowFieldCanvasProps)
       let due = 0 // 60 Hz frames since the last stage fill
       let burn = 0 // 60 Hz frames since the last residue burn
       let styles: string[] = []
+      let palette = '' // the stage and stroke colors, as read from the tokens
       let reduced = false // the canvas holds the reduced-motion still frame
-      // What that still frame was drawn with ('' = redraw it): its size and props.
+      // What that still frame was drawn with ('' = redraw it): its size, props and colors.
       let stillKey = ''
       let settle: ReturnType<typeof setTimeout> | undefined // the pending still rebuild
 
       const count = () => particleCount(width, height, live.current.density)
       const keyOf = ({ density, calm }: LiveProps = live.current) =>
-        `${width}x${height} ${density} ${calm}`
+        `${width}x${height} ${density} ${calm} ${palette}`
 
       const fill = (ctx: CanvasRenderingContext2D, alpha: number) => {
         ctx.globalCompositeOperation = 'source-over'
@@ -120,7 +121,8 @@ export function FlowFieldCanvas({ density, calm, paused }: FlowFieldCanvasProps)
         }
         burn += dt
         if (burn >= BURN_EVERY) {
-          burn -= BURN_EVERY
+          // At most one burn per step: a rebuild's longer steps leave no backlog for the loop.
+          burn %= BURN_EVERY
           if (black) {
             ctx.globalCompositeOperation = 'color-burn'
             ctx.fillStyle = BURN
@@ -218,7 +220,9 @@ export function FlowFieldCanvas({ density, calm, paused }: FlowFieldCanvasProps)
           styles = [deep, mid, accent, premium].flatMap((rgb) =>
             LEVEL_ALPHA.map((alpha) => `rgba(${rgb.join(',')},${alpha})`),
           )
-          stillKey = '' // a still frame is redrawn in the new colors
+          // Part of the still frame's key: new colors redraw it, but an OS light/dark flip, which
+          // leaves this always-dark stage's tokens alone, costs nothing.
+          palette = `${stage} ${styles.join(' ')}`
         },
         resize(frame) {
           width = frame.width

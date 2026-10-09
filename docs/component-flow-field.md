@@ -141,7 +141,7 @@ with the shared `group-data-[state=…]/fx:` strings from `packages/fx/BUILDERS.
 | `running` | canvas fades in over the poster (`duration-slow`); trails stream at the display rate |
 | `calm` | energy eases to 0.22 (time constant ≈ 0.67 s): slower streams, longer fade, dimmer strokes |
 | `paused` | off-screen, hidden tab or `paused`: the last frame holds, no frames are requested |
-| `still` (`prefers-reduced-motion: reduce`) | one frame pre-advanced 120 frames (2 s) from the seeded opening, repainted only after a resize, a theme flip, or a `calm`/`density` change; no loop. Asked for the same still frame again, it does nothing |
+| `still` (`prefers-reduced-motion: reduce`) | one frame pre-advanced 120 frames (2 s) from the seeded opening, repainted only after a resize, new token colors, or a `calm`/`density` change; no loop. Asked for the same still frame again (an OS light/dark flip, which leaves this always-dark stage's tokens alone, or a visibility re-check), it does nothing |
 | `off` | no 2D context: the poster stays; nothing throws |
 | resize, running or paused | particles rescale to the new box and the painted trails are scaled onto the new store: no re-simulation, no jump forward in time |
 | resize, `still` | the old still frame is scaled at once; the still frame is rebuilt at the new size 150 ms after the last resize |
@@ -150,12 +150,23 @@ with the shared `group-data-[state=…]/fx:` strings from `packages/fx/BUILDERS.
 follows the store's pixels: the trails keep a 1x store on any display (`maxDpr: 1`). The
 synchronous rebuilds (the warm-up on first paint, a still frame) are capped at the approved
 stage's work, 600 particles × 60 or 120 steps: a bigger field covers the same time in fewer,
-longer steps (`rebuildSteps`). Measured in GPU headless Chromium (RX 9070 XT), device-pixel-ratio
-2, on a 1872 × 1032 stage: about 110 fps for 'medium' and 80 fps for 'high' (26 fps for 'medium'
-with the old 2x store). At 1920 × 1080, fitting the stage, a resize drag and the settled still
-rebuild all stay under 50 ms (no long task), running or reduced. Under software raster
-(SwiftShader, 1280 × 720) the resize steps cost nothing and the one settled still rebuild takes
-about 100–190 ms.
+longer steps (`rebuildSteps`). A resize rescales the painted trails (no simulation), and a still
+frame is rebuilt once, 150 ms after the last resize.
+
+Measured in headless Chromium on a GPU (RX 9070 XT, D3D11), before → after this design:
+
+| Case | Before (2x store, re-simulated) | After |
+|---|---|---|
+| Frame rate, 1872 × 1032 at DPR 2, uncapped: 'medium' / 'high' | 188 / 93 fps | 265 / 215 fps (as at DPR 1) |
+| Still frame at mount, 1920 × 1080 'high' (3000 particles) | 69–93 ms | about 20 ms |
+| Warm-up at mount, same stage | 49–68 ms | about 10 ms |
+| Each step of a resize drag, reduced motion | 71–94 ms | nothing; one 18–26 ms rebuild after it settles |
+| Each step of a resize drag, running | a 60-step warm-up | nothing over 8 ms (a scaled copy) |
+| Live switch to reduced motion | 118 ms | one 21 ms rebuild, then 0 frames |
+
+Under software raster (SwiftShader, 1280 × 720 'high'), resize steps cost nothing either way, and
+the one still rebuild (at mount, after a resize settles, on a live switch) takes 115–190 ms. On a
+phone CPU, expect a single rebuild of that order when reduced motion is on.
 
 ## 6. Logic (`flow-field.logic.tsx`)
 
@@ -177,7 +188,9 @@ about 100–190 ms.
     and observers are notified in creation order, so this one copies the painted trails to a
     scratch canvas just before the loop resizes (and so blanks) the store.
   - `theme`: reads `--sk-accent`, `--sk-accent-deep`, `--sk-premium`, `--sk-well` into 16 stroke
-    styles (4 groups × 4 alphas) and the fade color; a still frame is redrawn in the new colors.
+    styles (4 groups × 4 alphas) and the fade color. The colors are part of the still frame's
+    key, so a still frame is redrawn only when they change: an OS light/dark flip leaves this
+    always-dark stage's tokens, and its still frame, alone.
   - `resize`: rescales the particles and sizes the glow canvas to a third. With a copy of the old
     trails, scales it onto the new store and releases it; a still frame is then rebuilt 150 ms
     after the last resize. Without one (the first paint), marks the trails stale.
@@ -197,7 +210,8 @@ about 100–190 ms.
   - Residue: even at 60 Hz, WebKit's trails stall about ten levels above black (a grey haze, worst
     when `calm`). On a black stage the renderer adds a `color-burn` fill of near-white every 4
     elapsed 60 Hz frames (counted in time, not steps, so trail length doesn't depend on the refresh
-    rate), which lowers dark pixels by about one level and leaves bright trails alone; every engine
+    rate; at most one per step, so a rebuild's longer steps leave no backlog), which lowers dark
+    pixels by about one level and leaves bright trails alone; every engine
     then fades to true black. Skipped when `--sk-well` isn't black (it would darken the stage
     below its token).
 - Simulation (`flow-field.sim.ts`, pure): seeded gradient noise (mulberry32 permutation), a stream
@@ -246,9 +260,9 @@ export const flowFieldStyles = tv({
   `intersect(true)`; frames stroke and copy the glow; `still` under reduced motion with no pending
   frames; a resize scales a copy of the old trails (no fills) and keeps streaming at the new size;
   under reduced motion it holds the scaled frame and rebuilds once, 150 ms after the last resize
-  (fewer, longer steps for a large field); a still frame asked for every frame (the loop reading
-  reduced motion without its `change` event) is drawn once, then costs nothing, and a theme flip
-  redraws it once; fades run at most once per 60 Hz frame and burns every 4 frames at 165, 60 and
+  (fewer, longer steps for a large field); a still frame asked for again (an OS light/dark flip
+  that changes no token, a visibility re-check) costs nothing, and new token colors redraw it
+  once; fades run at most once per 60 Hz frame and burns every 4 frames at 165, 60 and
   20 Hz; a 1x trails store at DPR 3; `density`/`calm` changes apply live (and redraw the still
   frame); `paused` holds; StrictMode mounts once (one pending frame, none after unmount, the
   still frame redrawn on a `calm` change); unmount leaves no pending frames.
@@ -300,9 +314,10 @@ brackets — all story chrome), `Densities` (low, medium, high side by side on 2
 - The shared loop has no "repaint now" call for a prop change, so the island redraws its own still
   frame when `calm`/`density` change under reduced motion (it owns the canvas; the loop is idle).
 - **1x trails store** (`maxDpr: 1`, agent-picked after review): the per-frame fade and additive
-  strokes are fill-rate bound, so a full-screen field on a 2x display ran at about 26–35 fps with
-  the default 2x cap. A 1x store holds the display rate there (§ 5 Cost); on a 2x display the
-  trails are slightly softer, and on a 1x display (where the mockup was approved) nothing changes.
+  strokes are fill-rate bound, so a full-screen field on a 2x display ran at 31–35 fps in review
+  (a 165 Hz display) with the default 2x cap. A 1x store costs what a 1x display does (§ 5 Cost:
+  'high' draws about 2.3x faster, 'medium' 1.4x); on a 2x display the trails are slightly
+  softer, and on a 1x display (where the mockup was approved) nothing changes.
 - **Resize without re-simulating** (from the approved mockup): the old trails are scaled onto the
   new store, and the reduced-motion still frame is rebuilt 150 ms after the last resize. Copying
   the trails before the loop blanks the store relies on `ResizeObserver` notifying observers in

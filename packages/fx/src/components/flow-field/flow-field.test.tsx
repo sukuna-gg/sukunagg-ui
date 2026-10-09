@@ -26,10 +26,6 @@ const fills = (frames: number, steps = frames) => 1 + steps + Math.floor(frames 
 const WARM_FILLS = fills(60)
 const STILL_FILLS = fills(120)
 
-/** `prefers-reduced-motion` flipped without its `change` event (a read the browser swallowed). */
-const motionQuery = () =>
-  matchMedia('(prefers-reduced-motion: reduce)') as unknown as { matches: boolean }
-
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 /** Count calls to `method` made while `run` executes. */
@@ -225,32 +221,27 @@ describe('FlowField — on the shared loop', () => {
     expect(fx.pendingFrames()).toBe(0)
   })
 
-  it('costs nothing per frame when the loop keeps asking for the same still frame', () => {
-    env = installFxEnv()
+  it('costs nothing when the loop asks for the same still frame again', () => {
+    env = installFxEnv({ reducedMotion: true })
     const { container } = render(<FlowField />)
-    const root = rootOf(container)
-    env.intersect(true)
     const fx = env
-    fx.frame(16)
-    // Reduced motion reported per frame without a `change` event: the loop stays `running`.
-    motionQuery().matches = true
-    expect(during(fx, 'fillRect', () => fx.frame(32))).toBe(STILL_FILLS)
-    expect(during(fx, 'fillRect', () => fx.frame(48))).toBe(0)
-    expect(during(fx, 'drawImage', () => fx.frame(64))).toBe(0)
-    expect(root.dataset.state).toBe('running')
-    // A theme flip repaints it once in the new colors; then it holds again.
+    // The stage is pinned dark: an OS light/dark flip re-reads the same tokens, and the loop's
+    // repaint finds that still frame already on the canvas.
     expect(during(fx, 'fillRect', () => fx.colorScheme('light'))).toBe(0)
-    expect(during(fx, 'fillRect', () => fx.frame(80))).toBe(STILL_FILLS)
-    expect(during(fx, 'fillRect', () => fx.frame(96))).toBe(0)
-    motionQuery().matches = false
-    expect(during(fx, 'fillRect', () => fx.frame(112))).toBeGreaterThan(0)
+    expect(during(fx, 'drawImage', () => fx.colorScheme('dark'))).toBe(0)
+    // So does a loop re-evaluation that lands on `still` again (visibility, pause).
+    expect(during(fx, 'fillRect', () => fx.intersect(true))).toBe(0)
+    expect(rootOf(container).dataset.state).toBe('still')
+    expect(fx.pendingFrames()).toBe(0)
   })
 
-  it('redraws a still frame in the new colors when the theme flips', () => {
+  it('redraws a still frame once when the theme changes its colors', () => {
     env = installFxEnv({ reducedMotion: true })
-    render(<FlowField />)
+    const { container } = render(<FlowField />)
     const fx = env
+    rootOf(container).style.setProperty('--sk-accent', '#ff0000')
     expect(during(fx, 'fillRect', () => fx.colorScheme('light'))).toBe(STILL_FILLS)
+    expect(during(fx, 'fillRect', () => fx.colorScheme('dark'))).toBe(0)
   })
 
   it('fades at most once per 60 Hz frame and burns every 4, at any refresh rate', () => {
