@@ -36,7 +36,7 @@ export interface LootRevealProps extends Omit<ComponentPropsWithoutRef<'ul'>, 'c
   stagger?: 'normal' | 'slow'
   /**
    * Play the reveal on mount. `false` renders the revealed row with no motion — for a pack the
-   * player already opened.
+   * player already opened (a legendary keeps its resting rays and halo, without the burst layers).
    * @default true
    */
   play?: boolean
@@ -105,14 +105,18 @@ const SPARKS_FRONT = sparkGroup(true)
  * - Timing: card `i` starts flipping at `200ms + i × step + 450ms × (legendaries up to and
  *   including i)`; step is 350ms (`stagger="normal"`) or 700ms (`"slow"`). Use it to time an
  *   app-owned sound or `aria-live` counter.
- * - Accessibility: a `<ul>` of `<li>`s (name it with `aria-label`). Kind, name and rarity label
- *   are real text from the first render; backs, icon, glows and sparks are `aria-hidden`. Not
- *   interactive. `prefers-reduced-motion: reduce` shows the revealed row at once; the component
- *   does not announce — the app owns any live region.
+ * - Accessibility: a `<ul role="list">` of `<li>`s (name it with `aria-label`). Kind, name and
+ *   rarity label are real text from the first render; while it plays, a card's face and label
+ *   stay `visibility: hidden` until it turns over. Backs, icon, glows and sparks are
+ *   `aria-hidden`. Not interactive. `prefers-reduced-motion: reduce` shows the revealed row at
+ *   once; the component does not announce — the app owns any live region.
  * - Variants: `stagger`: 'normal' (default) | 'slow'; per item `rarity`: 'common' | 'rare' |
  *   'epic' | 'legendary' (colors from existing tokens until rarity colors are approved, Q38(c)).
- * - Layout: fills its container's width (`container-type: inline-size`); cards are up to 124px
- *   wide (min 72px) and wrap. The legendary burst spills past the root — clip a parent if needed.
+ * - Layout: fills its container's width (`container-type: inline-size`) and the cards share one
+ *   row, each up to 124px wide; only at their 72px minimum do they wrap to a new row. Long names
+ *   wrap inside the card. The root clips horizontally
+ *   (`overflow-x: clip`), so the legendary burst spills up and down but never widens the page. In
+ *   a stage that clips itself, pass `className="overflow-x-visible"` so the rays reach its edges.
  * - The ref points at the `<ul>`; `className` merges last; `style` is spread after the internal
  *   `--sk-loot-reveal-n` custom property.
  *
@@ -141,6 +145,8 @@ export const LootReveal = forwardRef<HTMLUListElement, LootRevealProps>(function
 
   return (
     <ul
+      // biome-ignore lint/a11y/noRedundantRoles: list-style none makes Safari/VoiceOver drop list semantics.
+      role="list"
       ref={ref}
       className={s.root({ className })}
       style={{ '--sk-loot-reveal-n': items.length, ...style } as CSSProperties}
@@ -149,13 +155,16 @@ export const LootReveal = forwardRef<HTMLUListElement, LootRevealProps>(function
       {items.map((item, i) => {
         const legendary = item.rarity === 'legendary'
         if (legendary) charges += 1
+        // The one-shot burst (flash, shock ring, flare, sheen, sparks) ends invisible, so a
+        // still row (play={false}) skips it; the rays and halo are part of the resting frame.
+        const burst = legendary && play
         const c = lootRevealStyles({ rarity: item.rarity, play })
         const sparks = (group: Spark[], layer: string) => (
           <span aria-hidden="true" className={c.sparks({ class: layer })}>
             {group.map(({ j, shape, tint }) => (
               <i
                 key={j}
-                className={lootRevealSparkStyles({ shape, tint, play })}
+                className={lootRevealSparkStyles({ shape, tint })}
                 style={{ '--sk-loot-reveal-j': j } as CSSProperties}
               />
             ))}
@@ -176,10 +185,10 @@ export const LootReveal = forwardRef<HTMLUListElement, LootRevealProps>(function
                 </span>
               ) : null}
               <span aria-hidden="true" className={c.halo()} />
-              {legendary ? <span aria-hidden="true" className={c.core()} /> : null}
-              {legendary ? <span aria-hidden="true" className={c.wave()} /> : null}
+              {burst ? <span aria-hidden="true" className={c.core()} /> : null}
+              {burst ? <span aria-hidden="true" className={c.wave()} /> : null}
               <span aria-hidden="true" className={c.ring()} />
-              {legendary ? sparks(SPARKS_BEHIND, 'z-0') : null}
+              {burst ? sparks(SPARKS_BEHIND, 'z-0') : null}
               <div className={c.card()}>
                 <div className={c.flip()}>
                   <div aria-hidden="true" className={c.back()}>
@@ -195,12 +204,12 @@ export const LootReveal = forwardRef<HTMLUListElement, LootRevealProps>(function
                       </span>
                     ) : null}
                     <span className={c.name()}>{item.name}</span>
-                    {legendary ? <span aria-hidden="true" className={c.sheen()} /> : null}
+                    {burst ? <span aria-hidden="true" className={c.sheen()} /> : null}
                   </div>
-                  {legendary ? <span aria-hidden="true" className={c.flare()} /> : null}
+                  {burst ? <span aria-hidden="true" className={c.flare()} /> : null}
                 </div>
               </div>
-              {legendary ? sparks(SPARKS_FRONT, 'z-3') : null}
+              {burst ? sparks(SPARKS_FRONT, 'z-3') : null}
             </div>
             <span className={c.rarity()}>
               <span className={c.label()}>{labels[item.rarity]}</span>

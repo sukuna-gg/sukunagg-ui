@@ -1,12 +1,25 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Decorator, Meta, StoryObj } from '@storybook/react-vite'
 import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react'
 import { Button } from '../button'
+import { GradientText } from '../gradient-text'
 import { ScrambleText } from './index'
+
+// Story chrome only. The library doesn't bundle Archivo; load it with its `wdth` axis like a
+// consumer would, so the condensed black display titles match the approved mockup.
+const ARCHIVO =
+  'https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap'
+const withArchivo: Decorator = (Story) => (
+  <>
+    <link rel="stylesheet" href={ARCHIVO} precedence="default" />
+    <Story />
+  </>
+)
 
 const meta = {
   title: 'Components/ScrambleText',
   component: ScrambleText,
   tags: ['autodocs'],
+  decorators: [withArchivo],
   args: { text: 'MATCH FOUND', as: 'h2', delay: 0, duration: 800 },
 } satisfies Meta<typeof ScrambleText>
 
@@ -100,6 +113,48 @@ export const Staggered: Story = {
             </div>
           ))}
         </dl>
+      )}
+    </Replayable>
+  ),
+}
+
+/**
+ * Inherited text styling composes: under a gradient fill (GradientText) the decode draws in the
+ * inherited `color` and the gradient returns when it ends; a bare `bg-clip-text text-transparent`
+ * parent has no real `color`, so its settling glyphs draw in `--sk-text` instead; a glow
+ * `text-shadow` or a text-stroke styles the noise too. The real text is hidden with `visibility`
+ * while it decodes, so none of them shows the answer early.
+ */
+export const Composed: Story = {
+  render: () => (
+    <Replayable>
+      {() => (
+        <div className="flex flex-col gap-5">
+          <h2 className={`${display} text-[64px] leading-[.9]`}>
+            <GradientText>
+              <ScrambleText text="VICTORY ROYALE" delay={300} duration={900} />
+            </GradientText>
+          </h2>
+          <h2 className={`${display} text-[48px] leading-[.9]`}>
+            <span className="inline-block bg-[linear-gradient(90deg,var(--sk-premium),var(--sk-accent))] bg-clip-text text-transparent">
+              <ScrambleText text="FLAWLESS" delay={380} duration={900} />
+            </span>
+          </h2>
+          <ScrambleText
+            as="h2"
+            text="MATCH FOUND"
+            delay={450}
+            duration={900}
+            className={`${display} text-[48px] leading-[.9] text-text [text-shadow:0_0_.35em_var(--sk-accent-glow)]`}
+          />
+          <ScrambleText
+            as="h2"
+            text="ROUND 12"
+            delay={600}
+            duration={900}
+            className={`${display} text-[48px] leading-[.9] text-transparent [-webkit-text-stroke:1px_var(--sk-text)]`}
+          />
+        </div>
       )}
     </Replayable>
   ),
@@ -239,7 +294,7 @@ function Lobby({ width, still = false }: { width: number; still?: boolean }) {
         <ScrambleText
           as="h2"
           text="MATCH FOUND"
-          className={`${display} text-[length:clamp(30px,10cqi,46px)] leading-[.9] whitespace-nowrap`}
+          className={`${display} text-[length:clamp(32px,12cqi,58px)] leading-[.9] tracking-[.06em] whitespace-nowrap`}
           {...at(60, 780)}
         />
         <p

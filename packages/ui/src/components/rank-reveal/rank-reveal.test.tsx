@@ -31,6 +31,18 @@ describe('RankReveal', () => {
     expect(html).toContain('--sk-rank-reveal-i:9')
   })
 
+  it('server-renders the title in the heading tag chosen by headingLevel', () => {
+    for (const level of ['h3', 'h4'] as const) {
+      const html = renderServer(<RankReveal title="Master" headingLevel={level} />)
+      expect(html).toContain(`<${level} class=`)
+      expect(html).not.toContain('<h2')
+    }
+    // 'p': no heading at all — the eyebrow and the title are both paragraphs.
+    const html = renderServer(<RankReveal title="Master" headingLevel="p" />)
+    expect(html).not.toMatch(/<h[1-6]/)
+    expect(html.match(/<p class=/g)).toHaveLength(2)
+  })
+
   it('renders the title (with its division) at the chosen heading level', () => {
     const { rerender, container } = render(<RankReveal title="Master" division="I" />)
     expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('Master I')
@@ -64,12 +76,58 @@ describe('RankReveal', () => {
 
   it('maps tone to the captured color variables (accent by default)', () => {
     const { container, rerender } = render(<RankReveal title="Master" />)
+    const face = () => container.querySelector('[data-theme="dark"]')?.firstElementChild as Element
     expect(root(container).className).toContain('[--sk-rank-reveal-hue:var(--sk-accent)]')
     expect(root(container).className).toContain('[--sk-rank-reveal-glow:var(--sk-accent-glow)]')
+    expect(face().className).toContain(
+      'bg-[linear-gradient(var(--sk-rank-reveal-hue),var(--sk-rank-reveal-deep))]',
+    )
+    const evenPip = () => container.querySelectorAll('.animate-rank-reveal-pip')[1] as Element
+    expect(evenPip().className).toContain('even:bg-(--sk-rank-reveal-hue)')
     rerender(<RankReveal title="Master" tone="premium" />)
     expect(root(container).className).toContain('[--sk-rank-reveal-hue:var(--sk-premium)]')
     expect(root(container).className).toContain('[--sk-rank-reveal-deep:var(--sk-premium-dim)]')
     expect(root(container).className).not.toContain('var(--sk-accent)')
+    // Light premium and premium-dim are near-identical: the face's lower stop takes the dark stage.
+    expect(face().className).toContain(
+      'color-mix(in_oklab,var(--sk-rank-reveal-deep)_70%,var(--sk-bg))',
+    )
+    // Premium's hue is nearly the bone, so the small pips take the deep stop (and only that).
+    expect(evenPip().className).toContain('even:bg-(--sk-rank-reveal-deep)')
+    expect(evenPip().className).not.toContain('even:bg-(--sk-rank-reveal-hue)')
+  })
+
+  it('keeps every effect-layer length in px, so the parts align at any root font size', () => {
+    const { container } = render(<RankReveal title="Master" />)
+    const fx = root(container).firstElementChild as HTMLElement
+    // Tailwind's numeric spacing scale (`size-50`, `h-6`, `top-25`) is rem-based.
+    const remScale =
+      /^(?:[\w-]+:)*-?(?:size|w|h|top|right|bottom|left|inset|translate-[xy])-(?!0$)\d+(?:\.\d+)?$/
+    const classes = Array.from(fx.querySelectorAll('*')).flatMap((el) => Array.from(el.classList))
+    expect(classes).toContain('size-[720px]')
+    expect(classes.filter((c) => remScale.test(c))).toEqual([])
+  })
+
+  it('is a size container with an intrinsic width floor for shrink-to-fit parents', () => {
+    const { container } = render(<RankReveal title="Master" />)
+    const el = root(container)
+    expect(el.classList.contains('@container')).toBe(true)
+    expect(el.classList.contains('[contain-intrinsic-inline-size:288px]')).toBe(true)
+  })
+
+  it('keeps the title whole: fluid size, wraps rather than clips, prints without the sheen', () => {
+    render(<RankReveal title="Grandmaster" />)
+    const heading = screen.getByRole('heading')
+    const text = heading.firstElementChild as HTMLElement
+    expect(heading.classList.contains('text-[length:clamp(20px,9cqi,42px)]')).toBe(true)
+    for (const c of [
+      '[overflow-wrap:anywhere]',
+      'max-w-full',
+      'print:bg-none',
+      'print:[-webkit-text-fill-color:currentColor]',
+      '[-webkit-text-fill-color:transparent]',
+    ])
+      expect(text.classList.contains(c)).toBe(true)
   })
 
   it('guards every animated part with motion-reduce:animate-none', () => {
@@ -153,18 +211,18 @@ describe('RankReveal', () => {
         headingLevel="h3"
         emblem={<span />}
         id="rr"
-        role="status"
+        lang="en"
         data-testid="r"
-        aria-label="Promoted to Master"
+        aria-describedby="rr-note"
       />,
     )
     const el = root(container)
     for (const attr of ['tone', 'headinglevel', 'emblem', 'title', 'division', 'eyebrow'])
       expect(el.hasAttribute(attr)).toBe(false)
     expect(el.id).toBe('rr')
-    expect(screen.getByRole('status')).toBe(el)
+    expect(el.lang).toBe('en')
     expect(screen.getByTestId('r')).toBe(el)
-    expect(el.getAttribute('aria-label')).toBe('Promoted to Master')
+    expect(el.getAttribute('aria-describedby')).toBe('rr-note')
   })
 
   it('forwards the ref to the root div', () => {

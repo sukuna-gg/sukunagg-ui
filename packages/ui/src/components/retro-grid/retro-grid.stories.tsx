@@ -89,6 +89,16 @@ export const LandingHero: Story = {
   ),
 }
 
+/** A full-viewport hero: the floor reaches both sides of the frame at any width and height. */
+export const FullViewport: Story = {
+  render: (args) => (
+    // An app would write `min-h-svh`; the Storybook frame pads 24px on every side.
+    <RetroGrid {...args} className="min-h-[calc(100svh-48px)]">
+      <ArenaCopy />
+    </RetroGrid>
+  ),
+}
+
 export const Speeds: Story = {
   render: () => (
     <div className="grid gap-4 md:grid-cols-3">

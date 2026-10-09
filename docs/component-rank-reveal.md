@@ -27,7 +27,9 @@ packages/ui/src/components/rank-reveal/
 
 packages/ui/scripts/motion/rank-reveal.ts   # @keyframes sk-rank-reveal-* + @utility → theme.css
 test/browser/rank-reveal.test.ts            # plays, starts hidden, settles on the final frame,
-                                            #   replay via key, reduced motion, no console errors
+                                            #   replay via key, long title fits at 340px,
+                                            #   px geometry at a 10/20px root, fit-content floor,
+                                            #   reduced motion, no console errors
 ```
 
 ## 3. API
@@ -36,7 +38,7 @@ test/browser/rank-reveal.test.ts            # plays, starts hidden, settles on t
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 
 interface RankRevealOwnProps {
-  /** The new rank, e.g. "Master". Rendered in a real heading (`headingLevel`). */
+  /** The new rank, e.g. "Master". Real text in a heading (`headingLevel`, unless 'p'); scales to fit. */
   title: ReactNode
   /** Division or tier numeral after the title, in the tone color: "I", "III", "2". */
   division?: ReactNode
@@ -58,9 +60,19 @@ export type RankRevealProps = RankRevealOwnProps &
 
 - **Plays on mount, once.** There is no `play` prop and no hidden "armed" state. To replay, remount
   it: `<RankReveal key={replayCount} … />`.
-- The root fills its container's width (`w-full`, and it is a size container for the narrow title
-  step at ≤ 420px) and clips the ray field (`overflow-hidden`). Give it a stage — a card, a dialog,
-  a hero — around 320px tall; it centers its content vertically if the stage is taller.
+- The root fills its container's width (`w-full`) and clips the ray field (`overflow-hidden`). Give
+  it a stage — a card, a dialog, a hero — around 320px tall; it centers its content vertically if
+  the stage is taller.
+- **The stage needs a definite width.** The root is a size container (inline-size containment, so
+  the title can scale with its width, §4), and a size container takes its width from its parent,
+  never from its content. A shrink-to-fit parent (`width: fit-content`, inline-block, an absolutely
+  positioned box or a native `<dialog>` with no width) would collapse it to its padding, so the
+  root declares an intrinsic width floor (`contain-intrinsic-inline-size: 288px`): such a parent
+  gets the 320px phone layout. Give the stage a width for anything larger (the library's `Dialog`
+  already has one).
+- The effect layer (rays, halo, orbit, pips, sparks, glints, crest, ray mask) is sized in **px**,
+  like the `--sk-text-*` tokens, so it lines up at any root font size (a "Large" 20px browser
+  default, a 62.5% root). Only the copy's spacing follows the rem spacing scale.
 - It has no background of its own, only a soft tone glow behind the crest that fades out well inside
   its box, so it sits seamlessly inside a bigger card (see the `PostMatch` story). The darker
   vignette in the gallery card is stage chrome (the stories), not the component.
@@ -68,7 +80,7 @@ export type RankRevealProps = RankRevealOwnProps &
 
 Deliberately **not** in v1: a `play`/`paused` prop or play-on-view (needs JS; replay is `key`),
 `children`/actions (put the Continue button in your screen), rarity/tier colors (Q38(c) is open —
-`tone` covers crimson vs premium), a `size` prop (one tuned size; the title steps down below 420px),
+`tone` covers crimson vs premium), a `size` prop (one tuned size; the title scales with the width),
 sound, and configurable timings (the choreography is one literal timeline, §4).
 
 ## 4. Variants → tokens
@@ -76,21 +88,22 @@ sound, and configurable timings (the choreography is one literal timeline, §4).
 | Part | accent (default) | premium |
 |---|---|---|
 | Ray field, halo, glows | `--sk-accent-glow` | `--sk-premium` @ 55% |
-| Crest face (outer hex) | `--sk-accent` → `--sk-accent-deep` | `--sk-premium` → `--sk-premium-dim` |
+| Crest face (outer hex) | `--sk-accent` → `--sk-accent-deep` | `--sk-premium` → `--sk-premium-dim` 70% + the crest's dark `--sk-bg` (depth, §11) |
 | Tone glow (root, `rank-reveal-glow`) | `--sk-accent` @ 10% | `--sk-premium` @ 10% |
 | Eyebrow | `--sk-accent` 82% + `--sk-text` | `--sk-premium` 82% + `--sk-text` |
 | Title sheen, division numeral | `--sk-accent` | `--sk-premium` |
+| Small (even) pips | `--sk-accent` | `--sk-premium-dim` (premium itself is nearly the bone, §11) |
 
 Shared by both tones:
 
 | Part | Token(s) |
 |---|---|
 | Crest core (dark in both themes) | the built-in crest pins `data-theme="dark"` (like VideoPlayer) and mixes the tone's deep color with `--sk-bg`; facets use `--sk-text` / `--sk-bg` there |
-| "Bone" (pips, orbit ring, wave, spark tips, glints) | `color-mix(--sk-premium 72%, --sk-on-accent)` |
+| "Bone" (big pips, orbit ring, wave, spark tips, glints) | `color-mix(--sk-premium 72%, --sk-on-accent)` |
 | Crest outline + flame | `color-mix(--sk-on-accent 75%, --sk-premium)` |
 | Tick arc | `--sk-text` @ 16% |
 | Pip knock-out ring | `--sk-surface` (the stage it is designed to sit on) |
-| Title | `--sk-text`, `font-display` black, expanded, 42px (34px = `text-3xl` ≤ 420px) |
+| Title | `--sk-text`, `font-display` black, expanded, `clamp(20px, 9cqi, 42px)`: 42px from a ~500px root, then 9% of the root's content width; prints as plain `--sk-text` |
 | Description | `--sk-text-dim` 13px; `<strong>` `--sk-text`; `<em>` `--sk-premium`, `tabular-nums` |
 
 **No new color token.** Colors are captured on the root as `--sk-rank-reveal-hue|deep|glow|bone|cb`
@@ -137,8 +150,9 @@ Static image layers (too long for one arbitrary class; none is named `bg-*`, whi
 would pair with `bg-<color>`): `rank-reveal-glow` (the root's tone glow), `rank-reveal-rays` /
 `rank-reveal-rays-alt` (two `repeating-conic-gradient(in srgb, …)` ray fields with a radial mask —
 `in srgb` because Firefox draws a repeating conic gradient with `color-mix()` stops as dotted
-hairlines under the default oklab interpolation), `rank-reveal-halo`, `rank-reveal-glint` (a
-four-point cross) and `rank-reveal-flame` (the crest's flame as an SVG `mask`).
+hairlines under the default oklab interpolation; each is preceded by the same gradient without
+`in srgb`, which a browser without gradient interpolation methods keeps instead),
+`rank-reveal-halo`, `rank-reveal-glint` (a four-point cross) and `rank-reveal-flame` (the crest's flame as an SVG `mask`).
 
 The timeline (one `@utility animate-rank-reveal-<part>` per part, literal durations, `both` fill
 unless noted):
@@ -156,18 +170,20 @@ unless noted):
 | eyebrow / title / line | rise .6s / .7s / .6s at .82s / .94s / 1.08s; title sheen 1s at 1.3s |
 | slot (each copy line) | slot 2s linear, no fill: clipped at its bottom edge until 1.7s, released by 2s |
 
-Settles by ~2.3s; after that only the two decorative loops (ray spin, halo breathe) run.
+Settles by ~2.4s (glint-alt ends last); after that only the two decorative loops (ray spin, halo
+breathe) run.
 
 ## 5. States
 
 | State | Behavior |
 |---|---|
-| default (on mount) | plays the ~2.3s timeline in §4 once, then rests on the final frame; the rays keep a slow spin and the halo breathes. |
+| default (on mount) | plays the ~2.4s timeline in §4 once, then rests on the final frame; the rays keep a slow spin and the halo breathes. |
 | settled | crest, ray field, orbit, pips and copy fully visible; waves, sparks and glints are gone (transient). |
 | replay | change `key`: React remounts the root and the CSS animations start over. |
 | prefers-reduced-motion | every part carries `motion-reduce:animate-none` → the settled frame immediately, no loops. Nothing is hidden. |
 | server / no-JS | same markup; the CSS animations run without JS. |
-| older browsers | needs `color-mix()`, CSS trig (`cos()`/`sin()`) and gradient interpolation hints (`in srgb`), all Baseline 2023. Where they are missing those declarations drop (tints vanish, the pips collapse onto the crest, the ray fields disappear); the crest, title and description stay legible. |
+| older browsers | needs `color-mix()`, CSS trig (`cos()`/`sin()`) and container query units (`cqi`), Baseline 2023. Gradient interpolation methods (`in srgb`) are Baseline 2024 (Firefox 127); before that the ray fields fall back to the same gradient without `in srgb`. Where the 2023 features are missing those declarations drop (tints vanish, the pips collapse onto the crest); the crest, title and description stay legible. |
+| print | backgrounds are not printed, so the sheen-filled title falls back to plain `--sk-text` (`print:bg-none`); the decorative layers drop out. |
 | `tone="premium"` | bone/gold burst instead of crimson (§4). |
 
 ## 6. Logic (`rank-reveal.logic.tsx`)
@@ -194,16 +210,25 @@ Settles by ~2.3s; after that only the two decorative loops (ray spin, halo breat
 
 ```ts
 tone: {
-  accent: { root: '[--sk-rank-reveal-hue:var(--sk-accent)] [--sk-rank-reveal-deep:var(--sk-accent-deep)] [--sk-rank-reveal-glow:var(--sk-accent-glow)]' },
-  premium: { root: '[--sk-rank-reveal-hue:var(--sk-premium)] [--sk-rank-reveal-deep:var(--sk-premium-dim)] [--sk-rank-reveal-glow:color-mix(in_oklab,var(--sk-premium)_55%,transparent)]' },
+  accent: {
+    root: '[--sk-rank-reveal-hue:var(--sk-accent)] [--sk-rank-reveal-deep:var(--sk-accent-deep)] [--sk-rank-reveal-glow:var(--sk-accent-glow)]',
+    crestFace: 'bg-[linear-gradient(var(--sk-rank-reveal-hue),var(--sk-rank-reveal-deep))]',
+  },
+  premium: {
+    root: '[--sk-rank-reveal-hue:var(--sk-premium)] [--sk-rank-reveal-deep:var(--sk-premium-dim)] [--sk-rank-reveal-glow:color-mix(in_oklab,var(--sk-premium)_55%,transparent)]',
+    crestFace: 'bg-[linear-gradient(var(--sk-rank-reveal-hue),color-mix(in_oklab,var(--sk-rank-reveal-deep)_70%,var(--sk-bg)))]',
+  },
 },
 defaultVariants: { tone: 'accent' },
 ```
 
 Every animated slot pairs its `animate-rank-reveal-*` utility with `motion-reduce:animate-none`
 (no animated slot sits behind a data-/state variant, so the bare `motion-reduce:` wins). Geometry is
-literal (`size-180` ray field, `size-75` halo, crest 106×117px, pip radius 74px via `cos()`/`sin()`
-of `--sk-rank-reveal-i`). Static image layers that are too long for one arbitrary class
+literal **px** throughout the effect layer (`h-[188px]` box with the crest's center at
+`top-[100px]`, `size-[720px]` ray field masked from 412px to 458px, `size-[300px]` halo,
+`size-[200px]` orbit, `size-[110px]` waves, crest 106×117px, pip radius 74px via `cos()`/`sin()`
+of `--sk-rank-reveal-i`), never the rem spacing scale, so the parts stay aligned whatever the root
+font size (a unit test rejects `size-50`-style classes in the effect layer). Static image layers that are too long for one arbitrary class
 (tone glow, ray fields, halo, glint cross, flame mask) are `@utility rank-reveal-*` in the motion
 module (§4); none is named `bg-*` (tailwind-merge would pair it with `bg-<color>`). Exactly one
 `animate-*` class per slot, since tailwind-merge 3.7 cannot dedupe custom `animate-*` names.
@@ -216,35 +241,50 @@ module (§4); none is named `bg-*` (tailwind-merge would pair it with `bg-<color
       rank is never only in the crest.
 - [ ] Every keyframe has a `motion-reduce:animate-none` fallback and the base styles are the final
       frame, so reduced motion shows the complete reveal with no loops (asserted in unit + browser).
+- [ ] The title never clips: it scales with the root's width and a longer single word wraps
+      (`overflow-wrap:anywhere`); it prints as plain text (no background-clip sheen).
 - [ ] Contrast at rest: title `--sk-text`, eyebrow (accent 82% + text) and description
       `--sk-text-dim` clear 4.5:1 on `--sk-surface` in both themes; the ray field is masked out
       under the copy.
 - [ ] WCAG 2.3.1: the only flash is one crest brighten (.8s) and two small glints — no more than 3
       flashes in any second, and none full-screen.
-- [ ] Not a live region by default: the app decides whether to announce the promotion (pass
-      `role="status"` on a reveal that appears after an action, as with EmptyState).
+- [ ] Not a live region: the app announces the promotion from its **own persistent live region**
+      (`aria-live="polite"`, present before its text changes), as with MatchFound. A
+      `role="status"` on RankReveal itself is unreliable: it mounts already filled and replay
+      remounts it, and many screen-reader/browser pairs skip a live region that arrives with its
+      content.
 - [ ] Arrows in `description` should be `aria-hidden` with sr-only words ("to"), as in the stories.
 
 ## 9. Tests
 
-- Server render (`renderServer`): heading tag per `headingLevel`, real eyebrow/title/description
-  text, the `data-sk-rank-reveal` hook, no `'use client'`-only APIs.
-- `tone` maps to its literal custom-property classes; the default is `accent`.
+- Server render (`renderServer`): real eyebrow/title/description text, the `data-sk-rank-reveal`
+  hook, no `'use client'`-only APIs; the title's tag per `headingLevel` (`h2` default, `h3`, `h4`,
+  and `p` with no heading at all), also checked after a client render.
+- `tone` maps to its literal custom-property classes; the default is `accent`; premium's small pips
+  take the deep stop.
+- Every effect-layer length is px (no rem spacing-scale class); the root is a size container with
+  the `contain-intrinsic-inline-size` floor.
 - Every animated slot carries its `animate-rank-reveal-*` class **and** `motion-reduce:animate-none`.
 - Effect layer is `aria-hidden`; ten sparks and eight pips with `--sk-rank-reveal-i` 0…n−1.
 - Built-in crest pins `data-theme="dark"`; a custom `emblem` replaces it (still hidden from AT).
 - Optional parts (`eyebrow={null}`, no `description`, no `division`) render nothing.
-- Props don't leak (`tone`, `headingLevel`, `emblem`…); native props pass through; ref forwards;
-  consumer `className` merges last (`py-12` beats the root padding).
+- Props don't leak (`tone`, `headingLevel`, `emblem`…); native props pass through (`id`, `lang`,
+  `data-*`, `aria-describedby`); ref forwards; consumer `className` merges last (`py-12` beats the
+  root padding).
 - `expectHydrates` with the default story props; axe clean in both themes and both tones.
 - Every utility the component uses is emitted into `theme.css`, and there are exactly eight
   `sk-rank-reveal-*` keyframes.
 - Browser (`test/browser/rank-reveal.test.ts`, Web Animations state, never wall-clock): the story
-  renders and runs all eight keyframes; seeking to t=0 shows the hidden start (crest at scale .4,
+  renders and runs all eight keyframes; Replay plus a pause in the same frame captures every part
+  (the no-fill waves and slots too) and seeking to t=0 shows the hidden start (crest at scale .4,
   copy transparent, orbit undrawn, waves unseen during their delay); mid-rise the title's slot is
   clipped at its bottom edge and released after; finishing the timeline lands on the final frame;
   only the ray spin and halo breathe keep running; Replay (a new `key`) restarts the timeline;
-  under reduced motion there are no animations at all and the frame equals the settled one; every
+  under reduced motion there are no animations at all and the frame equals the settled one; in the
+  340px `Phone` stage the "Grandmaster" title fits on one line inside the root (no clipping); at a
+  20px and a 10px root font size the effect geometry equals the 16px one (each pip centre on the
+  orbit ring within 1px, the ray mask fading out below the crest); a `fit-content` stage gets a
+  320px reveal, not a collapsed one; every
   story renders without console errors (Google Fonts are stubbed). Passes in Chromium, Firefox and
   WebKit.
 
@@ -253,8 +293,8 @@ module (§4); none is named `bg-*` (tailwind-merge would pair it with `bg-<color
 `Playground` (the gallery stage — a surface card with a soft `--sk-well` vignette — plus Replay
 and controls), `PostMatch` (realistic post-match screen chrome:
 header, reveal, RR bar, Continue), `Tones` (accent vs premium), `CustomEmblem` (an app glyph in the
-`emblem` slot), `Phone` (340px stage, title step-down), `Settled` (the final frame with motion
-stopped — what reduced-motion users see; stable for review screenshots), `BothThemes` (dark + light
+`emblem` slot), `Phone` (two 340px stages, "Master I" and the long "Grandmaster": the title
+scales to fit), `Settled` (the final frame with motion stopped — what reduced-motion users see; stable for review screenshots), `BothThemes` (dark + light
 side by side). Ids: `components-rankreveal--playground`, `--post-match`, `--tones`,
 `--custom-emblem`, `--phone`, `--settled`, `--both-themes`. The stories load Archivo (with its
 `wdth` axis) from Google Fonts, as a consumer would; the library does not bundle the font.
@@ -284,7 +324,10 @@ side by side). Ids: `components-rankreveal--playground`, `--post-match`, `--tone
 - **Ray fields interpolate `in srgb`**: Firefox (153) renders a `repeating-conic-gradient` whose
   stops are non-legacy colors (any `color-mix()`, e.g. the premium glow and the alt rays) as dotted
   hairlines under the default oklab interpolation. sRGB interpolation is what legacy `rgba()` stops
-  already use, so Chromium/WebKit output is unchanged.
+  already use, so Chromium/WebKit output is unchanged. Gradient interpolation methods are only
+  Baseline 2024 (Firefox 127, Safari 16.2), so each ray field first declares the same gradient
+  without `in srgb`; an older engine drops the second declaration as invalid and keeps the rays.
+  Tailwind's Lightning CSS minifier keeps both declarations (checked with `--minify`).
 - **WebKit on Windows** (the local Playwright build) does not apply Archivo's variable `wdth` axis:
   any `font-stretch` above 100% comes out letter-spaced instead of wide, so the expanded title looks
   thin and tracked there. The approved mockup renders the same way in that build (a standalone
@@ -293,7 +336,34 @@ side by side). Ids: `components-rankreveal--playground`, `--post-match`, `--tone
   offers crimson vs premium only until the owner approves rarity tokens.
 - `// DECISION(open): pip knock-out ring` — the 3px ring that cuts the orbit line behind each pip is
   `--sk-surface`, the stage it is designed on; on another background it shows as a faint ring.
-- Title size 42px is literal (no token between `text-3xl` 34px and the hero sizes), like StatTile's
-  52px hero value; below 420px it steps to `text-3xl`. The description's 13px is the mockup's size
-  (between `text-sm` 12px and `text-md` 14px).
+- **Fluid title size** `clamp(20px, 9cqi, 42px)` (literal: no token between `text-3xl` 34px and
+  the hero sizes, like StatTile's 52px hero value). The mockup's 42px, with one step to 34px below
+  a 420px container, clipped real 10–11-letter rank names: "Grandmaster" is ~10.65em wide in
+  expanded Archivo black, so 362px at 34px in a 340px stage (308px of content). 9% of the root's
+  content width keeps "Grandmaster" on one line with ~4% to spare down to a ~250px root; a shorter
+  name is a little smaller than the mockup on a phone (28px instead of 34px at 340px). A longer
+  single word wraps (`overflow-wrap:anywhere`) instead of clipping.
+- **Premium crest depth**: light `--sk-premium` (#786A4A) and `--sk-premium-dim` (#776A48) are
+  effectively one color, so the premium face gradient was flat. The premium face's lower stop
+  mixes `--sk-premium-dim` 70% with the crest's pinned-dark `--sk-bg` (both themes; accent is
+  unchanged). The light premium burst still reads olive-khaki rather than gold: that is the token
+  value, for the owner — a brighter light premium or a real `--sk-premium-dim` would fix it.
+- **Premium pips**: the small (even) pips are the tone's hue, and dark `--sk-premium` is nearly the
+  bone itself, so premium lost the accent tone's big-bone / small-color rhythm. Premium's small pips
+  take `--sk-premium-dim` instead (dark: cream vs khaki). Mixing it with `--sk-bg`, as the crest
+  face does, was rejected: outside the dark-pinned crest the light `--sk-bg` lightens it back to the
+  bone. In light the two premium tokens are one color, so the contrast there is only the bone's
+  lift (part of the token question above).
+- **px effect geometry**: the effect layer once mixed rem spacing-scale sizes (`size-180`, `size-50`,
+  `h-47`) with px literals (the ray mask, the 74px pip radius, the crest, spark travel), so it only
+  lined up at a 16px root: at 20px the mask cut the rays at the crest's center and the pips sat
+  inside the orbit. Everything in it is px now (matching the px `--sk-text-*` tokens); the copy's
+  spacing stays on the rem scale like the rest of the library.
+- **Intrinsic width floor**: the root's inline-size containment (needed for the `cqi` title) makes it
+  contribute no content width, so a shrink-to-fit parent collapsed it to 32px.
+  `contain-intrinsic-inline-size: 288px` (+ the 32px padding = the 320px phone layout) gives such a
+  parent a usable width and never forces overflow in a definite-width parent (checked down to a
+  250px block, flex and `1fr` grid parent). `min-width: min(100%, 320px)` does not work: the
+  percentage is cyclic in a shrink-to-fit parent and resolves to 0.
+- The description's 13px is the mockup's size (between `text-sm` 12px and `text-md` 14px).
 - No mono token: the mockup's JetBrains Mono eyebrow and `+32 RR` use `font-sans` (+ `tabular-nums`).

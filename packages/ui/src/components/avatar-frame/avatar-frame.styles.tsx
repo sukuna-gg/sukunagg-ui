@@ -9,17 +9,22 @@ import { tv, type VariantProps } from '../../utils/tv'
  * `motion-reduce:animate-none`; each `animate-*` utility also sets the layer's rest angle
  * (`--sk-avatar-frame-phase`), so reduced motion lands on a designed still frame.
  *
- * Geometry: the root is sized by the child plus a 6px pad (3px ring + 3px gap). `back` and
+ * Geometry: the root is sized by the child plus a 6px pad (3px ring + 3px gap). The pad is
+ * load-bearing: `avatar-frame-status`, `-cutout` and `-cutout-avatar` derive the avatar's size and
+ * edge from the frame as `100cqw - 12px` / `50cqw - 7px`, so overriding the root's padding moves the
+ * dot and the hole off the avatar's edge. `back` and
  * `front` cover that frame box and are size containers, so every layer measures itself in `cqw`.
- * Inside `back`, `cut` bleeds 24px past the frame (room for the glow) and carries the status
- * hole; `layers` brings the ring layers back to the frame box.
+ * Inside `back`, `cut` bleeds `max(24px, 30cqw)` past the frame and carries the status hole (its
+ * mask clips at that box). The bleed scales with the frame, so the box always holds the glow's blur
+ * (≤ 9cqw, faded out by ~27cqw), the comet head's glow and the live halo at its widest (≈ 23cqw), at
+ * any avatar size; `layers` brings the ring layers back to the frame box.
  */
 export const avatarFrameStyles = tv({
   slots: {
     root: 'group/avatar-frame relative isolate inline-grid shrink-0 place-items-center p-[6px] align-middle',
     back: 'pointer-events-none absolute inset-0 @container-[size]',
-    cut: 'absolute -inset-[24px]',
-    layers: 'absolute inset-[24px]',
+    cut: 'absolute -inset-[max(24px,30cqw)]',
+    layers: 'absolute inset-[max(24px,30cqw)]',
     halo: 'absolute -inset-[20cqw] rounded-full opacity-70 avatar-frame-halo animate-avatar-frame-breathe motion-reduce:animate-none',
     ripple:
       'absolute inset-0 rounded-full border-[1.5px] border-accent opacity-0 animate-avatar-frame-ripple motion-reduce:animate-none',
@@ -39,8 +44,10 @@ export const avatarFrameStyles = tv({
     pill: [
       'absolute top-full left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-[.45em]',
       'rounded-pill py-[.27em] pr-[.73em] pl-[.64em] whitespace-nowrap',
-      // No mono token exists (Q39 brief): display face, bold, uppercase, tracked.
-      'font-display font-bold uppercase leading-none tracking-[.14em] text-[length:clamp(8px,11cqw,11px)]',
+      // No mono token exists (Q39 brief): display face, bold, uppercase, tracked. `leading-none`
+      // must come after the font size: tailwind-merge drops a `leading-*` that precedes a `text-*`
+      // size (a v4 font size also sets line-height), and the pill would inherit the parent's.
+      'font-display font-bold uppercase tracking-[.14em] text-[length:clamp(8px,11cqw,11px)] leading-none',
       // DECISION(open): pill fill — the accent gradient (not the mockup's flat --sk-accent, ≈ 3.5:1
       // in dark) so the white label clears 4.5:1 in both themes.
       'bg-gradient-accent text-on-accent',

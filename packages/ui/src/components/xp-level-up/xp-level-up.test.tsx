@@ -132,6 +132,15 @@ describe('XpLevelUp', () => {
     expect(sparks.map((s) => s.style.getPropertyValue('--sk-xp-level-up-i'))).toEqual(
       Array.from({ length: 16 }, (_, i) => String(i)),
     )
+    // Odd sparks alternate to the premium token (no mix with the text color).
+    expect(sparks[0]?.classList.contains('odd:[--sk-xp-level-up-c:var(--sk-premium)]')).toBe(true)
+  })
+
+  it('draws the LV caption at full strength with the number’s accent-deep shadow', () => {
+    render(<XpLevelUp {...base} />)
+    const caption = screen.getByText('LV')
+    expect(caption.classList.contains('opacity-80')).toBe(false)
+    expect(caption.classList.contains('[text-shadow:0_1px_0_var(--sk-accent-deep)]')).toBe(true)
   })
 
   it('plays a plain gain with levelUp={false}', () => {
@@ -157,7 +166,22 @@ describe('XpLevelUp', () => {
     const prelude = screen.getByText('Top 4')
     expect(prelude.hasAttribute('aria-hidden')).toBe(false)
     expect(prelude.classList.contains('font-display')).toBe(true)
+    expect(prelude.classList.contains('text-[22px]')).toBe(true)
+    expect(prelude.classList.contains('@max-md:text-xl')).toBe(true)
+    // The display size would drop `leading-none` in tailwind-merge; the variant restates it.
+    expect(prelude.classList.contains('leading-none')).toBe(true)
     expect(screen.getByText('Level 42')).toBeTruthy()
+  })
+
+  it('never drains the bar in a plain gain: from is capped at progress', () => {
+    const { unmount } = render(
+      <XpLevelUp level={42} levelUp={false} from={60} progress={20} data-testid="x" />,
+    )
+    expect(screen.getByTestId('x').style.getPropertyValue('--sk-xp-level-up-from')).toBe('20')
+    unmount()
+    // A level-up starts in the previous level, so a `from` above `progress` is kept.
+    render(<XpLevelUp level={42} from={60} progress={20} data-testid="y" />)
+    expect(screen.getByTestId('y').style.getPropertyValue('--sk-xp-level-up-from')).toBe('60')
   })
 
   it('sets the clamped, rounded inline vars and lets the consumer style win', () => {
@@ -244,14 +268,48 @@ describe('XpLevelUp', () => {
     expect(screen.getByRole('progressbar', { name: 'XP vers le niveau 43' })).toBeTruthy()
   })
 
-  it('shrinks four-digit levels to fit the badge', () => {
-    const { container, unmount } = render(<XpLevelUp level={1200} progress={10} />)
-    const long = byClass(container, 'xp-level-up-level') as HTMLElement
-    expect(long.classList.contains('text-[28px]')).toBe(true)
-    expect(long.classList.contains('text-[40px]')).toBe(false)
-    unmount()
-    const { container: c2 } = render(<XpLevelUp level={999} progress={10} />)
-    expect(byClass(c2, 'xp-level-up-level')?.classList.contains('text-[40px]')).toBe(true)
+  it('shrinks four- and five-digit levels to fit the badge, keeping the tight line height', () => {
+    const num = (level: number) => {
+      const { container, unmount } = render(<XpLevelUp level={level} progress={10} />)
+      const classes = [...(byClass(container, 'xp-level-up-level') as HTMLElement).classList]
+      unmount()
+      return classes
+    }
+    const three = num(999)
+    expect(three).toContain('text-[40px]')
+    expect(three).toContain('leading-none')
+    const four = num(1200)
+    expect(four).toContain('text-[28px]')
+    expect(four).toContain('@max-md:text-[22px]')
+    expect(four).not.toContain('text-[40px]')
+    // tailwind-merge drops `leading-none` along with the base size; the variant restates it.
+    expect(four).toContain('leading-none')
+    const five = num(12345)
+    expect(five).toContain('text-[22px]')
+    expect(five).toContain('@max-md:text-xl')
+    expect(five).not.toContain('text-[28px]')
+    expect(five).toContain('leading-none')
+  })
+
+  it('keeps an intrinsic width so a shrink-to-fit parent cannot collapse the size container', () => {
+    render(<XpLevelUp {...base} data-testid="x" />)
+    const el = screen.getByTestId('x')
+    expect(el.classList.contains('@container')).toBe(true)
+    expect(el.classList.contains('[contain-intrinsic-inline-size:30rem]')).toBe(true)
+    expect(el.classList.contains('max-w-full')).toBe(true)
+  })
+
+  it('keeps the bar visible in forced-colors mode', () => {
+    const { container } = render(<XpLevelUp {...base} />)
+    const track = byClass(container, 'forced-colors:border') as HTMLElement
+    expect(track.classList.contains('forced-colors:border-[CanvasText]')).toBe(true)
+    for (const cls of ['animate-xp-level-up-charge', 'animate-xp-level-up-refill']) {
+      expect(byClass(container, cls)?.classList.contains('forced-colors:bg-[Highlight]'), cls).toBe(
+        true,
+      )
+    }
+    // The LV caption paints over the number's text backplate.
+    expect(screen.getByText('LV').classList.contains('forced-colors:relative')).toBe(true)
   })
 
   it('renders children under the main row', () => {

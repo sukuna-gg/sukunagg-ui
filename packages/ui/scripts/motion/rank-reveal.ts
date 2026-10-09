@@ -84,7 +84,7 @@ export const css = String.raw`
   }
 }
 
-/* The timeline: one utility per part, literal timings (settles by ~2.3s). */
+/* The timeline: one utility per part, literal timings (settles by ~2.4s, when glint-alt ends). */
 @utility animate-rank-reveal-rays {
   animation:
     sk-rank-reveal-enter 1s var(--sk-ease) both,
@@ -170,13 +170,17 @@ export const css = String.raw`
 }
 
 /* Ray fields, interpolated "in srgb": Firefox draws a repeating conic gradient with non-legacy
-   (color-mix) stops as dotted hairlines under the default oklab interpolation. */
+   (color-mix) stops as dotted hairlines under the default oklab interpolation. A browser without
+   gradient interpolation methods (Firefox < 127, Safari < 16.2) drops the "in srgb" declaration
+   as invalid, so the plain one before it keeps the rays. */
 @utility rank-reveal-rays {
+  background-image: repeating-conic-gradient(transparent 0, var(--sk-rank-reveal-glow) 2.5deg 5deg, transparent 7.5deg 15deg);
   background-image: repeating-conic-gradient(in srgb, transparent 0, var(--sk-rank-reveal-glow) 2.5deg 5deg, transparent 7.5deg 15deg);
   mask-image: radial-gradient(closest-side, transparent 9%, black 20%, transparent 78%);
 }
 
 @utility rank-reveal-rays-alt {
+  background-image: repeating-conic-gradient(from 5deg, transparent 0, color-mix(in oklab, var(--sk-premium) 50%, var(--sk-rank-reveal-hue)) 1deg 2deg, transparent 3deg 20deg);
   background-image: repeating-conic-gradient(from 5deg in srgb, transparent 0, color-mix(in oklab, var(--sk-premium) 50%, var(--sk-rank-reveal-hue)) 1deg 2deg, transparent 3deg 20deg);
   mask-image: radial-gradient(closest-side, transparent 9%, black 20%, transparent 78%);
 }

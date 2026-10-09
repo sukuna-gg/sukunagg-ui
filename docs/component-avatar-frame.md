@@ -25,8 +25,9 @@ packages/ui/src/components/avatar-frame/
 ├── avatar-frame.stories.tsx  # Components/AvatarFrame: the frame inside story-only screen chrome
 └── index.tsx                 # export { AvatarFrame } ; export type { AvatarFrameProps, AvatarFrameStatus, AvatarFrameTone }
 packages/ui/scripts/motion/avatar-frame.ts  # its @keyframes / @utility CSS → generated theme.css
-test/browser/avatar-frame.test.ts           # Playwright: loops run and turn; cut-out applied;
-                                            #   reduced motion = still frame; no console errors
+test/browser/avatar-frame.test.ts           # Playwright: loops run and turn; cut-out applied and
+                                            #   sized for large avatars; reduced motion = still
+                                            #   frame; no console errors
 ```
 
 ## 3. API
@@ -54,13 +55,36 @@ export type AvatarFrameProps =
 
 - **Size comes from the child.** The frame adds a 3px ring + 3px gap around whatever it wraps
   (`<Avatar size="sm">` → 44px frame, an 88px avatar → 100px frame). Every effect is measured in
-  container units of the frame (`cqw`), so the glow, sparks, status dot and pill scale with it.
+  container units of the frame (`cqw`), so the glow, halo, sparks, comet head, status dot, pill and
+  the status cut-out scale with it (the 3px ring itself stays 3px).
+- **The 6px pad is load-bearing; don't override the root's padding.** The status dot and its cut-out
+  find the avatar's edge from the frame box as `100cqw - 12px` (the avatar's width) and
+  `50cqw - 7px` (the dot's centre, 1px inside the avatar's edge). A different padding (`p-[10px]`)
+  shrinks the avatar inside the frame while the dot and the hole through the ring layers stay put,
+  ≈ 3px off the avatar's edge and out of line with the avatar's own cut-out. Spacing and alignment
+  overrides (`ml-2`, `align-top`) are fine.
+- **Effects paint outside the layout box; leave room around it.** Only the frame box takes layout
+  space. The live halo reaches ≈ 23% of the frame's width past each edge at its widest, the outer
+  spark orbit ≈ 20%, the glow less; the LIVE pill (11px type at line-height 1 on a 100px frame,
+  8px below ~73px) hangs half its height below the bottom edge: ≈ 8.5px on a 100px frame, ≈ 6px on
+  small ones. Neighbours and captions closer than that get painted over, so space frames (and their
+  captions) by at least ~20% of the frame plus the pill. In a tight grid, give the avatar a smaller
+  size rather than letting frames overlap (the Showcase story does this with a container query).
 - **Plays on mount, loops forever** (they are ambient decorations, not one-shot reveals). There is
   nothing to replay. Pause it by not rendering the variant (e.g. `live={false}`).
 - **`--sk-avatar-frame-backdrop`** (optional CSS variable, default `var(--sk-surface)`): the colour of
   the 3px separator ring around the LIVE pill. Set it when the frame sits on another surface, e.g.
   `className="[--sk-avatar-frame-backdrop:var(--sk-bg)]"`. The status dot needs no backdrop — its gap
   is a transparent cut-out.
+- **`--sk-avatar-frame-delay`** (optional CSS variable, default `0s`): shifts every loop of one frame.
+  Frames mount together, so a list of comets would turn in lockstep; give each a different negative
+  delay to start it mid-cycle, e.g. `className="[--sk-avatar-frame-delay:-1.1s]"`, or per item
+  ``style={{ '--sk-avatar-frame-delay': `${-i * 0.7}s` } as CSSProperties}``. Reduced motion ignores
+  it (no loops run).
+- **Put the link or button around the frame, not inside it.** With `status`, the avatar slot carries
+  the cut-out mask, which clips everything painted outside the child's own box, including a focus
+  outline. `<a href><AvatarFrame>…</AvatarFrame></a>` keeps the focus ring visible;
+  `<AvatarFrame><a href><Avatar /></a></AvatarFrame>` would clip it.
 - `data-sk-avatar-frame`, `data-tone`, `data-live` and `data-status` are set on the root for styling
   hooks and tests.
 
@@ -74,10 +98,10 @@ the pill (put it in the caption next to the avatar), and pausing offscreen (CSS 
 
 | Prop | Layer | Tokens |
 |---|---|---|
-| `tone="accent"` | comet ring (conic, turns 3.2s), 8% track, blurred glow, white-hot head dot | `--sk-accent`, `--sk-accent-deep`, `--sk-accent-glow`, hot = `color-mix(accent 55%, --sk-text)` |
+| `tone="accent"` | comet ring (conic, turns 3.2s), 8% track, blurred glow, white-hot head dot (6px with a 7px + 18px glow on a 100px frame; smaller on smaller frames, never larger) | `--sk-accent`, `--sk-accent-deep`, `--sk-accent-glow`, hot = `color-mix(accent 55%, --sk-text)` |
 | `tone="premium"` | metal ring (static conic), sheen sweep (5.5s, eased), 1px hairline, soft glow | `--sk-premium`, `--sk-premium-dim`, `--sk-on-accent` (highlights) |
 | `live` | breathing halo (2.8s), ripple ring (3.2s), LIVE pill with blinking dot (1.4s); accent ring turns solid | `--sk-accent`, `bg-gradient-accent` + `--sk-on-accent` (pill), `--sk-surface` (pill separator) |
-| `sparks` | three four-point stars with tails orbiting at 3.7s / 6.1s (reverse) / 9.3s | `--sk-premium`, `--sk-on-accent` (core) |
+| `sparks` | three four-point stars with tails orbiting at 3.7s / 6.1s (reverse) / 9.3s | `--sk-premium` (star, tail, `drop-shadow` at 60%); core = `color-mix(premium 55%, --sk-text)` (light core on dark, dark core on light) |
 | `status="online"` | filled dot with a soft highlight, cut out of ring + glow + avatar | `--sk-success`, `--sk-on-accent` |
 | `status="offline"` | hollow ring dot (shape differs, not just colour) | `--sk-text-faint` |
 
@@ -95,17 +119,19 @@ No new colour token. Masks use `black`/`transparent` (alpha only, not a colour).
 @keyframes sk-avatar-frame-ripple  { from { scale: 1; opacity: 0.7; } to { scale: 1.42; opacity: 0; } }
 @keyframes sk-avatar-frame-blink   { to { opacity: 0.3; } }
 
-@utility animate-avatar-frame-spin    { rotate: var(--sk-avatar-frame-phase, 0deg); animation: sk-avatar-frame-turn 3.2s linear infinite; }
-@utility animate-avatar-frame-sheen   { rotate: var(--sk-avatar-frame-phase, 0deg); animation: sk-avatar-frame-turn 5.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
-@utility animate-avatar-frame-orbit   { rotate: var(--sk-avatar-frame-phase, 0deg); animation: sk-avatar-frame-turn var(--sk-avatar-frame-t, 6s) linear infinite var(--sk-avatar-frame-dir, normal); }
-@utility animate-avatar-frame-breathe { animation: sk-avatar-frame-breathe 2.8s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate; }
-@utility animate-avatar-frame-ripple  { animation: sk-avatar-frame-ripple 3.2s cubic-bezier(0.2, 0.6, 0.3, 1) infinite; }
-@utility animate-avatar-frame-blink   { animation: sk-avatar-frame-blink 1.4s ease-in-out infinite alternate; }
+/* Every loop takes var(--sk-avatar-frame-delay, 0s) as its delay (written $delay below). */
+@utility animate-avatar-frame-spin    { rotate: var(--sk-avatar-frame-phase, 0deg); animation: sk-avatar-frame-turn 3.2s linear $delay infinite; }
+@utility animate-avatar-frame-sheen   { rotate: var(--sk-avatar-frame-phase, 0deg); animation: sk-avatar-frame-turn 5.5s cubic-bezier(0.45, 0, 0.55, 1) $delay infinite; }
+@utility animate-avatar-frame-orbit   { rotate: var(--sk-avatar-frame-phase, 0deg); animation: sk-avatar-frame-turn var(--sk-avatar-frame-t, 6s) linear $delay infinite var(--sk-avatar-frame-dir, normal); }
+@utility animate-avatar-frame-breathe { animation: sk-avatar-frame-breathe 2.8s cubic-bezier(0.45, 0, 0.55, 1) $delay infinite alternate; }
+@utility animate-avatar-frame-ripple  { animation: sk-avatar-frame-ripple 3.2s cubic-bezier(0.2, 0.6, 0.3, 1) $delay infinite; }
+@utility animate-avatar-frame-blink   { animation: sk-avatar-frame-blink 1.4s ease-in-out $delay infinite alternate; }
 
 /* Paint + geometry that can't be a plain utility (gradients, masks, pseudo-element shapes):
    avatar-frame-band (ring-shaped mask, width --sk-avatar-frame-bw, default 3px),
    avatar-frame-comet / -comet-glow / -metal / -sheen / -halo (conic + radial fills),
-   avatar-frame-head (the comet's head dot), avatar-frame-spark (star + tail),
+   avatar-frame-head (the comet's head dot: clamp(4px, 6cqw, 7px), glow min(18px, 18cqw)),
+   avatar-frame-spark (star + tail),
    avatar-frame-status / -online / -offline (dot size, 45° position, fill),
    avatar-frame-cutout / -cutout-avatar (the status hole through the ring layers and through the
    avatar itself). */
@@ -135,10 +161,12 @@ orbit instead of an `offset-path`. Four keyframes, no `@property`.
 - `forwardRef<HTMLSpanElement, AvatarFrameProps>`; the ref is the root `<span>`.
 - Destructures `tone`, `live`, `liveLabel`, `sparks`, `status`, `statusLabel`, `className`,
   `children` so none leak to the DOM; the rest spreads onto the root.
-- Structure: root `<span>` (inline-grid, sized by the child + a 6px pad: 3px ring + 3px gap) →
-  **back** (`aria-hidden`, covers the frame box, a size container) → **cut** (bleeds 24px past the
-  frame so the glow fits inside its mask; carries the status cut-out) → **layers** (back on the frame
-  box: halo, ripple, glow, track/hair, ring, head/sheen). Then the **avatar** slot (`children`, the
+- Structure: root `<span>` (inline-grid, sized by the child + a 6px pad: 3px ring + 3px gap; the
+  status geometry assumes that pad, see §3) →
+  **back** (`aria-hidden`, covers the frame box, a size container) → **cut** (bleeds
+  `max(24px, 30cqw)` past the frame: it scales with the frame, so the glow's blur and the halo at
+  its widest fade out inside the mask box at any size; carries the status cut-out) → **layers** (back
+  on the frame box: halo, ripple, glow, track/hair, ring, head/sheen). Then the **avatar** slot (`children`, the
   only part that takes the pointer; masked by the status hole) and the **front** layers (sparks,
   status dot, sr-only status, LIVE pill) on top, unmasked. Front renders only when one of
   `sparks`/`status`/`live` is set.
@@ -154,8 +182,8 @@ export const avatarFrameStyles = tv({
   slots: {
     root: 'group/avatar-frame relative isolate inline-grid shrink-0 place-items-center p-[6px] align-middle',
     back: 'pointer-events-none absolute inset-0 @container-[size]',
-    cut: 'absolute -inset-[24px]',
-    layers: 'absolute inset-[24px]',
+    cut: 'absolute -inset-[max(24px,30cqw)]',
+    layers: 'absolute inset-[max(24px,30cqw)]',
     halo: 'absolute -inset-[20cqw] rounded-full opacity-70 avatar-frame-halo animate-avatar-frame-breathe motion-reduce:animate-none',
     ripple: 'absolute inset-0 rounded-full border-[1.5px] border-accent opacity-0 animate-avatar-frame-ripple motion-reduce:animate-none',
     glow: 'absolute inset-0 rounded-full blur-[max(4px,7cqw)] opacity-75 transition-opacity duration-slow ease-sukuna group-hover/avatar-frame:opacity-100 motion-reduce:transition-none',
@@ -172,7 +200,8 @@ export const avatarFrameStyles = tv({
     status: 'avatar-frame-status',
     pill: [
       'absolute top-full left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center …',
-      'font-display font-bold uppercase … text-[length:clamp(8px,11cqw,11px)]',
+      // leading-none after the size: tailwind-merge drops a leading-* that precedes a text-* size
+      'font-display font-bold uppercase tracking-[.14em] text-[length:clamp(8px,11cqw,11px)] leading-none',
       'bg-gradient-accent text-on-accent',
       'shadow-[0_0_0_3px_var(--sk-avatar-frame-backdrop,var(--sk-surface)),0_6px_16px_-4px_var(--sk-accent-glow)]',
     ],
@@ -237,21 +266,30 @@ Per-layer rest angles, orbit radii and speeds are literal arbitrary-property cla
       nothing flashes more than 3×/s.
 - [ ] Not focusable and no pointer capture of its own: the decorative layers are
       `pointer-events: none`, so a framed avatar inside a button/link stays fully clickable.
+- [ ] The focusable element wraps the frame (as in the `FriendsList` story), never sits inside it:
+      with `status` the avatar slot is masked to the child's box, which would clip a focus outline
+      drawn outside it.
 
 ## 9. Tests
 
 Unit (`avatar-frame.test.tsx`): server render of every tone × live × sparks × status combination;
 real child + sr-only status text in the HTML; default/custom/empty `statusLabel`; `liveLabel`
-renders as visible text; each tone/live/status maps to its literal utilities; every animated slot
+renders as visible text; each tone/live/status maps to its literal utilities; the LIVE pill keeps
+`leading-none` next to its font size in every live combination; every animated slot
 carries `motion-reduce:animate-none`; decorative layers `aria-hidden`; front layers only when
 needed; prop names never leak as attributes (`data-*` hooks do); native props pass through; `ref`
-→ `HTMLSpanElement`; consumer `className` wins; hydrates; axe clean in both themes.
+→ `HTMLSpanElement`; consumer `className` wins (a non-geometric override: the 6px pad stays);
+hydrates; axe clean in both themes.
 
 Browser (`test/browser/avatar-frame.test.ts`; CI runs Chromium, the spec also passes in Firefox
 and WebKit): the Showcase story renders the three framed avatars and the pill text; ring, glow ring,
 head, sheen, the three orbits, halo, ripple and pill dot run their `sk-avatar-frame-*` keyframes;
 seeking the animations moves the comet from its 40° rest (130° at 800ms) and an orbit on its own
-clock; the status cut-out masks are applied and the dot sits on the avatar's 45° edge; under
+clock; the status cut-out masks are applied and the dot sits on the avatar's 45° edge; the LIVE
+pill is set at line-height 1 even under a 28px inherited line-height (1.54em tall, hanging half of
+it below the frame); on the
+`Large` story (200px avatars with status) the cut-out box bleeds 30% of the frame, more than 3× the
+glow's blur, and holds the live halo at its widest; under
 `reducedMotion: 'reduce'` no animation runs and every layer rests on its designed angle (ring 40°,
 head 33°, sheen −20°, orbits 140°/259°/11°, halo 70%) with all text visible; no console errors.
 
@@ -261,13 +299,19 @@ The frame always sits in story chrome (a surface card, captions, a roster). The 
 part of the component.
 
 - `Playground`: controls, in a surface card.
-- `Showcase`: the approved mockup. Crimson / Bone / Live profiles with captions on a lit stage.
+- `Showcase`: the approved mockup. Crimson / Bone / Live profiles with captions on a lit stage. The
+  stage is a size container with the mockup's narrow rules: at ≤ 420px the avatars drop to 72px
+  (64px / 56px on narrower phones), the captions shrink, and the 'RY · ' prefixes and the online dot
+  are visually hidden.
 - `Tones`: accent and premium profiles.
 - `Live`: a "Live now" rail (accent live; premium live + sparks).
 - `Sparks`: supporters (premium and accent with sparks).
 - `Status`: a party panel (online, offline, premium online; default sr-only labels).
 - `Sizes`: Avatar sm/md/lg and an 88px disc in both tones, plus live at lg.
-- `FriendsList`: a sidebar roster of buttons at `md`.
+- `Large`: profile-header scale, 200px avatars with status (comet; live): the glow, halo and
+  cut-out scale with the child.
+- `FriendsList`: a sidebar roster of buttons at `md`, each frame with its own
+  `--sk-avatar-frame-delay` so the comets don't turn in lockstep.
 - `Still`: the Showcase with every animation removed, i.e. the exact reduced-motion frame, for review.
 
 Story ids are `components-avatarframe--<story>` (e.g. `components-avatarframe--showcase`,
@@ -301,6 +345,9 @@ Story ids are `components-avatarframe--<story>` (e.g. `components-avatarframe--s
 - `// DECISION(open): status labels` — English defaults 'Online' / 'Offline', overridable via
   `statusLabel`; only these two statuses until there are tokens for away/busy.
 - `sparks` is independent of `tone` (default off); the mockup pairs it with `premium`.
+- **Desync is opt-in** (`--sk-avatar-frame-delay`, default `0s`): the component has no randomness
+  (server and client markup must match), so frames that mount together start in phase; a list sets
+  a per-item negative delay.
 - No mono token exists (Q39 build brief): the pill uses `font-display` bold, uppercase, tracked.
 - Every `DECISION(open)` above also sits as a `// DECISION(open):` comment at its touch point
   (`avatar-frame.styles.tsx`, `avatar-frame.logic.tsx`, `scripts/motion/avatar-frame.ts`).

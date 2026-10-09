@@ -55,6 +55,30 @@ const seek = (page: Page, ms: number) =>
       }
     }, ms)
 
+/**
+ * Replay (a fresh mount via `key`) and pause every animation at `ms` one frame later, inside one
+ * evaluate: no one-shot part (the no-fill waves and slots) can finish and drop out of
+ * getAnimations() before it is captured, however long the page took to load.
+ */
+const replayAndSeek = (page: Page, ms: number) =>
+  page.evaluate(async (t) => {
+    const replay = [...document.querySelectorAll('button')].find((b) => b.textContent === 'Replay')
+    replay?.click()
+    await new Promise(requestAnimationFrame)
+    const root = document.querySelector('[data-sk-rank-reveal]') as HTMLElement
+    for (const a of root.getAnimations({ subtree: true })) {
+      a.pause()
+      a.currentTime = t
+    }
+  }, ms)
+
+/** `playState@currentTime` of each animation on the first match. */
+const timing = (page: Page, selector: string) =>
+  page
+    .locator(selector)
+    .first()
+    .evaluate((el) => el.getAnimations().map((a) => `${a.playState}@${Number(a.currentTime)}`))
+
 const computed = (page: Page, selector: string, prop: string) =>
   page
     .locator(selector)
@@ -132,7 +156,10 @@ test.describe('RankReveal', () => {
     }) => {
       await page.goto(story('playground'))
       await expect(page.locator(ROOT)).toBeVisible()
-      await seek(page, 0)
+      await replayAndSeek(page, 0)
+      // Captured on the fresh mount, so the assertions below test live animations.
+      expect(await timing(page, part('wave'))).toEqual(['paused@0'])
+      expect(await timing(page, `${ROOT} h2`)).toEqual(['paused@0'])
       expect(await computed(page, part('crest'), 'opacity')).toBe('0')
       expect(await computed(page, part('crest'), 'scale')).toBe('0.4')
       expect(await computed(page, part('title'), 'opacity')).toBe('0')
@@ -220,6 +247,118 @@ test.describe('RankReveal', () => {
       await expect(page.getByText('Rank up')).toBeVisible()
       await expect(page.getByText('+32 RR')).toBeVisible()
       expect(errors).toEqual([])
+    })
+
+    test('the title scales with a 340px phone stage and never clips', async ({ page }) => {
+      // The story's second stage is "Grandmaster"; args put a longer single word in the first.
+      await page.goto(`${story('phone')}&args=title:Grossmeisterschaften`)
+      await expect(page.getByRole('heading', { level: 2, name: 'Grandmaster' })).toBeVisible()
+      const fit = await page.locator(ROOT).evaluateAll((roots) =>
+        roots.map((root) => {
+          const h2 = root.querySelector('h2') as HTMLElement
+          const text = (h2.firstElementChild as HTMLElement).getBoundingClientRect()
+          const box = root.getBoundingClientRect()
+          const pad = Number.parseFloat(getComputedStyle(root).paddingLeft)
+          const content = root.clientWidth - 2 * pad
+          return {
+            // clamp(20px, 9cqi, 42px): 9% of the root's content box at this width.
+            size: Math.round((Number.parseFloat(getComputedStyle(h2).fontSize) / content) * 1000),
+            fits:
+              h2.scrollWidth <= root.clientWidth &&
+              text.left >= box.left + pad - 0.5 &&
+              text.right <= box.right - pad + 0.5,
+          }
+        }),
+      )
+      expect(fit).toEqual([
+        { size: 90, fits: true },
+        { size: 90, fits: true },
+      ])
+    })
+
+    test('the effect layer lines up at any root font size (px geometry)', async ({ page }) => {
+      await page.goto(story('playground'))
+      await expect(page.locator(ROOT)).toBeVisible()
+      // Offsets from the crest's center (the anchor), rounded to half a pixel.
+      const geometry = (fontSize: string) =>
+        page
+          .locator(ROOT)
+          .first()
+          .evaluate((root, size) => {
+            document.documentElement.style.fontSize = size
+            const half = (n: number) => Math.round(n * 2) / 2
+            const fx = root.firstElementChild as HTMLElement
+            const anchor = fx.firstElementChild as HTMLElement
+            const beams = anchor.firstElementChild as HTMLElement
+            const a = anchor.getBoundingClientRect()
+            const svg = root.querySelector('svg') as SVGSVGElement
+            const box = svg.getBoundingClientRect()
+            const r = (svg.querySelector('circle') as SVGCircleElement).r.baseVal.value
+            const ring = {
+              x: box.left + box.width / 2,
+              y: box.top + box.height / 2,
+              r: (r * box.width) / svg.viewBox.baseVal.width,
+            }
+            // Each pip's distance from the orbit ring line.
+            const pipOff = Math.max(
+              ...[...root.querySelectorAll('[class~="animate-rank-reveal-pip"]')].map((el) => {
+                const p = el.getBoundingClientRect()
+                const d = Math.hypot(p.x + p.width / 2 - ring.x, p.y + p.height / 2 - ring.y)
+                return Math.abs(d - ring.r)
+              }),
+            )
+            const crest = (
+              root.querySelector('[class~="animate-rank-reveal-crest"]') as HTMLElement
+            ).getBoundingClientRect()
+            const style = getComputedStyle(beams)
+            const mask =
+              style.getPropertyValue('mask-image') || style.getPropertyValue('-webkit-mask-image')
+            const rem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize)
+            const [opaque = Number.NaN, clear = Number.NaN] = [
+              ...mask.matchAll(/([\d.]+)(px|rem)/g),
+            ].map(([, n, unit]) => Number(n) * (unit === 'rem' ? rem : 1))
+            const top = beams.getBoundingClientRect().top
+            return {
+              fx: half(fx.getBoundingClientRect().height),
+              anchor: half(a.top - fx.getBoundingClientRect().top),
+              rays: half(beams.getBoundingClientRect().width),
+              ring: half(ring.r),
+              pipOffRing: pipOff <= 1,
+              crest: [half(crest.top - a.top), half(crest.bottom - a.top)],
+              // The ray field fades out below the crest: fully opaque well past its center,
+              // fully clear past its bottom edge.
+              maskBelowCrest: top + opaque - a.top > 40 && top + clear > crest.bottom,
+            }
+          }, fontSize)
+      const base = await geometry('16px')
+      expect(base).toEqual({
+        fx: 188,
+        anchor: 100,
+        rays: 720,
+        ring: 74,
+        pipOffRing: true,
+        crest: [-58.5, 58.5],
+        maskBelowCrest: true,
+      })
+      // Chrome/Firefox "Large" (20px) and the 62.5% root trick (10px).
+      for (const size of ['20px', '10px']) expect(await geometry(size)).toEqual(base)
+    })
+
+    test('a shrink-to-fit parent gets the 320px phone layout, not a collapsed box', async ({
+      page,
+    }) => {
+      await page.goto(story('playground'))
+      await expect(page.locator(ROOT)).toBeVisible()
+      const width = await page
+        .locator(ROOT)
+        .first()
+        .evaluate((root) => {
+          const stage = root.parentElement as HTMLElement
+          stage.style.width = 'fit-content'
+          return root.getBoundingClientRect().width
+        })
+      expect(width).toBe(320)
+      await expect(page.getByRole('heading', { level: 2, name: 'Master I' })).toBeVisible()
     })
 
     test('every story is a still frame', async ({ page }) => {

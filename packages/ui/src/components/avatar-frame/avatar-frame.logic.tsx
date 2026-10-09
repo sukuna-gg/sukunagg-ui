@@ -19,7 +19,9 @@ export interface AvatarFrameProps extends Omit<ComponentPropsWithoutRef<'span'>,
   /**
    * The round thing being framed — usually an `<Avatar>`. Its size sets the frame's size (the
    * frame adds a 3px ring and a 3px gap around it). Must be phrasing content: the root is a
-   * `<span>`, so the frame can sit inside buttons and links.
+   * `<span>`, so the frame can sit inside buttons and links. Put the link or button around the
+   * frame rather than passing one as the child: with `status` the child is masked to its own box,
+   * which clips a focus outline drawn outside it.
    */
   children: ReactNode
   /**
@@ -51,7 +53,8 @@ export interface AvatarFrameProps extends Omit<ComponentPropsWithoutRef<'span'>,
   /**
    * Presence dot on the avatar's bottom-right edge, cut cleanly out of the ring, glow and avatar.
    * `online`: a filled `--sk-success` dot. `offline`: a hollow `--sk-text-faint` ring (the shape
-   * differs, not only the colour). Omit for no dot.
+   * differs, not only the colour). Omit for no dot. The cut-out masks the child to its own box,
+   * so keep focusable elements around the frame, not inside it.
    */
   status?: AvatarFrameStatus
   /**
@@ -71,6 +74,11 @@ export interface AvatarFrameProps extends Omit<ComponentPropsWithoutRef<'span'>,
  *   access, no randomness. The loops play on mount and run forever (ambient decoration).
  * - Size: wraps any round child and takes its size; every effect scales with it (container
  *   units). Wrap `<Avatar>` rather than expecting the frame to size it.
+ * - Layout: only the frame box takes space. The halo, sparks and glow paint up to ≈ 23% of the
+ *   frame's width past its edges and the LIVE pill hangs half its height below it (≈ 8.5px on a
+ *   100px frame, ≈ 6px on frames under ~73px); space neighbours and captions accordingly.
+ * - Padding: the root's 6px pad (3px ring + 3px gap) is load-bearing. The status dot and its
+ *   cut-out locate the avatar's edge from it, so don't override the root's padding in `className`.
  * - Accessibility: every decorative layer is `aria-hidden` and ignores the pointer, so a framed
  *   avatar inside a button or link stays clickable. The child keeps its own semantics (`alt` /
  *   fallback). `status` adds a visually hidden `statusLabel`; the LIVE pill is real text
@@ -81,8 +89,11 @@ export interface AvatarFrameProps extends Omit<ComponentPropsWithoutRef<'span'>,
  *   `status`: 'online' | 'offline' | undefined (default, no dot).
  * - The LIVE pill's 3px separator ring is `--sk-avatar-frame-backdrop` (default `--sk-surface`);
  *   set it when the frame sits on another surface.
- * - The ref points at the root `<span>`; `className` merges last; `data-sk-avatar-frame`,
- *   `data-tone`, `data-live` and `data-status` are set on the root for styling hooks.
+ * - `--sk-avatar-frame-delay` (default `0s`) shifts every loop of one frame. Frames that mount
+ *   together turn in lockstep; give each item of a list its own negative delay to desync them.
+ * - The ref points at the root `<span>`; `className` merges last (leave its padding alone, see
+ *   above); `data-sk-avatar-frame`, `data-tone`, `data-live` and `data-status` are set on the
+ *   root for styling hooks.
  *
  * @example
  * ```tsx
@@ -93,8 +104,8 @@ export interface AvatarFrameProps extends Omit<ComponentPropsWithoutRef<'span'>,
  *   <Avatar src={user.avatarUrl} alt={user.name} fallback="RY" size="lg" />
  * </AvatarFrame>
  *
- * // Premium supporter with orbiting sparks
- * <AvatarFrame tone="premium" sparks>
+ * // Premium supporter with orbiting sparks, started 1.1s into its loops
+ * <AvatarFrame tone="premium" sparks className="[--sk-avatar-frame-delay:-1.1s]">
  *   <Avatar fallback="KA" size="lg" />
  * </AvatarFrame>
  *

@@ -14,6 +14,23 @@ const disc = {
   moss: 'bg-[linear-gradient(150deg,var(--sk-chart-6),color-mix(in_oklab,var(--sk-chart-6)_40%,var(--sk-well)))] text-on-accent',
 } as const
 
+// Literal size classes (rule 7). The hero disc follows the mockup's narrow rule: inside the
+// Showcase stage's container it drops to 72px at ≤ 420px (the mockup's phone size, ~65% of a
+// column), then 64px / 56px so the three columns of a 320–360px phone keep that ratio. Every effect
+// scales with the disc.
+const discSize = {
+  sm: '',
+  md: '',
+  lg: '',
+  hero: [
+    'size-[88px] text-[26px]',
+    '@max-[420px]:size-[72px] @max-[420px]:text-[22px]',
+    '@max-[340px]:size-[64px] @max-[340px]:text-[20px]',
+    '@max-[290px]:size-[56px] @max-[290px]:text-[17px]',
+  ].join(' '),
+  xl: 'size-[200px] text-[58px]',
+} as const
+
 /** A mockup-style avatar disc: gradient fill, inner hairline, a soft top-left highlight. */
 function Disc({
   initials,
@@ -22,12 +39,11 @@ function Disc({
 }: {
   initials: string
   look: keyof typeof disc
-  size?: 'hero' | 'sm' | 'md' | 'lg'
+  size?: keyof typeof discSize
 }) {
-  const hero = size === 'hero'
   return (
     <Avatar
-      size={hero ? 'lg' : size}
+      size={size === 'hero' || size === 'xl' ? 'lg' : size}
       fallback={
         <span className="relative font-display font-extrabold tracking-[-.01em] font-stretch-[118%]">
           {initials}
@@ -35,7 +51,7 @@ function Disc({
       }
       className={[
         disc[look],
-        hero ? 'size-[88px] text-[26px]' : '',
+        discSize[size],
         'shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--sk-on-accent)_16%,transparent)]',
         'before:absolute before:inset-0 before:rounded-full',
         'before:bg-[radial-gradient(circle_at_30%_20%,color-mix(in_oklab,var(--sk-on-accent)_30%,transparent),transparent_55%)]',
@@ -44,7 +60,10 @@ function Disc({
   )
 }
 
-/** The mockup's lit stage: a surface card with a faint crimson wash. */
+/**
+ * The mockup's lit stage: a surface card with a faint crimson wash. Its inner wrapper is an
+ * inline-size container, so the roster follows the mockup's `@container (max-width: 420px)` rules.
+ */
 function Stage({ children }: { children: ReactNode }) {
   return (
     <div className="relative grid min-h-80 w-full max-w-[600px] place-items-center overflow-hidden rounded-lg bg-surface shadow-card">
@@ -52,7 +71,7 @@ function Stage({ children }: { children: ReactNode }) {
         aria-hidden="true"
         className="absolute inset-0 bg-[radial-gradient(70%_80%_at_50%_40%,color-mix(in_oklab,var(--sk-accent)_6%,transparent),transparent_70%)]"
       />
-      <div className="relative w-full px-3 py-8">{children}</div>
+      <div className="@container relative w-full py-8">{children}</div>
     </div>
   )
 }
@@ -67,11 +86,11 @@ function Caption({ name, meta, tone }: CaptionProps) {
   return (
     <p className="m-0 flex flex-col items-center gap-1.5 text-center">
       <b
-        className={`inline-flex items-center gap-1.5 font-display text-[15px] font-extrabold uppercase leading-none tracking-[.04em] font-stretch-[120%] ${tone === 'premium' ? 'text-premium' : 'text-text'}`}
+        className={`inline-flex items-center gap-1.5 font-display text-[15px] font-extrabold uppercase leading-none tracking-[.04em] font-stretch-[120%] @max-[420px]:text-[13px] ${tone === 'premium' ? 'text-premium' : 'text-text'}`}
       >
         {name}
       </b>
-      <span className="inline-flex items-center gap-1.5 whitespace-nowrap font-sans text-[10px] font-medium uppercase leading-none tracking-[.08em] tabular-nums text-text-faint">
+      <span className="inline-flex items-center gap-1.5 whitespace-nowrap font-sans text-[10px] font-medium uppercase leading-none tracking-[.08em] tabular-nums text-text-faint @max-[420px]:text-[9px] @max-[420px]:tracking-[.04em]">
         {meta}
       </span>
     </p>
@@ -130,12 +149,24 @@ export const Playground: Story = {
   ),
 }
 
+const rosterItem = 'flex min-w-0 flex-col items-center gap-[22px] @max-[420px]:gap-5'
+/**
+ * A roster meta line, one flex item: the player prefix ('RY · ') is visually hidden on a narrow
+ * stage (the mockup's rule) and still read by screen readers.
+ */
+const Who = ({ id, children }: { id: string; children: ReactNode }) => (
+  <span>
+    <span className="@max-[420px]:sr-only">{id} · </span>
+    {children}
+  </span>
+)
+
 /** The approved mockup's roster: three player profiles on a lit stage. */
 function Roster() {
   return (
     <Stage>
-      <ul className="m-0 grid list-none grid-cols-3 items-start p-0">
-        <li className="flex min-w-0 flex-col items-center gap-[22px]">
+      <ul className="m-0 grid list-none grid-cols-3 items-start px-3 py-0 @max-[420px]:px-3.5">
+        <li className={rosterItem}>
           <AvatarFrame status="online" statusLabel="">
             <Disc initials="RY" look="crimson" />
           </AvatarFrame>
@@ -143,13 +174,16 @@ function Roster() {
             name="Crimson"
             meta={
               <>
-                <i aria-hidden="true" className="size-1.5 rounded-full bg-success" />
-                RY · Online
+                <i
+                  aria-hidden="true"
+                  className="size-1.5 rounded-full bg-success @max-[420px]:hidden"
+                />
+                <Who id="RY">Online</Who>
               </>
             }
           />
         </li>
-        <li className="flex min-w-0 flex-col items-center gap-[22px]">
+        <li className={rosterItem}>
           <AvatarFrame tone="premium" sparks>
             <Disc initials="KA" look="bone" />
           </AvatarFrame>
@@ -161,14 +195,14 @@ function Roster() {
                 Bone
               </>
             }
-            meta="KA · Premium"
+            meta={<Who id="KA">Premium</Who>}
           />
         </li>
-        <li className="flex min-w-0 flex-col items-center gap-[22px]">
+        <li className={rosterItem}>
           <AvatarFrame live>
             <Disc initials="M1" look="live" />
           </AvatarFrame>
-          <Caption name="Live" meta="M1 · 2.4K watching" />
+          <Caption name="Live" meta={<Who id="M1">2.4K watching</Who>} />
         </li>
       </ul>
     </Stage>
@@ -281,7 +315,10 @@ export const Sizes: Story = {
         {(['accent', 'premium'] as const).map((tone) => (
           <div key={tone} className="flex flex-wrap items-end justify-center gap-x-9 gap-y-8">
             {(['sm', 'md', 'lg', 'hero'] as const).map((size) => (
-              <div key={size} className="flex flex-col items-center gap-3">
+              <div
+                key={size}
+                className={`flex flex-col items-center ${size === 'hero' ? 'gap-5' : 'gap-3'}`}
+              >
                 <AvatarFrame tone={tone} sparks={tone === 'premium'} status="online">
                   <Disc initials="RY" look={tone === 'premium' ? 'bone' : 'crimson'} size={size} />
                 </AvatarFrame>
@@ -305,6 +342,25 @@ export const Sizes: Story = {
   ),
 }
 
+/**
+ * Profile-header scale: 200px avatars with a status dot. The glow, halo, comet head and the status
+ * cut-out all scale with the child (the cut-out's mask box bleeds 30% of the frame).
+ */
+export const Large: Story = {
+  render: () => (
+    <Panel title="Profile header · 200px">
+      <div className="flex flex-wrap items-start justify-center gap-x-24 gap-y-20 py-10">
+        <AvatarFrame status="online">
+          <Disc initials="RY" look="crimson" size="xl" />
+        </AvatarFrame>
+        <AvatarFrame live status="online">
+          <Disc initials="M1" look="live" size="xl" />
+        </AvatarFrame>
+      </div>
+    </Panel>
+  ),
+}
+
 const friends = [
   { name: 'ryomen', initials: 'RY', look: 'crimson', note: 'In queue · Ranked', frame: {} },
   {
@@ -312,32 +368,35 @@ const friends = [
     initials: 'KA',
     look: 'bone',
     note: 'Premium · Diamond II',
-    frame: { tone: 'premium', sparks: true },
+    frame: { tone: 'premium', sparks: true, className: '[--sk-avatar-frame-delay:-2.3s]' },
   },
   {
     name: 'mika_one',
     initials: 'M1',
     look: 'live',
     note: 'Streaming · 2.4K',
-    frame: { live: true },
+    frame: { live: true, className: '[--sk-avatar-frame-delay:-1.6s]' },
   },
   {
     name: 'sora',
     initials: 'SO',
     look: 'ember',
     note: 'Last seen 2h ago',
-    frame: { status: 'offline' },
+    frame: { status: 'offline', className: '[--sk-avatar-frame-delay:-1.1s]' },
   },
   {
     name: 'moss',
     initials: 'MO',
     look: 'moss',
     note: 'Online',
-    frame: { status: 'online', statusLabel: '' },
+    frame: { status: 'online', statusLabel: '', className: '[--sk-avatar-frame-delay:-2.2s]' },
   },
 ] as const
 
-/** Small sizes in real chrome: a sidebar friends roster. */
+/**
+ * Small sizes in real chrome: a sidebar friends roster. Each frame sets its own
+ * `--sk-avatar-frame-delay`, so the comets don't turn in lockstep.
+ */
 export const FriendsList: Story = {
   render: () => (
     <aside className="w-72 rounded-lg border border-line bg-surface p-2 shadow-card">

@@ -57,6 +57,8 @@ describe('LootReveal', () => {
   it('renders one list item per card, with its rarity on data-rarity', () => {
     render(<LootReveal aria-label="Pack rewards" items={DROP} />)
     const list = screen.getByRole('list', { name: 'Pack rewards' })
+    // explicit: list-style none makes Safari/VoiceOver drop the implicit list role
+    expect(list.getAttribute('role')).toBe('list')
     expect(screen.getAllByRole('listitem')).toHaveLength(4)
     expect(slots(list).map((li) => li.dataset.rarity)).toEqual([
       'common',
@@ -196,13 +198,21 @@ describe('LootReveal', () => {
     }
   })
 
-  it('play={false} renders the revealed row with no animation at all', () => {
+  it('play={false} renders the revealed row with no animation and no one-shot burst', () => {
     render(<LootReveal data-testid="r" items={PACK} play={false} />)
     const root = screen.getByTestId('r')
     expect(root.outerHTML).not.toMatch(/(^|\s|")animate-/)
     expect(screen.getByText('Crimson Vow Gold Banner')).toBeTruthy()
-    expect(all(root, '.loot-reveal-spark')).toHaveLength(24)
-    expect(all(root, '.loot-reveal-flare')).toHaveLength(1)
+    const legendary = slots(root)[2] as HTMLLIElement
+    // the burst ends invisible, so a still row skips it (no dead nodes) ...
+    expect(all(root, '.loot-reveal-spark')).toHaveLength(0)
+    expect(all(root, '.loot-reveal-flare')).toHaveLength(0)
+    // core (flash), wave (shock ring), sheen
+    expect(all(legendary, '.scale-125, .scale-230, .translate-x-\\[120\\%\\]')).toHaveLength(0)
+    // ... but keeps the resting frame: the rays (at 30%) and the halo.
+    expect(all(legendary, '.rotate-20.opacity-30')).toHaveLength(1)
+    expect(all(legendary, '.-inset-\\[45\\%\\]')).toHaveLength(1)
+    expect(legendary.querySelector('.loot-reveal-glow-gilded')).not.toBeNull()
   })
 
   it('hides decoration from assistive tech and keeps the information readable', () => {
@@ -231,6 +241,71 @@ describe('LootReveal', () => {
     for (const text of ['Kitsune Mask', 'Mask', 'Epic']) {
       expect(screen.getByText(text).closest('[aria-hidden="true"]')).toBeNull()
     }
+  })
+
+  it('keeps long names and kinds inside the card, and the label legible over its glow', () => {
+    const name = 'Drachenschuppenrüstung'
+    render(
+      <LootReveal
+        data-testid="r"
+        lang="de"
+        items={[{ name, kind: 'Sammlerabzeichen', rarity: 'epic' }]}
+        rarityLabels={{ epic: 'Episch' }}
+      />,
+    )
+    const li = slots(screen.getByTestId('r'))[0] as HTMLLIElement
+    // a minmax(0,1fr) column, so a long word can't widen the face past the card
+    expect(li.querySelector('.animate-loot-reveal-face')?.classList.contains('grid-cols-1')).toBe(
+      true,
+    )
+    expect(screen.getByText(name).classList.contains('wrap-anywhere')).toBe(true)
+    const kind = screen.getByText('Sammlerabzeichen')
+    for (const cls of ['max-w-full', 'truncate']) expect(kind.classList.contains(cls)).toBe(true)
+    // the label is the rarity color mixed toward --sk-text (AA over the card's own halo/glow)
+    const rarity = screen.getByText('Episch').parentElement as HTMLElement
+    expect(rarity.classList.contains('text-[10px]')).toBe(true)
+    expect(
+      rarity.classList.contains(
+        'text-[color-mix(in_oklab,var(--sk-loot-reveal-color)_75%,var(--sk-text))]',
+      ),
+    ).toBe(true)
+  })
+
+  it('sizes each card from the card count, counting its slot padding, so n cards share a row', () => {
+    render(<LootReveal data-testid="r" items={DROP} />)
+    const root = screen.getByTestId('r')
+    const card = [...root.classList].find((c) => c.startsWith('[--sk-loot-reveal-card:'))
+    // card = clamp(72px, 99cqi/n − 2 × slot padding, 124px): every slot is then 99cqi/n wide,
+    // so only the 72px floor wraps the row (Playwright checks the real layout).
+    const width = card?.match(
+      /^\[--sk-loot-reveal-card:clamp\(72px,calc\(99cqi\/var\(--sk-loot-reveal-n,3\)_-_([\d.]+)cqi\),124px\)\]$/,
+    )
+    expect(width).not.toBeNull()
+    const li = slots(root)[0] as HTMLLIElement
+    const pad = [...li.classList].find((c) => /^px-\[[\d.]+cqi\]$/.test(c))
+    const padding = Number(pad?.match(/[\d.]+/)?.[0])
+    expect(Number(width?.[1])).toBe(2 * padding)
+    expect(li.querySelector('.w-\\(--sk-loot-reveal-card\\)')).not.toBeNull()
+    // the rarity label may spend the slot padding before it widens the slot
+    const label = screen.getByText('Common').parentElement as HTMLElement
+    expect(label.classList.contains(`-mx-[${padding}cqi]`)).toBe(true)
+    // the name shrinks with the card (never over 10.5% of it), not only with the row
+    const name = screen.getByText('Ashen Grin')
+    expect(
+      name.classList.contains(
+        'text-[length:clamp(9.5px,min(2.5cqi,calc(var(--sk-loot-reveal-card)*.105)),13px)]',
+      ),
+    ).toBe(true)
+  })
+
+  it('clips horizontal overflow by default; a clipping stage can opt out', () => {
+    const { unmount } = render(<LootReveal data-testid="r" items={PACK} />)
+    expect(screen.getByTestId('r').classList.contains('overflow-x-clip')).toBe(true)
+    unmount()
+    render(<LootReveal data-testid="r" items={PACK} className="overflow-x-visible" />)
+    const root = screen.getByTestId('r')
+    expect(root.classList.contains('overflow-x-visible')).toBe(true)
+    expect(root.classList.contains('overflow-x-clip')).toBe(false)
   })
 
   it('omits the kind chip and icon wrapper when an item has none', () => {

@@ -6,7 +6,8 @@
  * Spec: docs/component-glitch-text.md §4. The base styles are the clean, final text: the slice
  * band (`--sk-glitch-text-y0`/`-y1`) is 0% tall and the fringe copies are clipped shut, so
  * reduced motion (`animate-none`) and browsers without `@property` land on the clean text.
- * Offsets are in `em` so the effect scales with the consumer's font size.
+ * Offsets are in `em` so the effect scales with the consumer's font size. The copies move by
+ * `text-shadow` (ink overflow), so only the root's own jitter can reach past its box.
  */
 // DECISION(open): motion.md carve-out (Q39) — animating clip-path and @property values (rule 2)
 // and an idle burst loop (rule 5) go beyond the v1.3 motion rules; recorded in the component doc.
@@ -111,31 +112,31 @@ export const css = String.raw`
     --sk-glitch-text-m: 1;
   }
   88.6% {
-    clip-path: inset(8% 0 66% 0);
+    clip-path: inset(8% -0.5em 66% -0.5em);
     --sk-glitch-text-m: 1.3;
   }
   90.1% {
-    clip-path: inset(56% 0 22% 0);
+    clip-path: inset(56% -0.5em 22% -0.5em);
     --sk-glitch-text-m: -1;
   }
   91.6% {
-    clip-path: inset(28% 0 50% 0);
+    clip-path: inset(28% -0.5em 50% -0.5em);
     --sk-glitch-text-m: 0.7;
   }
   93.1% {
-    clip-path: inset(70% 0 8% 0);
+    clip-path: inset(70% -0.5em 8% -0.5em);
     --sk-glitch-text-m: 1.3;
   }
   94.6% {
-    clip-path: inset(2% 0 78% 0);
+    clip-path: inset(2% -0.5em 78% -0.5em);
     --sk-glitch-text-m: -0.7;
   }
   96.1% {
-    clip-path: inset(42% 0 36% 0);
+    clip-path: inset(42% -0.5em 36% -0.5em);
     --sk-glitch-text-m: 1;
   }
   97.6% {
-    clip-path: inset(62% 0 14% 0);
+    clip-path: inset(62% -0.5em 14% -0.5em);
     --sk-glitch-text-m: 1.3;
   }
   99.1%,
@@ -224,25 +225,41 @@ export const css = String.raw`
   text-shadow: 0 0 0.45em color-mix(in oklab, var(--sk-accent-glow) 45%, transparent);
 }
 
+/* The copies are displaced with text-shadow, never translate. A shadow is ink overflow; a moved
+   box is scrollable overflow and would blink a scrollbar around a full-width root on every burst.
+   Fringe: transparent glyphs whose only paint is one shadow in an explicit tint (a currentColor
+   shadow on a transparent fill paints nothing in Firefox, which resolves it against the fill). */
 @utility glitch-text-fringe {
   clip-path: inset(50% 0 50% 0);
-  text-shadow: none;
-  translate: calc(var(--sk-glitch-text-side, 1) * var(--sk-glitch-text-m) * var(--sk-glitch-text-k) * -0.06em) 0;
+  -webkit-text-fill-color: transparent;
+  text-shadow: calc(var(--sk-glitch-text-side, 1) * var(--sk-glitch-text-m, 1) * var(--sk-glitch-text-k, 1) * -0.06em) 0 var(--sk-glitch-text-tint);
 }
 
+/* Shard: the cut band. A size container clipped on the block axis only, so the band's shadows
+   can spill sideways while its ink child (below) stays out of sight and out of the scroll area. */
 @utility glitch-text-shard {
-  clip-path: inset(var(--sk-glitch-text-y0) -0.5em calc(100% - var(--sk-glitch-text-y1)) -0.5em);
-  translate: calc(var(--sk-glitch-text-dx) * var(--sk-glitch-text-k)) 0;
-  text-shadow:
-    calc(var(--sk-glitch-text-k) * -0.06em) 0 var(--sk-accent),
-    calc(var(--sk-glitch-text-k) * 0.06em) 0 var(--sk-chart-2),
-    0 0 0.45em color-mix(in oklab, var(--sk-accent-glow) 45%, transparent);
+  container-type: size;
+  overflow-y: clip;
+  clip-path: inset(var(--sk-glitch-text-y0) -1em calc(100% - var(--sk-glitch-text-y1)) -1em);
 }
 
+/* The shard's glyphs keep the consumer's colour as their fill but sit one shard-height (100cqh)
+   below, clipped away; the shadows paint them back up into the band, moved by dx. */
+@utility glitch-text-shard-ink {
+  display: block;
+  translate: 0 100cqh;
+  text-shadow:
+    calc(var(--sk-glitch-text-dx) * var(--sk-glitch-text-k, 1)) -100cqh currentColor,
+    calc((var(--sk-glitch-text-dx) - 0.06em) * var(--sk-glitch-text-k, 1)) -100cqh var(--sk-accent),
+    calc((var(--sk-glitch-text-dx) + 0.06em) * var(--sk-glitch-text-k, 1)) -100cqh var(--sk-chart-2),
+    calc(var(--sk-glitch-text-dx) * var(--sk-glitch-text-k, 1)) -100cqh 0.45em color-mix(in oklab, var(--sk-accent-glow) 45%, transparent);
+}
+
+/* Full width of the frame, no bleed past it (a wider box would be scrollable overflow). */
 @utility glitch-text-edge {
   top: var(--sk-glitch-text-y1);
-  left: -8%;
-  right: -8%;
+  left: 0;
+  right: 0;
   height: min(max(1px, 0.04em), calc((var(--sk-glitch-text-y1) - var(--sk-glitch-text-y0)) * 99));
   opacity: 0.75;
   background-image: linear-gradient(
@@ -255,11 +272,9 @@ export const css = String.raw`
   );
 }
 
+/* Solid stops only: Firefox paints a color-mix() stop in a 3px repeating gradient as one flat
+   tint. The slot's opacity-30 fades the layer instead. */
 @utility glitch-text-scanlines {
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0 2px,
-    color-mix(in oklab, var(--sk-bg) 30%, transparent) 2px 3px
-  );
+  background-image: repeating-linear-gradient(to bottom, transparent 0 2px, var(--sk-bg) 2px 3px);
 }
 `

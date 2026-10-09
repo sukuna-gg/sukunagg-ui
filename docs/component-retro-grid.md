@@ -20,12 +20,14 @@ packages/ui/src/components/retro-grid/
 │                           #   horizon/glow/line/vignette/content + `speed`. Pure. Server-safe.
 ├── retro-grid.logic.tsx    # forwardRef <div>; static layer markup + children slot. NO 'use client'.
 ├── retro-grid.test.tsx
-├── retro-grid.stories.tsx  # ARENA hero, landing page, speeds, phone, backdrop, themes (chrome only)
+├── retro-grid.stories.tsx  # ARENA hero, landing page, full viewport, speeds, phone, backdrop,
+│                           #   themes (chrome only)
 └── index.tsx               # export { RetroGrid } ; export type { RetroGridProps }
 
 packages/ui/scripts/motion/retro-grid.ts   # @keyframes sk-retro-grid-* + @utility retro-grid-* /
                                            #   animate-retro-grid-* → generated theme.css
-test/browser/retro-grid.test.ts            # Playwright: renders, loops run, reduced motion = still
+test/browser/retro-grid.test.ts            # Playwright: renders, loops run, floor reaches the
+                                           #   sides of a full-viewport hero, reduced motion = still
 ```
 
 ## 3. API
@@ -50,6 +52,12 @@ export type RetroGridProps = RetroGridOwnProps & ComponentPropsWithoutRef<'div'>
   `min-h-96`; size it with a `min-h-*` class (`min-h-[420px]`, `min-h-svh`), which merges last and
   replaces the default (an `h-*` below 384px alone can't undercut `min-h-96`). The horizon always
   sits at 62% of the height; content taller than the sky grows the whole grid and keeps that ratio.
+  A fixed `h-*` can't grow, so content taller than its sky spills past the horizon onto the floor:
+  prefer `min-h-*`.
+- `children` are centred in the sky, inset 24px from the top and 30px from the horizon, so tall
+  content never touches the top edge.
+- The floor reaches both sides of the frame at any size, full-viewport heroes (`min-h-svh` on a
+  1920px+ screen) included.
 - The root is an inline-size container (`@container`), so `children` can size type with `cqi`
   units or `@md:`-style container variants. Below 560px of width the grid cells shrink (72px →
   56px) and the spotlights move outward.
@@ -89,15 +97,16 @@ Glow and horizon line use `--sk-accent` / `--sk-accent-glow` directly. Masks use
 
 ```css
 /* 4 keyframes */
+/* Every floor transform ends in scale(var(--sk-retro-grid-zoom, 1)): see retro-grid-tilt below. */
 @keyframes sk-retro-grid-scroll {           /* floor: one cell toward the viewer, then loop */
-  from { transform: rotateX(75deg) translate3d(0, 0, 0); }
-  to   { transform: rotateX(75deg) translate3d(0, var(--sk-retro-grid-cell), 0); }
+  from { transform: rotateX(75deg) translate3d(0, 0, 0) scale(var(--sk-retro-grid-zoom, 1)); }
+  to   { transform: rotateX(75deg) translate3d(0, var(--sk-retro-grid-cell), 0) scale(…); }
 }
 @keyframes sk-retro-grid-sweep {            /* the light wave the horizon emits */
-  0%       { transform: rotateX(75deg) translate3d(0, -1300px, 0); opacity: 0; }
+  0%       { transform: rotateX(75deg) translate3d(0, -1300px, 0) scale(…); opacity: 0; }
   12%      { opacity: 1; }
-  58%      { transform: rotateX(75deg) translate3d(0, 40px, 0); opacity: 1; }
-  64%, 100% { transform: rotateX(75deg) translate3d(0, 40px, 0); opacity: 0; }
+  58%      { transform: rotateX(75deg) translate3d(0, 40px, 0) scale(…); opacity: 1; }
+  64%, 100% { transform: rotateX(75deg) translate3d(0, 40px, 0) scale(…); opacity: 0; }
 }
 @keyframes sk-retro-grid-beam { to { rotate: var(--sk-retro-grid-to); } }       /* spotlight sway */
 @keyframes sk-retro-grid-emit { 0%, 60%, 100% { opacity: 0.78; } 7% { opacity: 1; } } /* flare */
@@ -115,10 +124,12 @@ Glow and horizon line use `--sk-accent` / `--sk-accent-glow` directly. Masks use
 Paint utilities (no `bg-` prefix, so tailwind-merge never pairs them with `bg-<color>`):
 `retro-grid-stage` (palette properties + light-scheme overrides + the sky→floor gradient),
 `retro-grid-beam` (conic spotlight + fade mask), `retro-grid-floor` / `retro-grid-near` (perspective
-150px, vanishing line on the horizon, depth masks), `retro-grid-plane` (soft wide lines, far plane),
-`retro-grid-plane-near` (crisp lines + depth grid), `retro-grid-tilt` (the shared `rotateX(75deg)`),
-`retro-grid-sweep`, `retro-grid-glow`, `retro-grid-line`, `retro-grid-vignette`. The exact CSS lives
-in `scripts/motion/retro-grid.ts`.
+150px, vanishing line on the horizon, depth masks), `retro-grid-plane` (soft wide lines, far plane;
+its cell and line widths divide by `--sk-retro-grid-zoom`), `retro-grid-plane-near` (crisp lines +
+depth grid), `retro-grid-tilt` (the shared `rotateX(75deg) scale(var(--sk-retro-grid-zoom, 1))`:
+a layer drawn as a 1/zoom scale model is scaled back to full size on the same plane, and the
+translations before the `scale()` stay in full-size pixels), `retro-grid-sweep`, `retro-grid-glow`,
+`retro-grid-line`, `retro-grid-vignette`. The exact CSS lives in `scripts/motion/retro-grid.ts`.
 
 ## 5. States
 
@@ -170,18 +181,19 @@ export const retroGridStyles = tv({
       'retro-grid-floor absolute inset-x-0 top-(--sk-retro-grid-horizon) bottom-0 overflow-hidden',
       '[--sk-retro-grid-cell:72px] @max-[560px]:[--sk-retro-grid-cell:56px]',
     ],
+    // Plane widths: see "Floor planes sized to the container" in §11.
     plane: [
-      'retro-grid-plane retro-grid-tilt absolute bottom-0 left-1/2 -ml-[3000px] h-[1500px] w-[6000px]',
-      'motion-reduce:animate-none',
+      'retro-grid-plane retro-grid-tilt absolute bottom-0 left-1/2 h-[375px] w-[max(1500px,250%)]',
+      '-ml-[max(750px,125%)] [--sk-retro-grid-zoom:4] motion-reduce:animate-none',
     ],
     near: 'retro-grid-near absolute inset-0',
     nearPlane: [
-      'retro-grid-plane-near retro-grid-tilt absolute bottom-0 left-1/2 -ml-[3000px] w-[6000px]',
-      'h-[calc(var(--sk-retro-grid-cell)*10)] motion-reduce:animate-none',
+      'retro-grid-plane-near retro-grid-tilt absolute bottom-0 left-1/2 w-[max(6000px,400%)]',
+      '-ml-[max(3000px,200%)] h-[calc(var(--sk-retro-grid-cell)*10)] motion-reduce:animate-none',
     ],
     sweep: [
-      'retro-grid-sweep retro-grid-tilt absolute bottom-0 left-1/2 -ml-[3000px] h-[260px] w-[6000px]',
-      'opacity-0 animate-retro-grid-sweep motion-reduce:hidden',
+      'retro-grid-sweep retro-grid-tilt absolute bottom-0 left-1/2 h-[260px] w-[max(6000px,1000%)]',
+      '-ml-[max(3000px,500%)] opacity-0 animate-retro-grid-sweep motion-reduce:hidden',
     ],
     horizon: 'absolute inset-x-0 top-(--sk-retro-grid-horizon) h-0',
     glow: [
@@ -192,7 +204,7 @@ export const retroGridStyles = tv({
     vignette: 'retro-grid-vignette absolute inset-0',
     content: [
       'relative z-10 row-start-1 flex min-w-0 flex-col items-center justify-center',
-      'px-4 pb-1.5 text-center',
+      'px-4 pt-6 pb-7.5 text-center',
     ],
   },
   variants: {
@@ -257,11 +269,19 @@ answered with an empty stylesheet so the spec never needs the network):
   animations (`sk-retro-grid-beam` ×2, `-scroll` ×2, `-sweep`, `-emit`) are running; no console
   errors.
 - `speed`: the Speeds story's planes run at `2.4s` / `1.2s` / `0.6s`.
-- theming: the light frame resolves `--sk-retro-grid-core` to the light accent, the dark frame to
-  the mix; re-parenting the light grid under a `data-theme="dark"` region restores the dark value.
-- reduced motion: no animation at all; planes `animation-name: none` and resting on
-  `rotateX(75deg)`; spotlights at `-28deg`; flare at `0.78`; the wave `display: none`; every story
-  is a complete still frame; no console errors.
+- theming: the light frame resolves `--sk-retro-grid-core` to its own `--sk-accent` (read from the
+  page, not hard-coded), the dark frame to the mix; re-parenting the light grid under a
+  `data-theme="dark"` region restores the dark value.
+- full-viewport hero (FullViewport story at 1920×1080 and 2560×1440): projecting each floor
+  layer's computed transform through its box's perspective, the line of its side edge meets the
+  frame side inside the band its mask keeps clear (far plane and wave ≤ 11% below the horizon, near
+  plane ≤ 26%), and both planes' far edges sit in that band too. This is the staircase regression
+  check.
+- container query (reduced motion): Playground (wide) has 72px cells and spotlights at 28% / 72%;
+  Phone (360px) has 56px cells and spotlights at 18% / 82%.
+- reduced motion: no animation at all; planes `animation-name: none` and resting on their
+  `rotateX(75deg)` tilt; spotlights at `-28deg`; flare at `0.78`; the wave `display: none`; every
+  story is a complete still frame; no console errors.
 
 ## 10. Stories
 
@@ -270,6 +290,8 @@ Title `Components/RetroGrid` (ids `components-retrogrid--<story>`):
 - `Playground`: the approved ARENA hero (eyebrow, display title, date line) in a rounded stage card.
   The copy is story chrome.
 - `LandingHero`: the grid behind a tournament landing page: top bar, hero copy and two `Button`s.
+- `FullViewport`: the ARENA hero filling the viewport (`min-h-[calc(100svh-48px)]`, the Storybook
+  frame's padding taken off; an app writes `min-h-svh`), the wide-and-tall case.
 - `Speeds`: slow / normal / fast side by side.
 - `Phone`: a 360px-wide card (container < 560px: smaller cells, spotlights moved out).
 - `Backdrop`: no children, a plain backdrop.
@@ -291,7 +313,31 @@ browser spec and the review screenshots run each one with `reducedMotion: 'reduc
   needed: no utility starts with `bg-`, and consumer `className` only reaches the root, which has
   no `animate-*` class.
 - **Sizing by `min-h-*`.** The default `min-h-96` keeps an empty backdrop visible; the 62fr/38fr
-  rows grow with tall content instead of letting it push the horizon off its 62% line.
+  rows grow with tall content instead of letting it push the horizon off its 62% line. The content
+  slot is inset `pt-6 pb-7.5` (24px / 30px): tall content keeps clear of the top edge, and short
+  content stays centred exactly where the prototype's `pb-1.5` put it (3px above the sky's middle).
+- **Floor planes sized to the container (review round 1).** Under the 150px perspective, a floor
+  layer of width X meets the frame's sides W/X of the way down the floor (W = container width,
+  any height). The prototype's fixed 6000px planes therefore showed their side edges as a stepped
+  "staircase" near the horizon on full-viewport heroes (faint at 1920px, glaring at 2560px). Each
+  layer is now wide enough for its own mask to hide that line at any width: the far plane and the
+  wave `max(6000px, 1000%)` (the floor mask is clear down to 11%), the near plane
+  `max(6000px, 400%)` (its mask is clear down to 26%). Simply widening every layer to 10W more than
+  doubled Chromium's tile memory at 2560×1440 (101 → 269 MB settled, peaks at the 512 MB budget).
+  So the far plane, which only carries soft lines, is drawn as a quarter-scale model
+  (`--sk-retro-grid-zoom: 4`: a 375px-deep box at 2.5W, with cell and line widths divided by the
+  zoom), and `retro-grid-tilt` and the keyframes scale it back up on the same plane. Measured in
+  headless Chromium (cc tile memory, settled, reduced motion), old → new: 2560×1440 101 → 89 MB,
+  1920×1080 82 → 60 MB, 1440×900@2x 132 → 103 MB, 2560×1440@2x 269 → 257 MB. Animating, it is
+  124 → 150 MB at 2560×1440 and about the same or lower elsewhere. At story sizes the frames match
+  the old ones (mean difference about 0.2/255 per channel, worst pixel 18/255) in Chromium and
+  Firefox. The near plane keeps full resolution for its crisp lines,
+  and so does the wave for its crest. The FullViewport story and its browser check guard this.
+- **Real Safari is unverified.** The Windows WebKit build (`webkit-2336`) renders the floor flat
+  (no perspective), and it renders the approved prototype the same way, so this is not a
+  regression. Before release, spot-check Playground, LandingHero and FullViewport in macOS/iOS
+  Safari: perspective and `mask-image` on `retro-grid-floor`, the zoomed far plane, and the
+  rounded-corner clip under `isolate`.
 - **One deliberate departure from the prototype (story chrome only):** the date line is
   `text-text/70`, not `text-text-dim`. The prototype's dim date measured 4.28:1 on the glow in
   dark (below AA for 14px text); 70% text reads nearly the same and measures 6.3:1.
@@ -316,7 +362,8 @@ browser spec and the review screenshots run each one with `reducedMotion: 'reduc
   ×½, like ShinyText's speeds). The wave (6s), flare (6s) and spotlights (9s) keep the prototype's
   timing. Tunable as a patch pre-1.0.
 - **Custom property names** follow `--sk-<component>-<thing>` (`--sk-retro-grid-*`). They are
-  component-private, set on the root by `retro-grid-stage` (not tokens, not in `docs/tokens.md`).
-  No `@property` is needed.
+  component-private (not tokens, not in `docs/tokens.md`): the palette and horizon are set on the
+  root by `retro-grid-stage`, the cell size on the floor, the zoom on the far plane, the angles and
+  delay on the beams. No `@property` is needed.
 - **Mask stops use `black`/`transparent`/`rgb(0 0 0 / n%)`**: a mask reads only alpha, so these
   aren't colors (rule 8 is about painted color).

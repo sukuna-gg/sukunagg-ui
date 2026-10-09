@@ -35,8 +35,10 @@ export interface RetroGridProps extends ComponentPropsWithoutRef<'div'>, RetroGr
  *   dawn sky over a bone floor in light). A dark region nested in a light page stays dark.
  * - Layout: fills its container's width with a default `min-h-96`; size it with a `min-h-*` class
  *   (`min-h-[420px]`, `min-h-svh`), which replaces the default (a smaller `h-*` alone can't undercut
- *   it). The horizon sits at 62% of the height and `children` fill the sky above it; taller content
- *   grows the grid. Below 560px of width the cells shrink.
+ *   it). The floor reaches both sides at any size, full-viewport heroes included. The horizon sits
+ *   at 62% of the height and `children` fill the sky above it (inset 24px from the top); taller
+ *   content grows the grid. A fixed `h-*` can't grow, so content taller than its sky spills past
+ *   the horizon onto the floor: prefer `min-h-*`. Below 560px of width the cells shrink.
  * - Variants: `speed`: 'slow' | 'normal' (default) | 'fast', mapped to literal
  *   `animate-retro-grid-scroll*` utilities.
  * - The ref points at the root `<div>`; `className` merges last; the root carries

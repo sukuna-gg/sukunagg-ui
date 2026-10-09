@@ -114,6 +114,66 @@ test.describe('AvatarFrame', () => {
       expect(Math.abs(dot.x + dot.width / 2 - cx)).toBeLessThan(1.5)
       expect(Math.abs(dot.width - (frame.width - 12) * 0.21)).toBeLessThan(1)
     })
+
+    test('the LIVE pill is set at line-height 1 and hangs half its height below the frame', async ({
+      page,
+    }) => {
+      await page.goto(story('components-avatarframe--showcase'))
+      await expect(page.locator(frames)).toHaveCount(3)
+      const live = page.locator(frames).nth(2)
+      // A tall inherited line-height must not stretch the pill (tailwind-merge once dropped its
+      // `leading-none` because it preceded the font-size class).
+      await live.evaluate((el) => {
+        el.style.lineHeight = '28px'
+      })
+      const pill = live.locator('.bg-gradient-accent')
+      const [size, leading] = await pill.evaluate((el) => [
+        Number.parseFloat(getComputedStyle(el).fontSize),
+        Number.parseFloat(getComputedStyle(el).lineHeight),
+      ])
+      expect(leading).toBe(size)
+      const box = await live.boundingBox()
+      const p = await pill.boundingBox()
+      if (!box || !p) throw new Error('missing boxes')
+      // 1em of text + .27em padding top and bottom (16.9px at 11px type); the hang is half of it.
+      expect(Math.abs(p.height - size * 1.54)).toBeLessThan(0.5)
+      expect(Math.abs(p.y + p.height - (box.y + box.height) - p.height / 2)).toBeLessThan(0.5)
+    })
+
+    test('on large avatars the status cut-out box scales: glow and halo fade out inside it', async ({
+      page,
+    }) => {
+      // The cut-out mask clips at its own box. A fixed bleed square-clipped the glow and the live
+      // halo of a 200px avatar; the bleed is 30% of the frame, so both fade out inside it.
+      await page.goto(story('components-avatarframe--large'))
+      await expect(page.locator(frames)).toHaveCount(2)
+      for (const n of [0, 1]) {
+        await seek(page, n, 2800) // the live halo breathes out to its widest (scale 1.04)
+        const frame = page.locator(frames).nth(n)
+        const box = await frame.boundingBox()
+        const cut = await frame.locator('.avatar-frame-cutout').boundingBox()
+        if (!box || !cut) throw new Error('missing boxes')
+        expect(box.width).toBeGreaterThan(200)
+        const bleed = (cut.width - box.width) / 2
+        expect(bleed).toBeGreaterThan(box.width * 0.3 - 1)
+        // A Gaussian blur is spent by ~3 radii; all of it must sit inside the masked box.
+        const blur = await frame
+          .locator('.avatar-frame-cutout [class*="blur-"]')
+          .first()
+          .evaluate((el) => Number.parseFloat(getComputedStyle(el).filter.replace(/^blur\(/, '')))
+        expect(blur).toBeGreaterThan(10)
+        expect(3 * blur).toBeLessThan(bleed)
+      }
+      const live = page.locator(frames).nth(1)
+      const cut = await live.locator('.avatar-frame-cutout').boundingBox()
+      const halo = await live.locator('.avatar-frame-halo').boundingBox()
+      if (!cut || !halo) throw new Error('missing boxes')
+      expect(halo.width).toBeGreaterThan(300)
+      expect(halo.x).toBeGreaterThanOrEqual(cut.x)
+      expect(halo.y).toBeGreaterThanOrEqual(cut.y)
+      expect(halo.x + halo.width).toBeLessThanOrEqual(cut.x + cut.width)
+      expect(halo.y + halo.height).toBeLessThanOrEqual(cut.y + cut.height)
+    })
   })
 
   test.describe('reduced motion', () => {

@@ -209,11 +209,15 @@ export const css = String.raw`
   animation: sk-loot-reveal-bloom 700ms var(--sk-ease) calc(var(--sk-loot-reveal-at, 0ms) + 550ms);
 }
 
+/* The label rises in after the flip; like the face it stays visibility: hidden (out of the
+   accessibility tree) until its card turns over, so no "Legendary" is read before its name. */
 @utility animate-loot-reveal-label {
   --sk-loot-reveal-o1: 0.6;
   --sk-loot-reveal-y0: 0 4px;
-  animation: sk-loot-reveal-bloom 350ms var(--sk-ease) calc(var(--sk-loot-reveal-at, 0ms) + 300ms)
-    both;
+  --sk-loot-reveal-pre: hidden;
+  animation:
+    sk-loot-reveal-bloom 350ms var(--sk-ease) calc(var(--sk-loot-reveal-at, 0ms) + 300ms) both,
+    sk-loot-reveal-side 900ms linear var(--sk-loot-reveal-at, 0ms) both;
 }
 
 @utility animate-loot-reveal-hint {

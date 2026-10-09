@@ -123,6 +123,46 @@ test.describe('GlitchText', () => {
         .toEqual([true])
     })
 
+    test('a full-width root keeps the page scroll width through every burst step', async ({
+      page,
+    }) => {
+      // The documented `block` setup: the heading fills its row, inside the story's gutter. The
+      // copies move by text-shadow (ink overflow) and the edge streak stays in the frame, so no
+      // step of the intro burst or the loop may widen the page (it used to by up to 0.4em + 8%).
+      await page.setViewportSize({ width: 520, height: 700 })
+      await page.goto(story('components-glitchtext--headings'))
+      const heading = page.locator(root).first()
+      await expect(heading).toBeVisible()
+      await heading.evaluate((el) => {
+        el.style.display = 'block'
+        el.style.justifySelf = 'stretch'
+      })
+      const overflow = () =>
+        page.evaluate(() => {
+          const d = document.documentElement
+          return d.scrollWidth - d.clientWidth
+        })
+      expect(await overflow()).toBe(0)
+      // Each of the seven 52.5ms steps (88.6%…97.6% of 3.5s), in the first burst and a later one.
+      const steps = [88.6, 90.1, 91.6, 93.1, 94.6, 96.1, 97.6].map((p) => p * 35 - 3080 + 10)
+      for (const t of [...steps, ...steps.map((ms) => ms + 3500)]) {
+        await seek(page, t)
+        expect(await overflow(), `${t}ms after mount`).toBe(0)
+      }
+    })
+
+    test('the scanline texture uses solid line stops faded by its layer', async ({ page }) => {
+      // Firefox paints a color-mix() stop inside a 3px repeating gradient as one flat tint, so
+      // the stops must be plain colours and the 30% comes from the layer's opacity.
+      await page.goto(story('components-glitchtext--scanline'))
+      await expect(page.locator(root)).toBeVisible()
+      const scan = `${root} .glitch-text-scanlines`
+      expect(await css(page, scan, 'opacity')).toBe('0.3')
+      expect(await css(page, scan, 'background-image')).toMatch(
+        /^repeating-linear-gradient\(rgba\(0, 0, 0, 0\) 0px, rgba\(0, 0, 0, 0\) 2px, rgb\(\d+, \d+, \d+\) 2px, rgb\(\d+, \d+, \d+\) 3px\)$/,
+      )
+    })
+
     test('intro={false} runs only the loop, and the layers stay aligned inside padding', async ({
       page,
     }) => {

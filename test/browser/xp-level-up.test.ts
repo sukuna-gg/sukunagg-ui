@@ -1,6 +1,6 @@
 import { expect, type Page, test } from '@playwright/test'
 
-// XpLevelUp (docs/component-xp-level-up.md §10). Asserts computed styles and Web Animations state,
+// XpLevelUp (docs/component-xp-level-up.md §9). Asserts computed styles and Web Animations state,
 // never wall-clock timing: animations are paused and seeked, or finished, before reading.
 const story = (id: string) => `/iframe.html?id=${id}&viewMode=story`
 const STORIES = ['playground', 'xp-gain', 'narrow', 'replay', 'themes'] as const
@@ -135,6 +135,46 @@ test.describe('XpLevelUp', () => {
       )
       expect(elapsed).toHaveLength(1)
       expect(elapsed[0]).toBeLessThan(1000)
+    })
+  })
+
+  test.describe('layout', () => {
+    test.use({ reducedMotion: 'reduce' })
+
+    test('keeps an intrinsic width in a shrink-to-fit parent', async ({ page }) => {
+      await page.goto(story('components-xplevelup--xp-gain'))
+      await expect(page.getByRole('progressbar')).toBeVisible()
+      const width = await page.evaluate(() => {
+        const root = document
+          .querySelector('[role="progressbar"]')
+          ?.closest('[class~="@container"]')
+        const stage = root?.parentElement
+        if (!root || !stage) return Number.NaN
+        stage.style.width = 'max-content'
+        return root.getBoundingClientRect().width
+      })
+      // A size container alone would collapse to 0 here; the intrinsic 30rem stands in.
+      expect(width).toBeCloseTo(480, 0)
+    })
+
+    test('five-digit levels fit the badge with a tight line height', async ({ page }) => {
+      await page.goto(`${story('components-xplevelup--playground')}&args=level:12345`)
+      await expect(page.locator(NUM)).toBeAttached()
+      const m = await page.locator(NUM).evaluate((el) => {
+        const cs = getComputedStyle(el)
+        const face = el.parentElement?.getBoundingClientRect().width ?? 0
+        return { fs: cs.fontSize, lh: cs.lineHeight, num: el.getBoundingClientRect().width, face }
+      })
+      expect(m.lh).toBe(m.fs)
+      expect(m.num).toBeLessThan(m.face - 8)
+    })
+
+    test('the bar keeps an outline and a fill in forced colors', async ({ page }) => {
+      await page.emulateMedia({ forcedColors: 'active' })
+      await page.goto(story('components-xplevelup--playground'))
+      await expect(page.getByRole('progressbar')).toBeVisible()
+      expect(await css(page, '[class~="forced-colors:border"]', 'border-top-width')).toBe('1px')
+      expect(await css(page, REFILL, 'background-color')).not.toBe('rgba(0, 0, 0, 0)')
     })
   })
 

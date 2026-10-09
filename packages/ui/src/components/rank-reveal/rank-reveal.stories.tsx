@@ -66,7 +66,15 @@ function Stage({
 }: RankRevealProps & { width?: number; height?: number; label?: ReactNode }) {
   const [take, setTake] = useState(0)
   return (
-    <div style={{ display: 'grid', gap: 12, justifyItems: 'start' }}>
+    // minmax(0, …): the column may shrink below the card's width, so `maxWidth: 100%` can apply.
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'minmax(0, max-content)',
+        gap: 12,
+        justifyItems: 'start',
+      }}
+    >
       <div style={stage(width, height)}>
         <RankReveal key={take} {...props} />
       </div>
@@ -200,8 +208,26 @@ export const CustomEmblem: Story = {
   render: (args) => <Stage {...args} />,
 }
 
+/** 340px stages: the title scales with the stage, so an 11-letter rank still fits on one line. */
 export const Phone: Story = {
-  render: (args) => <Stage {...args} width={340} />,
+  render: (args) => (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
+      <Stage {...args} width={340} label="Master I" />
+      <Stage
+        {...args}
+        width={340}
+        title="Grandmaster"
+        division={undefined}
+        description={
+          <>
+            Master I <span aria-hidden="true">→</span>
+            <span className="sr-only">to</span> <strong>Grandmaster</strong> · <em>Top 200</em>
+          </>
+        }
+        label="Long rank name"
+      />
+    </div>
+  ),
 }
 
 /** Story-only: a stage that jumps every CSS animation inside it to its end (loops are dropped). */

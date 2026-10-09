@@ -201,19 +201,25 @@ function PackHeader({
   )
 }
 
-/** A pack-opening screen: a 540 × 320 stage (like the approved prototype) around the reveal. */
+/**
+ * A pack-opening screen: a 540 × 320 stage (like the approved prototype) around the reveal. The
+ * height is a minimum, so a row that wraps (cards at their 72px floor) grows the stage instead of
+ * being clipped by it.
+ */
 function PackScreen({
   title = 'Crimson Vow Pack',
   width = 540,
-  height = 320,
+  minHeight = 320,
   ...props
-}: LootRevealProps & { title?: string; width?: number; height?: number }) {
+}: LootRevealProps & { title?: string; width?: number; minHeight?: number }) {
   return (
     <div
       style={{
         width,
         maxWidth: '100%',
-        height,
+        minHeight,
+        display: 'flex',
+        flexDirection: 'column',
         overflow: 'hidden',
         borderRadius: 'var(--sk-radius-lg)',
         background: 'var(--sk-surface)',
@@ -222,7 +228,7 @@ function PackScreen({
     >
       <div
         style={{
-          height: '100%',
+          flex: 1,
           display: 'flex',
           flexDirection: 'column',
           padding: '14px 14px 12px',
@@ -236,8 +242,11 @@ function PackScreen({
           stagger={props.stagger}
           play={props.play ?? true}
         />
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', paddingBottom: 4 }}>
-          <LootReveal aria-label={`${title} rewards`} {...props} />
+        {/* Symmetric extra padding keeps the row's centre where it was, and keeps a wrapped
+            (taller) row clear of the header while the cards pop up. */}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', paddingBlock: '12px 16px' }}>
+          {/* The stage clips itself, so let the rays reach its edges (the root clips x). */}
+          <LootReveal aria-label={`${title} rewards`} className="overflow-x-visible" {...props} />
         </div>
       </div>
     </div>
@@ -291,4 +300,45 @@ export const Settled: Story = {
 export const Narrow: Story = {
   args: { items: PACK },
   render: (args) => <PackScreen {...args} width={340} />,
+}
+
+/**
+ * Translated, long names (`lang="de"`): an unbreakable name wraps inside its card, a long kind
+ * chip truncates with an ellipsis, and `rarityLabels` carries the translated rarities.
+ */
+export const LongNames: Story = {
+  args: {
+    lang: 'de',
+    items: [
+      { name: 'Kirschblütensprühdose', kind: 'Sprühdose', rarity: 'rare', icon: <SprayIcon /> },
+      {
+        name: 'Drachenschuppenrüstung',
+        kind: 'Sammlerabzeichen',
+        rarity: 'epic',
+        icon: <MaskIcon />,
+      },
+      {
+        name: 'Gelöbnis des Purpurbanners',
+        kind: 'Banner',
+        rarity: 'legendary',
+        icon: <BannerIcon />,
+      },
+    ],
+    rarityLabels: { common: 'Gewöhnlich', rare: 'Selten', epic: 'Episch', legendary: 'Legendär' },
+  },
+  render: (args) => <PackScreen {...args} title="Purpurschwur-Paket" />,
+}
+
+/**
+ * No stage: the component straight on the page, in the page gutter. The root clips horizontally
+ * by default, so on a phone the legendary rays stop at its edges instead of scrolling the page
+ * sideways (vertically the burst still spills).
+ */
+export const Unstaged: Story = {
+  args: { items: PACK },
+  render: (args) => (
+    <div style={{ paddingBlock: 56 }}>
+      <LootReveal aria-label="Crimson Vow Pack rewards" {...args} />
+    </div>
+  ),
 }

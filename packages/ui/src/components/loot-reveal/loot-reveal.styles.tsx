@@ -11,10 +11,20 @@ import { tv, type VariantProps } from '../../utils/tv'
  */
 export const lootRevealStyles = tv({
   slots: {
-    root: '@container isolate m-0 flex w-full list-none flex-wrap items-start justify-center gap-y-6 p-0',
+    // overflow-x-clip: the burst spills up and down but never widens the page (a stage that
+    // clips itself can opt out with overflow-x-visible so the rays reach its edges).
+    root: [
+      '@container isolate m-0 flex w-full list-none flex-wrap items-start justify-center gap-y-6 p-0',
+      'overflow-x-clip',
+      // The card width. Each slot takes 99cqi/n of the row: its card plus its own 2 × 2.25cqi
+      // padding (`px-[2.25cqi]` below), so n cards always fit and only the 72px floor wraps the
+      // row. At n = 3 the card is 28.5cqi, as in the prototype. (cqi resolves where it is used:
+      // in the slots, against this container.)
+      '[--sk-loot-reveal-card:clamp(72px,calc(99cqi/var(--sk-loot-reveal-n,3)_-_4.5cqi),124px)]',
+    ],
     slot: 'loot-reveal-clock flex flex-col items-center gap-3.5 px-[2.25cqi]',
     box: [
-      'relative aspect-[5/7] w-[clamp(72px,calc(85.5cqi/var(--sk-loot-reveal-n,3)),124px)]',
+      'relative aspect-[5/7] w-(--sk-loot-reveal-card)',
       // the soft floor shadow under the card
       'before:absolute before:inset-x-[6%] before:-bottom-[8%] before:h-[9%] before:rounded-[50%]',
       'before:bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--sk-well)_80%,transparent),transparent)]',
@@ -68,7 +78,8 @@ export const lootRevealStyles = tv({
       '[&>*]:block [&>*]:h-auto [&>*]:w-full',
     ],
     face: [
-      'absolute inset-0 grid grid-rows-[auto_1fr_auto] justify-items-center overflow-hidden rounded-md',
+      // grid-cols-1 = minmax(0,1fr): a long word can't widen the column past the card
+      'absolute inset-0 grid grid-cols-1 grid-rows-[auto_1fr_auto] justify-items-center overflow-hidden rounded-md',
       'px-[8%] pt-[9%] pb-[12%] text-center text-text [rotate:y_180deg] backface-hidden',
       'border border-[color:color-mix(in_oklab,var(--sk-loot-reveal-color)_75%,transparent)] bg-surface-2',
       'bg-[radial-gradient(110%_70%_at_50%_40%,color-mix(in_oklab,var(--sk-loot-reveal-color)_30%,transparent),transparent_70%),linear-gradient(to_top,color-mix(in_oklab,var(--sk-loot-reveal-color)_16%,transparent),transparent_45%)]',
@@ -77,7 +88,7 @@ export const lootRevealStyles = tv({
       'motion-reduce:animate-none',
     ],
     kind: [
-      'row-start-1 rounded-pill bg-(--sk-loot-reveal-color) px-[.75em] py-[.4em] text-surface',
+      'row-start-1 max-w-full truncate rounded-pill bg-(--sk-loot-reveal-color) px-[.75em] py-[.4em] text-surface',
       'font-sans text-[clamp(7px,1.8cqi,9px)] leading-none font-semibold tracking-[.14em] uppercase',
     ],
     icon: [
@@ -86,8 +97,14 @@ export const lootRevealStyles = tv({
       '[&>*]:block [&>*]:h-auto [&>*]:w-full motion-reduce:animate-none',
     ],
     name: [
-      'row-start-3 font-display text-[clamp(9.5px,2.5cqi,13px)] leading-[1.04] font-extrabold uppercase',
+      // 2.5cqi as in the prototype, but never over 10.5% of the card: at n = 3 that cap never
+      // binds (the card is 28.5cqi, or 124px when the type is at its 13px max); with 4+ cards
+      // the type shrinks with the cards, not only with the row.
+      'row-start-3 font-display text-[length:clamp(9.5px,min(2.5cqi,calc(var(--sk-loot-reveal-card)*.105)),13px)]',
+      'leading-[1.04] font-extrabold uppercase',
       'tracking-[.02em] text-balance font-stretch-condensed [word-spacing:.08em]',
+      // long or unbreakable (translated) names wrap inside the card instead of clipping
+      'wrap-anywhere',
     ],
     sheen: [
       'pointer-events-none absolute inset-0 translate-x-[120%]',
@@ -98,9 +115,13 @@ export const lootRevealStyles = tv({
       'pointer-events-none absolute inset-0 rounded-md [rotate:y_180deg] backface-hidden opacity-0',
       'loot-reveal-flare motion-reduce:animate-none',
     ],
+    // Mixed 25% toward --sk-text: the card's own halo, glow and rays sit behind the label, so the
+    // raw rarity color dips under 4.5:1 in light; the mix keeps AA on the rendered background.
+    // -mx-[2.25cqi] undoes the slot's padding: a label wider than a small card ("Legendary" is
+    // ~82px) spends that padding before it widens the slot (and wraps the row).
     rarity: [
-      'relative z-1 grid min-h-2.5 font-sans text-[10px] leading-none font-semibold uppercase',
-      'tracking-eyebrow text-(--sk-loot-reveal-color)',
+      'relative z-1 -mx-[2.25cqi] grid min-h-2.5 font-sans text-[10px] leading-none font-semibold uppercase',
+      'tracking-eyebrow text-[color-mix(in_oklab,var(--sk-loot-reveal-color)_75%,var(--sk-text))]',
     ],
     label: '[grid-area:1/1] text-center motion-reduce:animate-none',
     hint: '[grid-area:1/1] text-center text-text-faint opacity-0 motion-reduce:animate-none',
@@ -170,11 +191,12 @@ export const lootRevealStyles = tv({
 })
 
 /**
- * One legendary spark. `loot-reveal-spark` places it from `--sk-loot-reveal-j`; `shape` and
- * `tint` alternate like the prototype (every 4th from 1 is a dot, every 3rd is accent-colored).
+ * One legendary spark (rendered only while the row plays). `loot-reveal-spark` places it from
+ * `--sk-loot-reveal-j`; `shape` and `tint` alternate like the prototype (every 4th from 1 is a
+ * dot, every 3rd is accent-colored).
  */
 export const lootRevealSparkStyles = tv({
-  base: 'loot-reveal-spark motion-reduce:animate-none',
+  base: 'loot-reveal-spark animate-loot-reveal-spark motion-reduce:animate-none',
   variants: {
     shape: {
       streak: [
@@ -191,9 +213,8 @@ export const lootRevealSparkStyles = tv({
       rarity: '[--sk-loot-reveal-spark:var(--sk-loot-reveal-color)]',
       accent: '[--sk-loot-reveal-spark:var(--sk-accent)]',
     },
-    play: { true: 'animate-loot-reveal-spark', false: '' },
   },
-  defaultVariants: { shape: 'streak', tint: 'rarity', play: true },
+  defaultVariants: { shape: 'streak', tint: 'rarity' },
 })
 
 export type LootRevealStyleProps = VariantProps<typeof lootRevealStyles>

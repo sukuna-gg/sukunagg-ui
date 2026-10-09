@@ -5,6 +5,8 @@ const fill = [
   'absolute inset-0 overflow-hidden rounded-pill',
   'bg-[linear-gradient(90deg,var(--sk-accent-deep),var(--sk-accent)_calc(100%_-_24px),color-mix(in_oklab,var(--sk-accent),var(--sk-on-accent)_25%))]',
   'before:absolute before:inset-y-0.75 before:right-0.75 before:w-0.75 before:rounded-pill before:bg-on-accent before:shadow-[0_0_8px_2px_var(--sk-accent-glow)]',
+  // Forced colors drop background images: paint the fill with the system highlight instead.
+  'forced-colors:bg-[Highlight]',
 ]
 
 // A light band that sweeps once across whichever fill moves first. At rest it sits past the
@@ -28,7 +30,12 @@ const shine = [
  */
 export const xpLevelUpStyles = tv({
   slots: {
-    root: '@container relative isolate flex min-w-0 flex-col gap-5 font-sans text-text',
+    // A size container doesn't size to its content, so it would collapse to 0 in a shrink-to-fit
+    // parent (w-fit dialog, items-center column, inline-flex); the intrinsic width stands in.
+    root: [
+      '@container relative isolate flex min-w-0 max-w-full flex-col gap-5 font-sans text-text',
+      '[contain-intrinsic-inline-size:30rem]',
+    ],
     eyebrow: [
       'm-0 flex items-center gap-2.25 font-display text-sm font-extrabold uppercase leading-none',
       'tracking-eyebrow font-stretch-[125%]',
@@ -51,9 +58,10 @@ export const xpLevelUpStyles = tv({
     sparks:
       'pointer-events-none absolute top-1/2 left-1/2 drop-shadow-[0_0_3px_var(--sk-accent-glow)]',
     // DECISION(open): Q39 spark colors. The mockup alternates accent/premium through light-dark(),
-    // which needs a color-scheme the theme doesn't set; odd sparks mix accent with the text color.
+    // which needs a color-scheme the theme doesn't set; odd sparks take --sk-premium in every theme
+    // (the mockup's cream in dark, the rim's gold-brown in light).
     spark: [
-      'xp-level-up-spark odd:[--sk-xp-level-up-c:color-mix(in_oklab,var(--sk-accent),var(--sk-text)_55%)]',
+      'xp-level-up-spark odd:[--sk-xp-level-up-c:var(--sk-premium)]',
       'animate-xp-level-up-spark motion-reduce:animate-none',
     ],
     hexWrap: 'absolute inset-0',
@@ -64,11 +72,16 @@ export const xpLevelUpStyles = tv({
       'xp-level-up-hex absolute inset-0',
       'bg-[conic-gradient(from_200deg,var(--sk-xp-level-up-rim),var(--sk-premium-dim),var(--sk-xp-level-up-rim),var(--sk-premium-dim),var(--sk-xp-level-up-rim))]',
     ],
+    // The highlight sits just above the top tip so the small LV caption reads ≥ 4.5:1 in both themes.
     face: [
       'xp-level-up-hex absolute inset-1 grid place-content-center justify-items-center gap-px text-on-accent',
-      'bg-[radial-gradient(120%_80%_at_50%_12%,var(--sk-accent),var(--sk-accent-deep)_78%)]',
+      'bg-[radial-gradient(120%_80%_at_50%_-4%,var(--sk-accent),var(--sk-accent-deep)_78%)]',
     ],
-    prefix: '-mr-[.26em] text-[10px] font-semibold leading-none tracking-[.26em] opacity-80',
+    // Forced colors: positioned, so it paints over the number's (taller) text backplate.
+    prefix: [
+      '-mr-[.26em] text-[10px] font-semibold leading-none tracking-[.26em]',
+      '[text-shadow:0_1px_0_var(--sk-accent-deep)] forced-colors:relative',
+    ],
     num: [
       'xp-level-up-level font-display text-[40px] font-black leading-none font-stretch-[105%] tabular-nums',
       '[text-shadow:0_2px_0_var(--sk-accent-deep)] @max-md:text-[32px]',
@@ -94,6 +107,8 @@ export const xpLevelUpStyles = tv({
     track: [
       'absolute inset-0 rounded-pill bg-surface-2 ring-1 ring-inset ring-line',
       'bg-[repeating-linear-gradient(90deg,transparent_0_calc(10%_-_1px),var(--sk-line-soft)_0_10%)]',
+      // Forced colors drop the ring (a box-shadow): outline the track with a real border.
+      'forced-colors:border forced-colors:border-[CanvasText]',
     ],
     barGlow: 'absolute inset-0 rounded-pill drop-shadow-[0_0_6px_var(--sk-accent-glow)]',
     clip: 'absolute inset-0 overflow-hidden rounded-pill',
@@ -129,15 +144,18 @@ export const xpLevelUpStyles = tv({
         xp: 'animate-xp-level-up-swap-in motion-reduce:animate-none',
       },
       false: {
-        // No headline swap: the prelude is the heading, so it takes the display type.
+        // No headline swap: the prelude is the heading, so it takes the display type. A font size
+        // drops `leading-none` in tailwind-merge, so each size here restates it.
         prelude:
-          'font-display text-[22px] font-black uppercase text-text font-stretch-[112%] @max-md:text-[18px]',
+          'font-display text-[22px] leading-none font-black uppercase text-text font-stretch-[112%] @max-md:text-xl',
         fillNew: ['animate-xp-level-up-gain motion-reduce:animate-none', ...shine],
       },
     },
-    // Four-digit levels (prestige) need a smaller number to fit the hexagon.
-    long: {
-      true: { num: 'text-[28px] @max-md:text-[22px]' },
+    // Prestige levels need a smaller number to fit the hexagon: four digits, then five (the most
+    // that fit). Each size restates `leading-none`, which tailwind-merge drops with the base size.
+    digits: {
+      4: { num: 'text-[28px] leading-none @max-md:text-[22px]' },
+      5: { num: 'text-[22px] leading-none @max-md:text-xl' },
     },
   },
   defaultVariants: { levelUp: true },

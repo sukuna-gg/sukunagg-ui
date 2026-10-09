@@ -33,18 +33,24 @@ export const retroGridStyles = tv({
       'retro-grid-floor absolute inset-x-0 top-(--sk-retro-grid-horizon) bottom-0 overflow-hidden',
       '[--sk-retro-grid-cell:72px] @max-[560px]:[--sk-retro-grid-cell:56px]',
     ],
+    // A plane of width X shows its side edges at the frame's sides W/X of the way down the floor
+    // (W = container width), so each plane is wide enough for its mask to hide them at any W: the
+    // far plane and the wave 10W (the floor mask is clear down to 11%), the near plane 4W (its own
+    // mask is clear down to 26%), never under the 6000px that small stages need. The far plane is
+    // a quarter-scale model (zoom 4) of its 1500px-deep plane, which keeps its raster memory near
+    // the old fixed 6000px plane's; its soft lines don't need full resolution.
     plane: [
-      'retro-grid-plane retro-grid-tilt absolute bottom-0 left-1/2 -ml-[3000px] h-[1500px] w-[6000px]',
-      'motion-reduce:animate-none',
+      'retro-grid-plane retro-grid-tilt absolute bottom-0 left-1/2 h-[375px] w-[max(1500px,250%)]',
+      '-ml-[max(750px,125%)] [--sk-retro-grid-zoom:4] motion-reduce:animate-none',
     ],
     near: 'retro-grid-near absolute inset-0',
     nearPlane: [
-      'retro-grid-plane-near retro-grid-tilt absolute bottom-0 left-1/2 -ml-[3000px] w-[6000px]',
-      'h-[calc(var(--sk-retro-grid-cell)*10)] motion-reduce:animate-none',
+      'retro-grid-plane-near retro-grid-tilt absolute bottom-0 left-1/2 w-[max(6000px,400%)]',
+      '-ml-[max(3000px,200%)] h-[calc(var(--sk-retro-grid-cell)*10)] motion-reduce:animate-none',
     ],
     sweep: [
-      'retro-grid-sweep retro-grid-tilt absolute bottom-0 left-1/2 -ml-[3000px] h-[260px] w-[6000px]',
-      'opacity-0 animate-retro-grid-sweep motion-reduce:hidden',
+      'retro-grid-sweep retro-grid-tilt absolute bottom-0 left-1/2 h-[260px] w-[max(6000px,1000%)]',
+      '-ml-[max(3000px,500%)] opacity-0 animate-retro-grid-sweep motion-reduce:hidden',
     ],
     horizon: 'absolute inset-x-0 top-(--sk-retro-grid-horizon) h-0',
     glow: [
@@ -55,7 +61,7 @@ export const retroGridStyles = tv({
     vignette: 'retro-grid-vignette absolute inset-0',
     content: [
       'relative z-10 row-start-1 flex min-w-0 flex-col items-center justify-center',
-      'px-4 pb-1.5 text-center',
+      'px-4 pt-6 pb-7.5 text-center',
     ],
   },
   variants: {
