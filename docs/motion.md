@@ -47,6 +47,30 @@ the track, 1.4s, infinite) for indeterminate Progress. Both new tokens need no t
 Reduced motion: indicators jump, panels snap, popups/toasts appear without slide/scale, bars
 render at their value, indeterminate shows a static partial bar, the Badge live dot is still.
 
+## Showpieces (Q38, Q39): a deliberate carve-out
+
+The nine showpiece components exist to be decoration, so they bend three of the rules above. They
+are opt-in components; nothing here is added to an existing component.
+
+| Rule | How showpieces bend it | Bound |
+|---|---|---|
+| 1. CSS only | ScrambleText decodes in a `'use client'` island driven by `requestAnimationFrame`. | One island; the server and no-JS render the real text, reduced motion shows it at once. |
+| 2. Compositor-only properties | `background-position` (RetroGrid floor), registered `@property` angles and integers (BorderBeam, AvatarFrame rings, MatchFound and XpLevelUp counters), `offset-distance` (AvatarFrame sparks), `clip-path` (GlitchText slices). | Small painted areas only; never a full-page layer. |
+| 5. No idle decoration | RetroGrid, BorderBeam, AvatarFrame and GlitchText loop while visible. | Reduced motion stops every loop on a designed rest frame; GlitchText stays under 3 flashes a second (WCAG 2.3.1). |
+
+What every showpiece still guarantees:
+- **The base style is the final frame.** Each keyframe's `from` holds the hidden or initial state, so
+  reduced motion, no `@property` support and no JS all land on the finished look. One-shot reveals
+  (RankReveal, MatchFound, LootReveal, XpLevelUp, ScrambleText) play on mount; replay by changing `key`.
+- **Information keeps going under reduced motion.** MatchFound's countdown steps once a second instead
+  of sweeping; only the decorative pulse stops.
+- **Numbers drawn by CSS counters are `aria-hidden`**, with the real value in `sr-only` text.
+- **Names:** `@property --sk-<component>-*`, `@keyframes sk-<component>-*`, `@utility animate-<component>-*`,
+  one module per component in `packages/ui/scripts/motion/` (emitted into `theme.css` by `build-tokens.ts`).
+
+Canvas, WebGL and pointer effects are not allowed in `@sukunagg/ui` at all; they live in the opt-in
+`@sukunagg/fx` package (Q39), which has its own loop rules.
+
 ## Deferred (listed so they aren't forgotten)
 
 Checkbox tick draw, Switch overshoot, Stepper connector fill, Button spinner cross-fade, Tooltip

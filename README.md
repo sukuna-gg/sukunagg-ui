@@ -15,7 +15,7 @@
 
 **SSR-safe, accessible React components for dark-first products — and for the AI agents that build them.**
 
-<!-- count -->56<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
+<!-- count -->65<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
 contrast in both themes, `prefers-reduced-motion` honored, zero runtime styling, React Server
 Components-ready, React 18 and 19. Dark is the identity; light is a mode.
 
@@ -124,8 +124,10 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `Alert` | An inline message that draws attention to information, success, a caution, or an error. | [docs/llms/alert.md](docs/llms/alert.md) |
 | `AlertDialog` | Ask the user to confirm something that is hard to undo ("Delete project?", "Discard changes?"). | [docs/llms/alert-dialog.md](docs/llms/alert-dialog.md) |
 | `Avatar` | A user/entity image with a graceful fallback (initials or icon) while loading or on error. | [docs/llms/avatar.md](docs/llms/avatar.md) |
+| `AvatarFrame` | Decorates a circular avatar with an animated frame: a crimson comet ring that circles it, a bone "premium" ring with a passing sheen and orbiting sparks, a live-broadcast halo with a LIVE pill, and an online/offline status dot cut cleanly out of the ring. | [docs/llms/avatar-frame.md](docs/llms/avatar-frame.md) |
 | `Badge` | A small, pill-shaped label for status and metadata — "LIVE", counts, tags. | [docs/llms/badge.md](docs/llms/badge.md) |
 | `BarChart` · @sukunagg/charts | Compares amounts across categories: games per placement, kills per weapon by season, revenue per plan per month, pick rate per agent. | [docs/llms/bar-chart.md](docs/llms/bar-chart.md) |
+| `BorderBeam` | Sends a short light around the border of a card, a featured match, a season pass or a plan tile, to mark the one thing on a screen that deserves attention. | [docs/llms/border-beam.md](docs/llms/border-beam.md) |
 | `Breadcrumbs` | Show the path to the current page and let users jump back up it. | [docs/llms/breadcrumbs.md](docs/llms/breadcrumbs.md) |
 | `Button` | Triggers an action. | [docs/llms/button.md](docs/llms/button.md) |
 | `Card` | A surface container that groups related content on an elevation. | [docs/llms/card.md](docs/llms/card.md) |
@@ -143,12 +145,15 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `Drawer` | A panel that slides in from an edge (nav, filters, details). | [docs/llms/drawer.md](docs/llms/drawer.md) |
 | `EmptyState` | Takes the place of content that isn't there: no results, nothing yet this season, a player not found, a service not answering. | [docs/llms/empty-state.md](docs/llms/empty-state.md) |
 | `Field` | Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you. | [docs/llms/field.md](docs/llms/field.md) |
+| `GlitchText` | Hits real text with short RGB-split glitch bursts, for elimination banners, match results and error or offline headings. | [docs/llms/glitch-text.md](docs/llms/glitch-text.md) |
 | `GradientText` | Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases. | [docs/llms/gradient-text.md](docs/llms/gradient-text.md) |
 | `Heatmap` · @sukunagg/charts | A calendar of activity: one square per day, weeks as columns, darker or brighter by how much happened — games played per day, commits, sessions. | [docs/llms/heatmap.md](docs/llms/heatmap.md) |
 | `HoverCard` | Preview richer context for a link without a click — a user card, a repo summary, a footnote. | [docs/llms/hover-card.md](docs/llms/hover-card.md) |
 | `AlertIcon`, `ChartIcon`, `CheckIcon`, `ChevronDownIcon`, `ChevronLeftIcon`, `ChevronRightIcon`, `ChevronUpIcon`, `ClockIcon`, `CloseIcon`, `ExternalIcon`, `InfoIcon`, `LockIcon`, `MoonIcon`, `RefreshIcon`, `SearchIcon`, `SunIcon`, `UserIcon` | A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links. | [docs/llms/icon.md](docs/llms/icon.md) |
 | `Input` | A single-line text input. | [docs/llms/input.md](docs/llms/input.md) |
 | `AreaChart`, `LineChart` · @sukunagg/charts | Shows change across an ordered axis: rating over the last 30 matches, damage per round by role per week, placement per game, gold difference per minute. | [docs/llms/line-chart.md](docs/llms/line-chart.md) |
+| `LootReveal` | Flips a row of face-down item cards to reveal what a player won, one after another, with a rarity glow per card and a spark burst for legendaries. | [docs/llms/loot-reveal.md](docs/llms/loot-reveal.md) |
+| `MatchFound` | The ready-check prompt a game client shows when the queue pops: a draining countdown ring, who on the team has accepted, and the Accept / Decline actions. | [docs/llms/match-found.md](docs/llms/match-found.md) |
 | `Menu` | A dropdown menu of actions triggered by a button. | [docs/llms/menu.md](docs/llms/menu.md) |
 | `Meter` | Show a scalar measurement within a known range: storage used, quota, password strength, a score. | [docs/llms/meter.md](docs/llms/meter.md) |
 | `NumberField` | Enter a number precisely. | [docs/llms/number-field.md](docs/llms/number-field.md) |
@@ -157,7 +162,10 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `Progress` | A horizontal progress bar, determinate or indeterminate. | [docs/llms/progress.md](docs/llms/progress.md) |
 | `RadialGauge` · @sukunagg/charts | One value against a range, drawn as a 270° arc with the number in the middle: LP to the next division, plan usage, a score out of 100. | [docs/llms/radial-gauge.md](docs/llms/radial-gauge.md) |
 | `RadioGroup` | Choose one option from a small set. | [docs/llms/radio-group.md](docs/llms/radio-group.md) |
+| `RankReveal` | Celebrates a new rank with a crest that bursts in over a ray field while an orbit draws around it and the rank name rises into place. | [docs/llms/rank-reveal.md](docs/llms/rank-reveal.md) |
+| `RetroGrid` | A synthwave arena backdrop for hero sections: a crimson perspective grid scrolls toward the viewer under a glowing horizon, two spotlights sway in the sky and a light wave rolls out of the horizon every few seconds. | [docs/llms/retro-grid.md](docs/llms/retro-grid.md) |
 | `RowActions` | Every data table eventually needs a per-row "Edit / Duplicate / Delete" menu. | [docs/llms/row-actions.md](docs/llms/row-actions.md) |
+| `ScrambleText` | Decodes a short label out of glyph noise into its real text, sweeping left to right — for match-found titles, lobby rosters, callsigns and reveal moments. | [docs/llms/scramble-text.md](docs/llms/scramble-text.md) |
 | `ScrollArea` | Give a bounded region (a list, a code block, a sidebar) an overlay scrollbar that looks the same in every browser and matches the Sukuna surface, instead of the OS default. | [docs/llms/scroll-area.md](docs/llms/scroll-area.md) |
 | `Select` | A single-select dropdown. | [docs/llms/select.md](docs/llms/select.md) |
 | `ShinyText` | Sweeps a soft light band across dimmed text — for "New" flags, premium labels, and subtle CTA emphasis. | [docs/llms/shiny-text.md](docs/llms/shiny-text.md) |
@@ -176,6 +184,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `Toggle`, `ToggleGroup` | Pick one option from a small, mutually-exclusive set (segmented control), or toggle several independent options (a formatting toolbar). | [docs/llms/toggle-group.md](docs/llms/toggle-group.md) |
 | `Tooltip` | A hover/focus tooltip for supplementary text. | [docs/llms/tooltip.md](docs/llms/tooltip.md) |
 | `useVideoPlayer`, `VideoPlayer`, `VideoPlayerAudio`, `VideoPlayerEndScreen`, `VideoPlayerOverlay`, `VideoPlayerPanel`, `VideoPlayerPlaylist`, `VideoPlayerShare`, `VideoPlayerSkip`, `VideoPlayerUpNext` | Plays a single video with Sukuna-branded controls instead of each browser's native chrome, so video looks the same in Chrome, Safari and Firefox and matches the rest of the library. | [docs/llms/video-player.md](docs/llms/video-player.md) |
+| `XpLevelUp` | Celebrates an XP gain that crosses a level: the bar fills to the top, flashes once, the badge bursts and counts up to the new level, then the bar settles at the progress into that level. | [docs/llms/xp-level-up.md](docs/llms/xp-level-up.md) |
 <!-- components:end -->
 
 Fonts: the library does **not** bundle Archivo. Load it yourself (`@import` or `next/font`) so

@@ -35,9 +35,37 @@
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
+    "name": "AvatarFrame (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ AvatarFrame }",
+    "limit": "2 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "Badge (static, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ Badge }",
+    "limit": "2 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "BorderBeam (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ BorderBeam }",
     "limit": "2 kB",
     "ignore": [
       "react",
@@ -217,6 +245,20 @@
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
+    "name": "GlitchText (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ GlitchText }",
+    "limit": "2 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "GradientText (static, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ GradientText }",
@@ -256,6 +298,34 @@
     "path": "dist/index.js",
     "import": "{ Input }",
     "limit": "2 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "LootReveal (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ LootReveal }",
+    "limit": "3.5 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "MatchFound (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ MatchFound }",
+    "limit": "3.5 kB",
     "ignore": [
       "react",
       "react-dom",
@@ -322,11 +392,53 @@
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
+    "name": "RankReveal (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ RankReveal }",
+    "limit": "3 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "RetroGrid (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ RetroGrid }",
+    "limit": "2 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "RowActions + deps",
     "path": "dist/index.js",
     "import": "{ RowActions }",
     "limit": "54 kB",
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
+  },
+  {
+    "name": "ScrambleText (static + glyph island, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ ScrambleText }",
+    "limit": "2.5 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
   },
   {
     "name": "ScrollArea + deps",
@@ -516,6 +628,20 @@
     "import": "{ Tooltip }",
     "limit": "40 kB",
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
+  },
+  {
+    "name": "XpLevelUp (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ XpLevelUp }",
+    "limit": "3 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
   },
   {
     "name": "Button + deps (must NOT pull Base UI ~tens of kB)",
