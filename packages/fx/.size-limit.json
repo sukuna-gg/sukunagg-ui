@@ -21,7 +21,7 @@
     "name": "BracketBeam (our code + shared loop; react, @sukunagg/ui excluded)",
     "path": "dist/index.js",
     "import": "{ BracketBeam }",
-    "limit": "8 kB",
+    "limit": "10.5 kB",
     "ignore": [
       "react",
       "react-dom",

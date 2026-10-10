@@ -7,6 +7,7 @@ const story = (id: string, theme = 'dark') =>
   `/iframe.html?id=${id}&viewMode=story&globals=theme:${theme}`
 const PLAYGROUND = 'fx-bracketbeam--playground'
 const PHONE = 'fx-bracketbeam--phone'
+const DOUBLE = 'fx-bracketbeam--double-elimination'
 const root = '[data-sk-fx="bracket-beam"]'
 const scroller = `${root} > section`
 const svg = `${scroller} svg[focusable="false"]:not([viewBox])`
@@ -212,6 +213,58 @@ test.describe('BracketBeam', () => {
       await expect.poll(() => framesIn(page, 300)).toBe(0)
       await expect(page.locator(`${root} [data-match="champion"]`)).toHaveCount(0)
     })
+
+    test('double elimination: the beam reaches the trophy along a lower-bracket path', async ({
+      page,
+    }) => {
+      const errors = watchErrors(page)
+      await page.setViewportSize({ width: 1280, height: 900 })
+      await page.goto(story(DOUBLE))
+      const region = page.locator(scroller)
+      await expect(region).toHaveAttribute('data-state', 'running')
+      // Three of the champion's rows are in the lower band, one with their drop chip.
+      await expect(page.locator(`${root} [aria-label="Lower bracket"] [data-trail]`)).toHaveCount(3)
+      await expect(page.locator(`${root} [data-trail] [data-drop]`)).toHaveCount(1)
+      // Watch one loop: the trophy goes pending, the drop chip's row lights, the beam's head then
+      // travels below the lower band's top, and the trophy ignites after that.
+      const journey = await region.evaluate(async (el) => {
+        const grid = el.firstElementChild as HTMLElement
+        const lower = grid.querySelector('[aria-label="Lower bracket"]') as HTMLElement
+        const lowerTop = lower.getBoundingClientRect().top - grid.getBoundingClientRect().top
+        const card = grid.querySelector('[data-match="champion"]') as HTMLElement
+        const dropRow = grid.querySelector('[data-trail]:has([data-drop])') as HTMLElement
+        const head = grid.querySelector('svg circle[r="2.3"]') as SVGCircleElement
+        let pending = false
+        let dropLit = -1
+        let headBelow = -1
+        let crowned = -1
+        const t0 = performance.now()
+        while (performance.now() - t0 < 16000 && crowned < 0) {
+          const t = Math.round(performance.now() - t0)
+          const dim = card.hasAttribute('data-dim')
+          if (dim) pending = true
+          if (pending && dim && dropLit < 0 && !dropRow.hasAttribute('data-dim')) dropLit = t
+          const below = Number(head.getAttribute('cy')) > lowerTop
+          if (
+            dropLit >= 0 &&
+            headBelow < 0 &&
+            head.getAttribute('visibility') === 'visible' &&
+            below
+          )
+            headBelow = t
+          if (headBelow >= 0 && !dim) crowned = t
+          await new Promise((resolve) => setTimeout(resolve, 25))
+        }
+        return { pending, dropLit, headBelow, crowned }
+      })
+      expect(journey.pending).toBe(true)
+      expect(journey.dropLit).toBeGreaterThan(0)
+      expect(journey.headBelow).toBeGreaterThan(journey.dropLit)
+      expect(journey.crowned).toBeGreaterThan(journey.headBelow)
+      // Every row on the path is lit once the trophy has ignited.
+      await expect(page.locator(`${root} [data-trail][data-dim]`)).toHaveCount(0)
+      expect(errors).toEqual([])
+    })
   })
 
   test.describe('reduced motion', () => {
@@ -235,6 +288,23 @@ test.describe('BracketBeam', () => {
       // The trail is drawn in full and no beam head is out.
       await expect(page.locator(`${svg} circle[visibility="visible"]`)).toHaveCount(0)
       expect(errors).toEqual([])
+    })
+
+    test('double elimination: one still frame, the whole path and the drop chip lit', async ({
+      page,
+    }) => {
+      await page.goto(story(DOUBLE))
+      await expect(page.locator(scroller)).toHaveAttribute('data-state', 'still')
+      expect(await framesIn(page, 500)).toBe(0)
+      await expect(page.locator(`${root} [data-dim]`)).toHaveCount(0)
+      await expect(page.locator(`${root} [data-trail]`)).toHaveCount(7)
+      // The SVG trail is drawn along every wire on the path: six of the seven steps (the drop has
+      // no wire, so its trail has no length).
+      const lengths = await page
+        .locator(`${svg} g[filter] > g:first-child > path[stroke-dasharray]`)
+        .evaluateAll((paths) => paths.map((p) => Number(p.getAttribute('pathLength'))))
+      expect(lengths).toHaveLength(7)
+      expect(lengths.filter((length) => length > 1)).toHaveLength(6)
     })
 
     test('an overflowing bracket shows the trophy at once', async ({ page }) => {

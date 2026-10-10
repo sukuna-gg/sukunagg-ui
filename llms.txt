@@ -105,7 +105,7 @@ Install `bun add @sukunagg/charts` (peers on `@sukunagg/ui` for its `theme.css` 
 
 Install `bun add @sukunagg/fx` (peers on `@sukunagg/ui` for its `theme.css` tokens; client islands over a server-rendered CSS poster). Tailwind apps add `@import "@sukunagg/fx/theme.css"; @source "../node_modules/@sukunagg/fx/dist"`; others `import "@sukunagg/fx/styles.css"`.
 
-- [BracketBeam](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/bracket-beam.md): Shows a single-elimination tournament bracket and sends a beam of light along the champion's path, round by round, until the trophy card ignites.
+- [BracketBeam](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/bracket-beam.md): Shows a tournament bracket and sends a beam of light along the champion's path, round by round, until the trophy card ignites.
 - [FlowField](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/flow-field.md): A matchmaking-screen backdrop where crimson particles stream along a drifting noise field and swirl around the content you centre on it.
 - [HoloCard](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/holo-card.md): A holographic foil card that wraps your card art and tilts toward the pointer or the arrow keys.
 - [Lightning](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/lightning.md): A crackling crimson lightning bolt behind a hero banner, drawn by one WebGL shader over a server-rendered SVG poster.

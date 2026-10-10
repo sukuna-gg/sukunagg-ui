@@ -21,8 +21,12 @@ export interface BracketBeamMeasureProps {
   links: readonly BracketLink[]
   /** Indices into `links` of the champion's path, in travel order. */
   trail: readonly number[]
+  /** The rows on the champion's path (`'<data-match>-<row>'`), in travel order: one per link. */
+  rows: readonly string[]
   /** The trophy column is rendered (grid columns). */
   champion: boolean
+  /** Double elimination: the two-band grid. */
+  double?: boolean
   /** Hold the current frame. */
   paused: boolean
   /** The region's accessible name. */
@@ -71,6 +75,8 @@ interface Comet {
 
 interface Segment {
   link: number
+  /** A drop into the lower bracket: nothing travels, the ripple and sparks play on the chip. */
+  drop: boolean
   trail: SVGPathElement
   flow: SVGPathElement
   ring: SVGCircleElement
@@ -87,15 +93,18 @@ interface Segment {
  * The client half of `BracketBeam`: the scrolling region around the server-rendered columns, plus
  * the SVG beams. On the shared fx loop (`useFxLoop`, `data-state` on this scroller), it measures
  * the real boxes, draws every wire and, along the champion's path, beams that travel round by round
- * until the trophy ignites. It writes only SVG attributes it created and `data-dim` on the path's
- * rows and the trophy card (styled by `bracket-beam.styles.tsx`), and removes them on teardown.
- * Rendered only by `BracketBeam`.
+ * until the trophy ignites (a double-elimination drop has no wire: its step plays a ripple and a
+ * spark burst on the drop chip instead). It writes only SVG attributes it created and `data-dim`
+ * on the path's rows and the trophy card (styled by `bracket-beam.styles.tsx`), and removes them on
+ * teardown. Rendered only by `BracketBeam`.
  * @internal
  */
 export function BracketBeamMeasure({
   links,
   trail,
+  rows: trailRows,
   champion,
+  double,
   paused,
   label,
   labelledBy,
@@ -109,7 +118,12 @@ export function BracketBeamMeasure({
       const svg = svgRef.current as SVGSVGElement
       const tl = timeline(trail.length)
       const find = (id: string) => box.querySelector(`[data-match="${id}"]`) as HTMLElement
-      const rows = [...box.querySelectorAll<HTMLElement>('[data-trail]')]
+      const rowIn = (match: Element, row: number | string) =>
+        match.querySelector<HTMLElement>(`:scope > [data-row="${row}"]`)
+      const rows = trailRows.map((key) => {
+        const at = key.lastIndexOf('-')
+        return rowIn(find(key.slice(0, at)), key.slice(at + 1)) as HTMLElement
+      })
       const card = box.querySelector<HTMLElement>('[data-match="champion"]')
 
       // --- SVG: glow filter, base wires, then per-segment layers (paint order as the mockup) ---
@@ -127,20 +141,27 @@ export function BracketBeamMeasure({
       const trailLayer = svgEl(glow, 'g')
       const fxLayer = svgEl(glow, 'g')
 
-      const resolved = links.map(([from, to, row]) => {
+      const resolved = links.map(([from, to, row, fromRow, drop]) => {
         const source = find(from)
         const dest = find(to)
+        const landing = row < 0 ? dest : (rowIn(dest, row) as HTMLElement)
         return {
           source,
-          win: source.querySelector('[data-winner]') ?? source,
+          // The row it leaves: the winner's, or `fromRow` (-1 matches nothing: the box's centre).
+          win:
+            (fromRow === undefined
+              ? source.querySelector('[data-winner]')
+              : rowIn(source, fromRow)) ?? source,
           dest,
-          row: row < 0 ? dest : (dest.querySelector(`[data-row="${row}"]`) as HTMLElement),
-          base: svgEl(baseLayer, 'path', { class: layer.base }),
+          // A drop lands on the destination row's chip, and has no wire.
+          row: drop ? (landing.querySelector('[data-drop]') ?? landing) : landing,
+          base: drop ? undefined : svgEl(baseLayer, 'path', { class: layer.base }),
         }
       })
       const hidden = { visibility: 'hidden' }
       const segments: Segment[] = trail.map((link) => ({
         link,
+        drop: !resolved[link]?.base,
         trail: svgEl(trailLayer, 'path', { class: layer.trail }),
         flow: svgEl(trailLayer, 'path', { class: layer.flow, ...hidden }),
         ring: svgEl(fxLayer, 'circle', { class: layer.ring, ...hidden }),
@@ -151,6 +172,7 @@ export function BracketBeamMeasure({
         target: resolved[link]?.dest ?? box,
       }))
       for (const seg of segments) {
+        if (seg.drop) continue // nothing travels: no comet
         seg.comets = [
           [layer.tail, 72],
           [layer.comet, 36],
@@ -186,6 +208,11 @@ export function BracketBeamMeasure({
           const w = rel(item.win)
           const z = rel(item.dest)
           const y = rel(item.row)
+          if (!item.base) {
+            // A drop: a zero-length "wire" on the chip's centre, where the beam reappears.
+            const [cx, cy] = [y.x + y.w / 2, y.y + y.h / 2]
+            return { path: wire(cx, cy, cx, cy), end: [cx, cy] as [number, number] }
+          }
           const path = wire(a.x + a.w, w.y + w.h / 2, z.x, y.y + y.h / 2)
           set(item.base, { d: path.d, pathLength: round2(Math.max(path.length, 0.01)) })
           return { path, end: [z.x, y.y + y.h / 2] as [number, number] }
@@ -269,7 +296,7 @@ export function BracketBeamMeasure({
             show(comet.el, on)
             if (on) comet.el.setAttribute('stroke-dashoffset', String(round2(comet.length - h)))
           }
-          if (h >= 0 && h <= length) active = [seg, h]
+          if (h >= 0 && h <= length && !seg.drop) active = [seg, h]
           const ripple = t - (tl.arrive[i] ?? 0)
           const rippling = !still && ripple >= 0 && ripple < 480
           show(seg.ring, rippling)
@@ -368,7 +395,7 @@ export function BracketBeamMeasure({
     { paused },
   )
 
-  const s = bracketBeamStyles({ champion })
+  const s = bracketBeamStyles({ champion, double })
   return (
     <section ref={ref} aria-label={label} aria-labelledby={labelledBy} className={s.scroller()}>
       <div ref={grid} className={s.grid()}>

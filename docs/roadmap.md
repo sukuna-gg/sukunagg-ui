@@ -448,7 +448,7 @@ Wave A approved and built ("lgtm", 2026-10-10); Review = the owner's visual pass
 
 | Item | Kind | Doc | Code | Review |
 |---|---|---|---|---|
-| BracketBeam `format="double"` | addition to a shipped component | [x] bracket-beam-double-elimination.md (merged into component-bracket-beam.md when built) | [ ] | [ ] |
+| BracketBeam `format="double"` | addition to a shipped component | [x] component-bracket-beam.md (pending spec merged in) | [x] 88 tests (39 new), 100% cov, 9.94 kB (budget 10.5 kB) | [ ] |
 
 ### Still suggestions (Q42, not designed)
 
@@ -559,3 +559,4 @@ Agents append one line per meaningful status change: `YYYY-MM-DD · <what flippe
 - 2026-10-10 · Q43 — MonthView + Agenda built (parallel builder, reviewed): `utils/date/events.ts`, lanes, native-popover "+N more", container-query list; 47 tests + 8 util tests, 100% cov; React 18 matrix green · (feat/calendars)
 - 2026-10-10 · Q43 — FileUpload + resizeImage + Camera/Upload/Image icons built (parallel builder, reviewed): 46 tests, 100% cov, 4 browser specs (a real 4000×3000 JPEG reaches FormData at 2000×1500); changeset patch · (feat/file-upload)
 - 2026-10-10 · Q43 — CommandPalette built (parallel builder, reviewed): pure fuzzy filter + chord parser modules, items registered via context with in-place `<template>` markers, React 18 matrix green · (feat/command-palette)
+- 2026-10-10 · Q43 — BracketBeam double elimination built (parallel builder, reviewed): `format="double"` with explicit `id`/`next` links, upper + lower bands, grand final, drop chips; single-elimination markup unchanged; 88 tests, 100% cov, 9.94 kB; changeset patch · (feat/bracket-double)

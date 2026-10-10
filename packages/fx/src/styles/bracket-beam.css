@@ -6,7 +6,12 @@
  *
  * Two keyframes. Both base styles are the final frame: the trophy's halo at full strength (the
  * breathe dims it and comes back), the shock ring invisible (it starts visible and expands away).
- * The beams themselves are SVG painted by the island (bracket-beam.measure.tsx), not CSS.
+ * The beams themselves are SVG painted by the island (bracket-beam.measure.tsx), not CSS. Then the
+ * double-elimination layout pieces: the two-band grid, a band's label and the drop chip. The
+ * double grid's rows keep their content height (no stretch), because the poster's wires cross
+ * bands and are placed in px (bracket-beam.double.ts); under a 640px container its tracks are a
+ * fixed 176px (the trophy's implicit one too), so a name still fits beside a drop chip, scoped
+ * under [data-sk-fx] to outrank the single-elimination 146px track utilities.
  */
 
 /* The trophy card's halo breathing while it is lit. Decorative: stops under reduced motion. */
@@ -60,4 +65,50 @@
     color-mix(in oklab, var(--sk-accent) 30%, transparent),
     transparent
   );
+}
+
+/* Double elimination: two bands at content height (the poster's wires are px). */
+@utility bracket-beam-double {
+  grid-template-rows: auto auto;
+  align-content: start;
+  /* 176px tracks under 640px; [data-sk-fx] outranks the 146px track utilities. */
+  @container bracket-beam (width <= 640px) {
+    [data-sk-fx] & {
+      grid-template-columns: repeat(var(--sk-bracket-beam-rounds), 176px);
+      grid-auto-columns: 176px;
+    }
+  }
+}
+
+/* A band's label ("Upper bracket") with a rule to its right. */
+@utility bracket-beam-band {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 18px;
+  margin-bottom: 6px;
+  overflow: hidden;
+  font: italic 700 11px / 1 var(--sk-font-display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--sk-text-dim);
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--sk-line-soft);
+  }
+}
+
+/* The drop chip ("▼ SF1"); its colors come from the row. */
+@utility bracket-beam-drop {
+  flex-shrink: 0;
+  padding: 0 4px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 4px;
+  font: 700 10px / 15px var(--sk-font-sans);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }

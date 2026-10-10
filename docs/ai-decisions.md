@@ -45,12 +45,15 @@ agent's own calls. Newest first.
   rounding so they add to 100. (5) **CommandPalette uses Base UI Autocomplete's `inline open` mode**
   inside Base UI Dialog (verified in `@base-ui/react` 1.8 types) instead of a hand-rolled listbox,
   with accent-insensitive fuzzy matching ("bahia" finds "Bahía"). (6) **Double elimination is
-  specced in `docs/bracket-beam-double-elimination.md`**, not in `component-bracket-beam.md`, because
-  that doc feeds the generated `llms.txt`/README and must not advertise an unshipped API; the PR that
-  builds it merges the two. (7) **Three new icons** (Camera, Upload, Image) for FileUpload, added to
+  specced in a separate pending doc**, not in `component-bracket-beam.md`, because that doc feeds
+  the generated `llms.txt`/README and must not advertise an unshipped API; the PR that built it
+  (`feat/bracket-double`) merged the two and deleted the pending doc. (7) **Three new icons** (Camera, Upload, Image) for FileUpload, added to
   the icon set rather than inlined. (8) **Built (wave A):** Timeline's halo uses Tailwind's built-in
   `animate-pulse` instead of a new keyframe, so `theme.css` doesn't change; Prose sizes sit on the
-  14/16/18px text tokens instead of the mockup's 13.5/15/17px.
+  14/16/18px text tokens instead of the mockup's 13.5/15/17px. (9) **Built (wave C):** double
+  elimination lives in a pure `bracket-beam.double.ts` (link validation, columns, poster wires,
+  champion path, drop chips) so the server markup for single elimination is byte-for-byte unchanged;
+  the size budget rose from 8 kB to 10.5 kB (9.94 kB measured) for the second layout.
 - **Why:** the mockup could ignore SSR, forms without JS and generated docs; the specs can't.
 - **Reverse:** (1) always render the island, or drop `auto`; (3) leave the original file in the
   input and require `onUpload` for resizing; (4) a client widget; (6) write it straight into

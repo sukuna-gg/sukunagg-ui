@@ -1,6 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { ReactNode } from 'react'
-import { BracketBeam, type BracketRound, type BracketTeamInfo } from './index'
+import {
+  BracketBeam,
+  type BracketGrandFinal,
+  type BracketRound,
+  type BracketTeamInfo,
+} from './index'
 
 /*
  * The screen chrome (event header, the stage card with its faint grid, the phone frame) lives here,
@@ -154,6 +159,156 @@ const IN_PROGRESS: BracketRound[] = [
   },
 ]
 
+/*
+ * Double elimination (the Q42 mockup's Copa Otoño): eight teams, explicit `id` / `next` links.
+ * Sahuaros (seed 4) lose the upper semi-final to Cobras Sonora, drop to the lower bracket, win it,
+ * beat Cobras in the grand final and again in the reset.
+ */
+const team = (name: string, seed: number): BracketTeamInfo => ({ name, seed })
+const COB = team('Cobras Sonora', 1)
+const PIT = team('Los Pitayos', 2)
+const DES = team('Desierto GG', 3)
+const SAH = team('Sahuaros', 4)
+const BAH = team('Bahía Kino', 5)
+const COY = team('Coyotes HMO', 6)
+const MEZ = team('Mezquite', 7)
+const CER = team('Cerro Gaming', 8)
+
+const UPPER: BracketRound[] = [
+  {
+    name: 'Quarter-final',
+    meta: 'Bo3',
+    matches: [
+      {
+        id: 'ub-qf1',
+        teams: [COB, CER],
+        scores: [2, 0],
+        winner: 0,
+        next: { winner: 'ub-sf1', loser: 'lb-r1-1' },
+      },
+      {
+        id: 'ub-qf2',
+        teams: [SAH, BAH],
+        scores: [2, 1],
+        winner: 0,
+        next: { winner: 'ub-sf1', loser: 'lb-r1-1' },
+      },
+      {
+        id: 'ub-qf3',
+        teams: [PIT, MEZ],
+        scores: [2, 0],
+        winner: 0,
+        next: { winner: 'ub-sf2', loser: 'lb-r1-2' },
+      },
+      {
+        id: 'ub-qf4',
+        teams: [DES, COY],
+        scores: [1, 2],
+        winner: 1,
+        next: { winner: 'ub-sf2', loser: 'lb-r1-2' },
+      },
+    ],
+  },
+  {
+    name: 'Semi-final',
+    meta: 'Bo3',
+    matches: [
+      {
+        id: 'ub-sf1',
+        teams: [COB, SAH],
+        scores: [2, 1],
+        winner: 0,
+        next: { winner: 'ub-final', loser: 'lb-r2-2' },
+      },
+      {
+        id: 'ub-sf2',
+        teams: [PIT, COY],
+        scores: [2, 0],
+        winner: 0,
+        next: { winner: 'ub-final', loser: 'lb-r2-1' },
+      },
+    ],
+  },
+  {
+    name: 'Upper final',
+    meta: 'Bo3',
+    matches: [
+      {
+        id: 'ub-final',
+        teams: [COB, PIT],
+        scores: [2, 1],
+        winner: 0,
+        next: { winner: 'gf', loser: 'lb-final' },
+      },
+    ],
+  },
+]
+
+const LOWER: BracketRound[] = [
+  {
+    name: 'Lower round 1',
+    meta: 'Bo3',
+    matches: [
+      { id: 'lb-r1-1', teams: [CER, BAH], scores: [0, 2], winner: 1, next: { winner: 'lb-r2-1' } },
+      { id: 'lb-r1-2', teams: [MEZ, DES], scores: [1, 2], winner: 1, next: { winner: 'lb-r2-2' } },
+    ],
+  },
+  {
+    name: 'Lower round 2',
+    meta: 'Bo3',
+    matches: [
+      { id: 'lb-r2-1', teams: [BAH, COY], scores: [1, 2], winner: 1, next: { winner: 'lb-semi' } },
+      { id: 'lb-r2-2', teams: [DES, SAH], scores: [0, 2], winner: 1, next: { winner: 'lb-semi' } },
+    ],
+  },
+  {
+    name: 'Lower semi',
+    meta: 'Bo3',
+    matches: [
+      { id: 'lb-semi', teams: [COY, SAH], scores: [0, 2], winner: 1, next: { winner: 'lb-final' } },
+    ],
+  },
+  {
+    name: 'Lower final',
+    meta: 'Bo3',
+    matches: [
+      { id: 'lb-final', teams: [SAH, PIT], scores: [2, 1], winner: 0, next: { winner: 'gf' } },
+    ],
+  },
+]
+
+const GRAND: BracketGrandFinal = {
+  meta: 'Bo5',
+  match: { id: 'gf', teams: [COB, SAH], scores: [1, 3], winner: 1 },
+  reset: { teams: [COB, SAH], scores: [2, 3], winner: 1 },
+}
+
+/** The same bracket where Cobras Sonora, unbeaten, take the grand final: no reset is played. */
+const GRAND_NO_RESET: BracketGrandFinal = {
+  meta: 'Bo5',
+  match: { id: 'gf', teams: [COB, SAH], scores: [3, 1], winner: 0 },
+}
+
+/** Mid-event: the lower semi is live, so the lower final and the grand final wait. */
+const LOWER_LIVE: BracketRound[] = [
+  LOWER[0] as BracketRound,
+  LOWER[1] as BracketRound,
+  {
+    name: 'Lower semi',
+    meta: 'Bo3',
+    matches: [{ id: 'lb-semi', teams: [COY, SAH], scores: [0, 1], next: { winner: 'lb-final' } }],
+  },
+  {
+    name: 'Lower final',
+    meta: 'Bo3',
+    matches: [{ id: 'lb-final', teams: [{ name: 'TBD' }, PIT], next: { winner: 'gf' } }],
+  },
+]
+const GRAND_LIVE: BracketGrandFinal = {
+  meta: 'Bo5',
+  match: { id: 'gf', teams: [COB, { name: 'TBD' }] },
+}
+
 /** The mockup's stage: a surface card with a faint 32px grid fading in toward the trophy. */
 function Stage({ children }: { children: ReactNode }) {
   return (
@@ -171,14 +326,19 @@ function Stage({ children }: { children: ReactNode }) {
 function EventPage({
   title,
   status,
+  wide = false,
   children,
 }: {
   title: string
   status: string
+  /** A double-elimination bracket has seven columns: give it room before it scrolls. */
+  wide?: boolean
   children: ReactNode
 }) {
   return (
-    <section className="mx-auto flex max-w-[1148px] flex-col gap-4">
+    <section
+      className={`mx-auto flex flex-col gap-4 ${wide ? 'max-w-[1760px]' : 'max-w-[1148px]'}`}
+    >
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="m-0 font-sans text-xs font-semibold tracking-eyebrow text-text-faint uppercase">
@@ -198,7 +358,8 @@ function EventPage({
   )
 }
 
-const meta = {
+// Annotated (not `satisfies`): the props are a single | double union, and a story may switch `format`.
+const meta: Meta<typeof BracketBeam> = {
   title: 'FX/BracketBeam',
   component: BracketBeam,
   tags: ['autodocs'],
@@ -215,17 +376,22 @@ const meta = {
   },
   argTypes: {
     rounds: { control: false },
+    upper: { control: false },
+    lower: { control: false },
+    grandFinal: { control: false },
     championMeta: { control: false },
+    dropLabel: { control: false },
+    dropSpokenLabel: { control: false },
   },
   render: (args) => (
     <EventPage title="Playoffs" status="Final · 8 teams · single elimination">
       <BracketBeam {...args} />
     </EventPage>
   ),
-} satisfies Meta<typeof BracketBeam>
+}
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<typeof BracketBeam>
 
 /** The approved mockup: eight teams, the champion's path lit by a beam, round by round. */
 export const Playground: Story = {}
@@ -277,6 +443,68 @@ export const InProgress: Story = {
   args: { rounds: IN_PROGRESS, champion: undefined, championMeta: undefined },
   render: (args) => (
     <EventPage title="Playoffs" status="Live · semi-final 2, map 3">
+      <BracketBeam {...args} />
+    </EventPage>
+  ),
+}
+
+const DOUBLE_ARGS = {
+  format: 'double',
+  rounds: undefined,
+  upper: UPPER,
+  lower: LOWER,
+  trophyMeta: 'Otoño',
+} as const
+
+/**
+ * Double elimination: the champion comes back from the lower bracket. Sahuaros lose the upper
+ * semi-final (lit, with its "▼ SF1" drop chip in the lower bracket), win the lower bracket, the
+ * grand final and the reset. The beam follows them through the drop.
+ */
+export const DoubleElimination: Story = {
+  args: {
+    ...DOUBLE_ARGS,
+    grandFinal: GRAND,
+    champion: 'Sahuaros',
+    championMeta: (
+      <>
+        <b>3–2</b> reset · from the lower bracket
+      </>
+    ),
+  },
+  render: (args) => (
+    <EventPage wide title="Copa Otoño" status="Final · 8 teams · double elimination">
+      <BracketBeam {...args} />
+    </EventPage>
+  ),
+}
+
+/** The upper bracket's unbeaten team wins the grand final, so the reset never happens. */
+export const DoubleNoReset: Story = {
+  args: {
+    ...DOUBLE_ARGS,
+    grandFinal: GRAND_NO_RESET,
+    champion: 'Cobras Sonora',
+    championMeta: (
+      <>
+        <b>3–1</b> grand final · unbeaten
+      </>
+    ),
+  },
+  render: DoubleElimination.render,
+}
+
+/** Mid-event, no champion yet: static, with drop chips naming where each lower team came from. */
+export const DoubleStatic: Story = {
+  args: {
+    ...DOUBLE_ARGS,
+    lower: LOWER_LIVE,
+    grandFinal: GRAND_LIVE,
+    champion: undefined,
+    championMeta: undefined,
+  },
+  render: (args) => (
+    <EventPage wide title="Copa Otoño" status="Live · lower semi, map 2">
       <BracketBeam {...args} />
     </EventPage>
   ),

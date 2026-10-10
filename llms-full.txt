@@ -22,7 +22,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - Badge: A small, pill-shaped label for status and metadata — "LIVE", counts, tags.
 - BarChart (@sukunagg/charts): Compares amounts across categories: games per placement, kills per weapon by season, revenue per plan per month, pick rate per agent.
 - BorderBeam: Sends a short light around the border of a card, a featured match, a season pass or a plan tile, to mark the one thing on a screen that deserves attention.
-- BracketBeam (@sukunagg/fx): Shows a single-elimination tournament bracket and sends a beam of light along the champion's path, round by round, until the trophy card ignites.
+- BracketBeam (@sukunagg/fx): Shows a tournament bracket and sends a beam of light along the champion's path, round by round, until the trophy card ignites.
 - Breadcrumbs: Show the path to the current page and let users jump back up it.
 - Button: Triggers an action.
 - Calendar: Shows one or two months and lets people pick a day or a range with a mouse, touch or the keyboard.
@@ -871,7 +871,7 @@ No new **color** token: every color is `--sk-accent`, `--sk-accent-glow`, `--sk-
 
 # BracketBeam — @sukunagg/fx
 
-> Shows a single-elimination tournament bracket and sends a beam of light along the champion's path, round by round, until the trophy card ignites.
+> Shows a tournament bracket and sends a beam of light along the champion's path, round by round, until the trophy card ignites.
 
 - **Package:** `@sukunagg/fx` — `bun add @sukunagg/fx @sukunagg/ui` (peers on `@sukunagg/ui` for its `theme.css` tokens; client islands over a server-rendered CSS poster)
 - **Import:** `import { BracketBeam } from '@sukunagg/fx'`
@@ -880,8 +880,11 @@ No new **color** token: every color is `--sk-accent`, `--sk-accent-glow`, `--sk-
 
 ## Purpose
 
-Shows a single-elimination tournament bracket and sends a beam of light along the champion's path,
-round by round, until the trophy card ignites. Use it for a playoffs page, an event recap or a
+Shows a tournament bracket and sends a beam of light along the champion's path, round by round,
+until the trophy card ignites. Single elimination by default; `format="double"` adds an upper and a
+lower bracket, a grand final and the optional bracket reset, and the beam follows the champion even
+when they come back from the lower bracket. Lower-bracket rows show which upper match each team
+dropped from, so no wire has to cross the bracket. Use it for a playoffs page, an event recap or a
 season finale; for a plain results table use `Table`.
 
 ## API
@@ -900,16 +903,30 @@ export interface BracketMatch {
   teams: readonly [BracketTeam, BracketTeam] // top row first
   scores?: readonly [number | string, number | string] // omit while unplayed
   winner?: 0 | 1 // omit while undecided
+  id?: string // required in double elimination; ignored in single
+  next?: BracketNext // double elimination only: where the winner and the loser go next
+}
+
+export interface BracketNext {
+  winner?: string // the `id` of the match the winner plays next: a connector
+  loser?: string // the `id` of the lower-bracket match the loser drops to: a drop chip, no wire
 }
 
 export interface BracketRound {
   name: string // column heading + the round list's accessible name, e.g. 'Quarter-finals'
   meta?: string // right of the heading, e.g. 'Bo3'
-  matches: readonly BracketMatch[] // match i feeds match ⌊i/2⌋ of the next round
+  matches: readonly BracketMatch[] // single elimination: match i feeds match ⌊i/2⌋ of the next round
 }
 
-interface BracketBeamOwnProps {
-  rounds: readonly BracketRound[]
+export interface BracketGrandFinal {
+  match: BracketMatch // give it an `id`: both finals' `next.winner` name it
+  reset?: BracketMatch // the bracket reset: include it once it's scheduled or played
+  name?: string // column heading, default 'Grand final'
+  resetName?: string // default 'Reset'
+  meta?: string // right of both headings, e.g. 'Bo5'
+}
+
+interface BracketBeamSharedProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
   champion?: string // the winning team's name: lights its path + renders the trophy card
   championMeta?: ReactNode // line under the champion's name, e.g. <><b>3–1</b> grand final</>
   championLabel?: string // card eyebrow. Default 'Champion'
@@ -921,21 +938,62 @@ interface BracketBeamOwnProps {
   paused?: boolean // hold the current frame. Default false
 }
 
-export type BracketBeamProps = BracketBeamOwnProps &
-  Omit<ComponentPropsWithoutRef<'div'>, 'children'>
+export interface BracketBeamSingleProps extends BracketBeamSharedProps {
+  format?: 'single' // default
+  rounds: readonly BracketRound[]
+}
+
+export interface BracketBeamDoubleProps extends BracketBeamSharedProps {
+  format: 'double'
+  upper: readonly BracketRound[] // round 1 first
+  lower: readonly BracketRound[] // round 1 first
+  grandFinal: BracketGrandFinal
+  upperLabel?: string // band label + its group's name. Default 'Upper bracket'
+  lowerLabel?: string // default 'Lower bracket'
+  /** Chip text for a dropped team, from the upper round + match index. Default 'SF1' style. */
+  dropLabel?: (round: BracketRound, matchIndex: number) => string
+  /** Spoken after the team's name. Default 'dropped from Semi-final 1'. */
+  dropSpokenLabel?: (roundName: string, matchIndex: number) => string
+}
+
+export type BracketBeamProps = BracketBeamSingleProps | BracketBeamDoubleProps
+```
+
+Discriminated on `format`; existing single-elimination code keeps working unchanged (no `format` =
+single, and its server markup is byte-for-byte what it was before double elimination shipped).
+Write `format="double"` as a literal attribute so TypeScript types the label callbacks.
+
+```tsx
+<BracketBeam format="double" champion="Sahuaros" championMeta="Desde la llave inferior"
+  upperLabel="Llave superior" lowerLabel="Llave inferior"
+  upper={upperRounds} lower={lowerRounds}
+  grandFinal={{ match: gf, reset: gfReset, name: 'Gran final', resetName: 'Reinicio', meta: 'Bo5' }} />
+// match: { id: 'ub-sf1', teams, scores, winner: 0, next: { winner: 'ub-final', loser: 'lb-r2-2' } }
 ```
 
 - `aria-label` / `aria-labelledby` name the scrolling region (default `aria-label` is
   `'Tournament bracket'`); every other native prop lands on the root `<div>`.
-- **Data rules.** Match `i` of a round feeds match `⌊i/2⌋` of the next one. A connector lands on
-  the row of the next match that holds the same team name, else on the top row for even `i` and
-  the bottom row for odd `i`. The champion's path is found by name: the last-round match
+- **Data rules (single).** Match `i` of a round feeds match `⌊i/2⌋` of the next one. A connector
+  lands on the row of the next match that holds the same team name, else on the top row for even
+  `i` and the bottom row for odd `i`. The champion's path is found by name: the last-round match
   `champion` won, then, round by round backwards, the feeder match they won.
+- **Data rules (double).** Every upper, lower and grand-final match has a unique `id`, and links are
+  explicit (owner, Q42 recommendation 4: lower-bracket seeding varies by organizer, so no position
+  rule). `next.winner` / `next.loser` name the destination match. The upper final's and the lower
+  final's `next.winner` are the grand final; the grand final's winner goes to `reset` when present,
+  else to the trophy; the reset's winner goes to the trophy (the grand final's and the reset's own
+  `next` are ignored). A connector lands on the destination's row holding the same team, else on
+  its first free row (winner links before loser links, upper before lower). A missing or duplicate
+  id, an unknown id, a match fed by more than two links, a winner link that doesn't move to a later
+  column, or a cycle **throw in development** and render the bracket without wires, drop chips or a
+  lit path in production.
 - **Replay** by changing `key`; the beam loops while on screen anyway.
-- Without `champion` the bracket is static: connectors, winners in bold, no beams, no trophy card.
+- Without `champion` the bracket is static: connectors, winners in bold, drop chips, no beams, no
+  trophy card.
 
-Deliberately **not** in v1: double elimination, byes drawn as gaps, team logos, click handlers
-on matches, a play-once mode, custom row renderers.
+Deliberately **not** in v1: byes drawn as gaps, team logos, click handlers on matches, a play-once
+mode, custom row renderers; and for double elimination: triple elimination, Swiss/round-robin
+stages, a lower bracket shown as a separate scroller.
 
 ## Variants & tokens
 
@@ -947,6 +1005,8 @@ No new color token. Everything resolves through `--sk-*` tokens (`@sukunagg/ui/t
 | Row text | name `--sk-font-display` 13px, `--sk-text-dim` (winner `--sk-text`, bold); seed and score `--sk-text-faint`, `font-sans tabular-nums` |
 | Lit row (champion's path) | `bracket-beam-glow` wash (`--sk-accent` 28% → 6% → 10%), 2px `--sk-accent` bar, score in `--sk-bracket-beam-ink`, seed `--sk-text` at 70% |
 | Heading | 10px uppercase, `--sk-tracking-eyebrow`, `--sk-text-faint` (meta `--sk-text-dim`), rule `--sk-line-soft` |
+| Band label (double) | `--sk-font-display` italic 700, 11px uppercase, tracking .14em, `--sk-text-dim`, with a 1px `--sk-line-soft` rule to its right |
+| Drop chip (double) | 10px bold `font-sans`, 1px `--sk-line` border, 4px radius, `--sk-text-faint` ("▼ SF1"); on the champion's lit row `--sk-bracket-beam-ink` with an `--sk-accent` border at 50% |
 | Wires | `--sk-line` 1.5px; lit path `--sk-accent` (SVG 2px through a blur glow filter; CSS poster 1.5px with `drop-shadow` in `--sk-accent` / `--sk-accent-glow`) |
 | Beam | trail `--sk-accent`, comet and flow dashes `--sk-bracket-beam-hot`, ripple + sparks `--sk-accent` |
 | Champion card | bg `--sk-surface-2`, radius `--sk-radius-md`; lit: border `--sk-accent`, glow `--sk-accent-glow`, eyebrow `--sk-bracket-beam-ink`; pending: dashed `--sk-line`, placeholders `--sk-line-soft` |
@@ -954,16 +1014,16 @@ No new color token. Everything resolves through `--sk-*` tokens (`@sukunagg/ui/t
 Component-scoped colors, set on the root from tokens (no new token):
 
 - `--sk-bracket-beam-ink: color-mix(in oklab, var(--sk-accent) 80%, var(--sk-text))`: the accent
-  pushed toward the text color, so small lit text (scores, the eyebrow) reaches AA in both
-  themes. Measured in Chromium on the lit wash: score 5.7:1 dark / 5.1:1 light (plain accent:
-  4.5 / 3.7); eyebrow on the card 6.2 / 5.8. On the wash the seed uses `--sk-text` at 70%
-  (6.2 / 5.3; the faint token would be 3.4 / 3.1).
+  pushed toward the text color, so small lit text (scores, the eyebrow, the champion's drop chip)
+  reaches AA in both themes. Measured in Chromium on the lit wash: score 5.7:1 dark / 5.1:1 light
+  (plain accent: 4.5 / 3.7); eyebrow on the card 6.2 / 5.8. On the wash the seed uses `--sk-text`
+  at 70% (6.2 / 5.3; the faint token would be 3.4 / 3.1).
 - `--sk-bracket-beam-hot: color-mix(in oklab, var(--sk-accent) 62%, var(--sk-text))`: the beam's
   bright core, paler than the accent on dark themes and deeper on light ones.
 - `--sk-bracket-beam-gap: clamp(36px, 6cqi, 64px)` (36px under 640px): the column gap, shared by
   the grid and the poster wires.
 
-Layout: `grid-template-columns: repeat(<rounds>, minmax(min-content, 1fr)) minmax(min-content, 1.15fr)`
+Layout (single): `grid-template-columns: repeat(<rounds>, minmax(min-content, 1fr)) minmax(min-content, 1.15fr)`
 (`--sk-bracket-beam-rounds` inline) with `min-width: min-content`, so the bracket fills its
 container, its columns shrink to their floor first, and only then does it scroll sideways. A round
 column's floor is 146px or its heading, whichever is wider; the trophy column's is 184px or the
@@ -971,6 +1031,14 @@ champion's name. Team names never widen a column (`contain: inline-size`): they 
 wider than the shock ring's 22px outset, so the ring never widens the scroller (no scrollbar flash
 on classic-scrollbar desktops). Under a 640px container (`@container bracket-beam`) the columns
 are fixed (146px, trophy 176px) and the padding tightens (12px, start 14px; the end stays 24px).
+
+Layout (double): columns = max(upper rounds, lower rounds) (`--sk-bracket-beam-band`) + grand
+final + reset (if any) + trophy, the same track template (`--sk-bracket-beam-rounds` = band + 1 or
+2). Each band is a subgrid row spanning the band columns: the upper band in row 1, the lower band in
+row 2 (14px below it); the grand-final, reset and trophy columns span both rows, their headings
+level with the upper band's, their match or card centred. Rows keep their content height
+(`align-content: start`). Round columns have a 176px floor (the mockup's 178), so a name still
+fits beside a drop chip; under a 640px container every track is a fixed 176px.
 
 CSS module `packages/fx/src/styles/bracket-beam.css` (two keyframes):
 
@@ -1000,25 +1068,47 @@ CSS module `packages/fx/src/styles/bracket-beam.css` (two keyframes):
   background-image: radial-gradient(closest-side,
     color-mix(in oklab, var(--sk-accent) 30%, transparent), transparent);
 }
+@utility bracket-beam-double { /* the two-band grid */
+  grid-template-rows: auto auto;
+  align-content: start;
+  @container bracket-beam (width <= 640px) {
+    [data-sk-fx] & { grid-template-columns: repeat(var(--sk-bracket-beam-rounds), 176px); grid-auto-columns: 176px; }
+  }
+}
+@utility bracket-beam-band { /* a band's label, with a rule to its right */
+  display: flex; align-items: center; gap: 10px; height: 18px; margin-bottom: 6px; overflow: hidden;
+  font: italic 700 11px / 1 var(--sk-font-display); letter-spacing: 0.14em;
+  text-transform: uppercase; white-space: nowrap; color: var(--sk-text-dim);
+  &::after { content: ""; flex: 1; height: 1px; background: var(--sk-line-soft); }
+}
+@utility bracket-beam-drop { /* the drop chip; colors come from the row */
+  flex-shrink: 0; padding: 0 4px; border-width: 1px; border-style: solid; border-radius: 4px;
+  font: 700 10px / 15px var(--sk-font-sans); letter-spacing: 0.02em; white-space: nowrap;
+}
 ```
 
-Timeline (ms, one loop; `N` = segments on the champion's path, 3 for 8 teams): beam `i` leaves
-at `420 + 900·i` and travels 560 ms (ease-in head, the tail drains into the box); each row on the
-path lights as its beam lands (the first at 100); the trophy ignites when the last beam lands
-(`IGN`), with a shock ring, a perimeter burst of sparks and rising embers; flow dashes march
-along the lit path; everything fades at `IGN + 2520` and the loop restarts 700 ms later (6 s for
-8 teams).
+Timeline (ms, one loop; `N` = steps on the champion's path, 3 for an 8-team single bracket, 7 for
+the 8-team double story): beam `i` leaves at `420 + 900·i` and travels 560 ms (ease-in head, the
+tail drains into the box); each row on the path lights as its beam lands (the first at 100); the
+trophy ignites when the last beam lands (`IGN`), with a shock ring, a perimeter burst of sparks and
+rising embers; flow dashes march along the lit path; everything fades at `IGN + 2520` and the loop
+restarts 700 ms later (6 s for 3 steps, 9.6 s for 7). A **drop** into the lower bracket is a step
+with no wire: nothing travels, and when it lands the row the champion dropped into lights, with a
+ripple and a spark burst on its drop chip; the next beam leaves from there.
 
 ## States
 
 | State | Behavior |
 |---|---|
-| server / no-JS (poster) | Boxes, CSS connectors, the champion's rows lit, trophy card lit. The final frame. |
+| server / no-JS (poster) | Boxes, CSS connectors, the champion's rows lit (and their drop chip), trophy card lit. The final frame. |
 | `data-state="paused"` | Island mounted, off-screen or hidden tab or `paused`: holds its frame. First paint after hydration is the lit frame (the poster's twin). |
-| `data-state="running"` | SVG replaces the CSS connectors (crossfade). Lit path fades, then beams travel round by round; the scroller follows the beam when the bracket overflows, until the viewer scrolls it. |
+| `data-state="running"` | SVG replaces the CSS connectors (crossfade). Lit path fades, then beams travel step by step (through the drop chip in double elimination); the scroller follows the beam when the bracket overflows, until the viewer scrolls it. |
 | `data-state="still"` (`prefers-reduced-motion: reduce`) | One still frame: the lit path, the trophy lit, no beams, sparks, ripples or flow; the breathe and shock loops stop. An overflowing bracket scrolls to the trophy once. |
-| no `champion` | Static: connectors only, the loop settles and requests no frames. |
+| no `champion` | Static: connectors (and drop chips) only, the loop settles and requests no frames. |
 | overflowing (narrow container) | Scrolls sideways; the region becomes a tab stop (`tabindex="0"`, focus ring) only while it overflows. |
+| double: reset | The reset column renders only when `grandFinal.reset` is given. |
+| double: the lit path | Every match the champion won, the wires between them, and the drop chip where they fell to the lower bracket; the upper match they lost is lit too (and the grand final they lost, when they won the reset), so the path reads as one story. |
+| double: broken links | Development throws (`[@sukunagg/fx] BracketBeam: …`); production renders the boxes without wires, chips or a lit path. |
 
 `data-state` lives on the island's scroller (`[data-sk-fx="bracket-beam"] > [data-state]`), the
 element `useFxLoop` observes; the root carries `data-sk-fx="bracket-beam"`.
@@ -1027,18 +1117,24 @@ element `useFxLoop` observes; the root carries `data-sk-fx="bracket-beam"`.
 
 - [ ] The bracket is a named region (`aria-label`, default 'Tournament bracket'); each round is an
       `<ol>` named by the round; headings are visual duplicates and `aria-hidden`.
+- [ ] Double elimination: each band is a `role="group"` named by its label (`upperLabel`,
+      `lowerLabel`); its visible label is `aria-hidden`; rounds stay lists named by the round name.
 - [ ] Every team name, seed and score is real text, and a row reads as a sentence, not bare
       numbers: "seed 1 Crimson Vow score 2, winner" (`sr-only` words from `seedLabel`,
       `scoreLabel`, `winnerLabel`); the champion card reads "Champion, <name>, <meta>".
+- [ ] A dropped team's row reads "seed 4 Sahuaros, dropped from Semi-final 1, score 2, winner": the
+      chip ("▼ SF1") is `aria-hidden` (its `title` gives mouse users the long form) and the spoken
+      label (`dropSpokenLabel`) follows the name.
+- [ ] The reset is announced by its column name (the list's `aria-label`, `resetName`).
 - [ ] Wires, beams, sparks, the bloom and the placeholders are `aria-hidden`; the SVG lives in an
       `aria-hidden` wrapper.
 - [ ] The scroller is a keyboard tab stop with a visible focus ring only while it overflows
       (WCAG 2.1.1), like `Table scroll`.
-- [ ] Small lit text keeps AA on the lit wash in both themes: scores and the eyebrow in
-      `--sk-bracket-beam-ink`, seeds in `--sk-text` at 70% (measured, § 4).
+- [ ] Small lit text keeps AA on the lit wash in both themes: scores, the eyebrow and the
+      champion's drop chip in `--sk-bracket-beam-ink`, seeds in `--sk-text` at 70% (measured, § 4).
 - [ ] Reduced motion: still frame, no loops; the final state is fully shown.
-- [ ] No flashing (WCAG 2.3.1): the trophy ignites once per 6 s loop; nothing flashes more than
-      3 times a second.
+- [ ] No flashing (WCAG 2.3.1): the trophy ignites once per loop (6 s or more); nothing flashes
+      more than 3 times a second.
 - [ ] The beam's auto-scroll never moves the page, only the bracket's own scroller, and stops for
       good once the viewer scrolls it.
 

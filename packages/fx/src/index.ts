@@ -17,8 +17,12 @@
 //   export { Name } from './components/<dir>'
 // bracket-beam
 export type {
+  BracketBeamDoubleProps,
   BracketBeamProps,
+  BracketBeamSingleProps,
+  BracketGrandFinal,
   BracketMatch,
+  BracketNext,
   BracketRound,
   BracketTeam,
   BracketTeamInfo,
