@@ -440,7 +440,7 @@ Wave A approved and built ("lgtm", 2026-10-10); Review = the owner's visual pass
 
 | Item | Kind | Doc | Code | Review |
 |---|---|---|---|---|
-| CommandPalette | client, Base UI `dialog` + `autocomplete` (inline) | [x] component-command-palette.md | [ ] | [ ] |
+| CommandPalette | client, Base UI `dialog` + `autocomplete` (inline) | [x] component-command-palette.md | [x] 62 tests, 100% cov, 4 browser specs, 47.8 kB with deps (budget 53 kB) | [ ] |
 | FileUpload + `resizeImage` | client over a native file input | [x] component-file-upload.md | [ ] | [ ] |
 | Poll | server form + write-in island | [x] component-poll.md | [x] 50 tests, 100% cov, 3.56 kB (budget 3.9 kB; spec target 1.5 kB missed: four states + form + results) | [ ] |
 
@@ -555,3 +555,4 @@ Agents append one line per meaningful status change: `YYYY-MM-DD · <what flippe
 - 2026-10-10 · Q42 — toolkit wave designed: mockup + recommendations approved; specs written for Kbd, Prose, Timeline, CommandPalette, FileUpload, Poll and BracketBeam double elimination (§D11, D41). Code waits on spec approval · (docs/q41-calendars)
 - 2026-10-10 · Q42 — toolkit wave A built: Kbd (server + platform island), Prose (CSS only), Timeline; exported, stories, 35 tests, 100% cov each; sizes 1.27 / 1.07 / 1.23 kB (budgets 1.5 kB); 678 ui tests green; check, test:coverage, build, check:pkg, size all pass; changeset patch. Owner visual review pending · (docs/q41-calendars)
 - 2026-10-10 · Q43 — Poll built (parallel builder, reviewed): server `<form>` + write-in island, 50 tests, 100% cov, 5 browser specs, 3.56 kB; React 18 matrix green; changeset patch · (feat/poll)
+- 2026-10-10 · Q43 — CommandPalette built (parallel builder, reviewed): pure fuzzy filter + chord parser modules, items registered via context with in-place `<template>` markers, React 18 matrix green · (feat/command-palette)
