@@ -4,9 +4,9 @@
 >
 > Legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[-]` dropped (say why)
 
-Last updated: 2026-10-09 — showpieces wave 1 (9 ui components) and the new `@sukunagg/fx` package (5 effects) built and reviewed (§D9). 70 components.
+Last updated: 2026-10-10 — toolkit wave A built (§D11, Q42): Kbd, Prose, Timeline shipped in code, waiting on the owner's visual pass; waves B and C and the calendars (§D10) wait on spec approval. 73 components.
 Current phase: **Phase 8 (remix example left) + Phase 9 (CI enforcement jobs left).** Phases 0–7 done; the library is on npm.
-Current version: `@sukunagg/ui` **0.10.0** + `@sukunagg/video` **0.1.0**, published by the owner 2026-09-29 (Q29). Next: `@sukunagg/ui` 0.11.0 (charts & stats wave 1 changeset), then `@sukunagg/charts` 0.1.0 (wave 2).
+Current version on npm: `@sukunagg/ui` **0.11.1**, `@sukunagg/fx` **0.1.0**, `@sukunagg/charts` **0.1.0**, `@sukunagg/video` **0.1.0** (Version Packages PR #32). Next: the Q43 release (toolkit + calendars), published through the Changesets flow on the owner's instruction.
 
 ---
 
@@ -367,6 +367,94 @@ state. Motion carve-out: `docs/motion.md` "Showpieces"; agent calls: D38.
 | Lightning | WebGL1 | [x] | [x] 27 tests, 100% cov, 5.44 kB | [x] |
 | BracketBeam | SVG + layout | [x] | [x] 49 tests, 100% cov, 7.69 kB | [x] |
 
+## D10. Calendars & date pickers (Q41)
+
+Owner request "calendars can we design somes" (2026-10-09); live mockup
+(https://claude.ai/artifact/U3NkqPTW8GUzAnKRhcxTBE) approved with "lgtm", with its four
+recommendations: everything in `@sukunagg/ui`, one typed text box (segmented `DateField` later),
+Intl time-zone math (no Temporal polyfill), waves below. No new dependencies, no new tokens (three
+motion keyframes only). Same contract as v1: docs-first, three-file split, ≥90% cov, axe, stories,
+a browser spec for each client component. Agent calls: D40.
+
+Specs approved with the rest of the backlog in Q43 ("keep going non stop until its published").
+
+### Shared internals
+
+| Item | Status |
+|---|---|
+| `utils/date/calendar-date.ts` — `'YYYY-MM-DD'` math + `monthMatrix` | [ ] |
+| `utils/date/locale.ts` — CLDR week start, names, typed-date parse/format | [ ] |
+| `utils/date/zone.ts` — IANA wall ⇄ instant via Intl (DST gap/overlap) | [ ] |
+| `scripts/motion/calendar.ts` — `sk-cal-next` / `sk-cal-prev` / `sk-cal-zoom` | [ ] |
+
+### Wave 1 — pickers
+
+| Item | Kind | Doc | Code | Review |
+|---|---|---|---|---|
+| Calendar | client, in-house grid | [x] component-calendar.md | [ ] | [ ] |
+| DatePicker | client, Base UI `popover` | [x] component-date-picker.md | [ ] | [ ] |
+| DateRangePicker | client, Base UI `popover` | [x] component-date-range-picker.md | [ ] | [ ] |
+
+### Wave 1b — date and time
+
+| Item | Kind | Doc | Code | Review |
+|---|---|---|---|---|
+| DateTimePicker | client, Base UI `popover` | [x] component-date-time-picker.md | [ ] | [ ] |
+
+### Wave 2 — schedules
+
+| Item | Kind | Doc | Code | Review |
+|---|---|---|---|---|
+| MonthView | server component | [x] component-month-view.md | [ ] | [ ] |
+| Agenda | server component | [x] component-agenda.md | [ ] | [ ] |
+
+### Later (not specced)
+
+WeekView (hour grid for tournament days) and a segmented `DateField`, when a page needs them.
+
+## D11. Toolkit wave (Q42)
+
+Owner asked "what other components can we add?", picked seven from the shortlist ("I like these
+ideas"), and approved the mockup's recommendations (https://claude.ai/artifact/At75qRavdfveJfo7x3vPPb):
+palette filtering built in + optional `onSearch`; Prose styles only; an opt-in `resizeImage`;
+double elimination with explicit match links; waves A → B → C. No new dependencies, no new color
+tokens. Agent calls: D41. Waves B and C approved in Q43.
+Wave A approved and built ("lgtm", 2026-10-10); Review = the owner's visual pass in Storybook.
+
+### Shared additions
+
+| Item | Status |
+|---|---|
+| Icons `CameraIcon`, `UploadIcon`, `ImageIcon` (component-icon.md) | [ ] |
+| Motion: `sk-poll-bar` (`scripts/motion/poll.ts`). Timeline needed none: its halo uses Tailwind's built-in `animate-pulse` | [ ] |
+
+### Wave A — read and scan (`@sukunagg/ui`, server)
+
+| Item | Kind | Doc | Code | Review |
+|---|---|---|---|---|
+| Kbd | server + platform island | [x] component-kbd.md | [x] 14 tests, 100% cov, 1.27 kB (budget 1.5 kB) | [ ] |
+| Prose | server, CSS only | [x] component-prose.md | [x] 8 tests, 100% cov, 1.07 kB (budget 1.5 kB) | [ ] |
+| Timeline | server | [x] component-timeline.md | [x] 13 tests, 100% cov, 1.23 kB (budget 1.5 kB) | [ ] |
+
+### Wave B — find, upload, vote (`@sukunagg/ui`, client islands)
+
+| Item | Kind | Doc | Code | Review |
+|---|---|---|---|---|
+| CommandPalette | client, Base UI `dialog` + `autocomplete` (inline) | [x] component-command-palette.md | [ ] | [ ] |
+| FileUpload + `resizeImage` | client over a native file input | [x] component-file-upload.md | [ ] | [ ] |
+| Poll | server form + write-in island | [x] component-poll.md | [ ] | [ ] |
+
+### Wave C — double elimination (`@sukunagg/fx`)
+
+| Item | Kind | Doc | Code | Review |
+|---|---|---|---|---|
+| BracketBeam `format="double"` | addition to a shipped component | [x] bracket-beam-double-elimination.md (merged into component-bracket-beam.md when built) | [ ] | [ ] |
+
+### Still suggestions (Q42, not designed)
+
+Countdown, OtpField, Banner, CopyButton, ThemeToggle, LockedPanel, MatchCard; Base UI
+NavigationMenu, Menubar, Toolbar, CheckboxGroup, Fieldset, Form.
+
 ## E. Update log
 
 Agents append one line per meaningful status change: `YYYY-MM-DD · <what flipped> · <commit or PR>`.
@@ -462,3 +550,7 @@ Agents append one line per meaningful status change: `YYYY-MM-DD · <what flippe
 - 2026-10-07 · Q37 "i like it... ship it" — owner approved ScrollArea `tone="accent"` as built; `feat/scroll-area-tone` pushed and PR opened. Merge/publish stay with the owner · (feat/scroll-area-tone)
 - 2026-10-09 · Q39 — showpieces wave 1 built and reviewed: RetroGrid, BorderBeam, RankReveal, MatchFound, LootReveal, XpLevelUp, AvatarFrame, ScrambleText, GlitchText (new, exported, stories, browser specs); 643 ui unit tests, 100% cov; cross-browser review rounds; 212/213 browser tests in Chromium/Firefox/WebKit (the 1 a Firefox timing flake under load, 3/3 alone); motion.md carve-out, D38, changeset patch. Owner visual review pending · (feat/ui-showpieces)
 - 2026-10-09 · Q39 — new package `@sukunagg/fx` built and reviewed: shared loop + ParticleField, HoloCard, FlowField, Lightning, BracketBeam (Storybook `FX` section, showcase, docs generator); 258 fx unit tests, 100% cov; Chromium live reduced-motion bug found in review and fixed in the loop; D39; changeset → 0.1.0 · (feat/fx-package)
+- 2026-10-09 · Q40 — owner chose the split size-limit entries, approved push, and asked to merge: #29 (ScrollArea tone), #30 (ui showpieces) and #31 (`@sukunagg/fx`) merged to main, all CI green. Release (Version Packages PR, npm) stays with the owner · (main 141681e)
+- 2026-10-09 · Q41 — calendars designed: live mockup approved ("lgtm") with all four recommendations; specs written for Calendar, DatePicker, DateRangePicker, DateTimePicker, MonthView, Agenda (§D10, D40). Code waits on spec approval · (docs/q41-calendars)
+- 2026-10-10 · Q42 — toolkit wave designed: mockup + recommendations approved; specs written for Kbd, Prose, Timeline, CommandPalette, FileUpload, Poll and BracketBeam double elimination (§D11, D41). Code waits on spec approval · (docs/q41-calendars)
+- 2026-10-10 · Q42 — toolkit wave A built: Kbd (server + platform island), Prose (CSS only), Timeline; exported, stories, 35 tests, 100% cov each; sizes 1.27 / 1.07 / 1.23 kB (budgets 1.5 kB); 678 ui tests green; check, test:coverage, build, check:pkg, size all pass; changeset patch. Owner visual review pending · (docs/q41-calendars)

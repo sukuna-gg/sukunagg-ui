@@ -308,6 +308,20 @@
     ]
   },
   {
+    "name": "Kbd (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ Kbd }",
+    "limit": "1.5 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "LootReveal (static, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ LootReveal }",
@@ -383,6 +397,20 @@
     "import": "{ Progress }",
     "limit": "16 kB",
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
+  },
+  {
+    "name": "Prose (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ Prose }",
+    "limit": "1.5 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
   },
   {
     "name": "RadioGroup + deps",
@@ -599,6 +627,20 @@
     "path": "dist/index.js",
     "import": "{ Textarea }",
     "limit": "2 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "Timeline (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ Timeline }",
+    "limit": "1.5 kB",
     "ignore": [
       "react",
       "react-dom",

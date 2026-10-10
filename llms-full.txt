@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt). This file concatenates every component page plus the design-token reference; the index is at https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt.
 
-@sukunagg/ui is a React 18/19 component library: 70 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 73 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -47,6 +47,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - HoverCard: Preview richer context for a link without a click — a user card, a repo summary, a footnote.
 - Icon: A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links.
 - Input: A single-line text input.
+- Kbd: Shows a key or a shortcut the way it looks on a keyboard: Esc, ⌘ K, Ctrl + Shift + L.
 - Lightning (@sukunagg/fx): A crackling crimson lightning bolt behind a hero banner, drawn by one WebGL shader over a server-rendered SVG poster.
 - LineChart (@sukunagg/charts): Shows change across an ordered axis: rating over the last 30 matches, damage per round by role per week, placement per game, gold difference per minute.
 - LootReveal: Flips a row of face-down item cards to reveal what a player won, one after another, with a rarity glow per card and a spark burst for legendaries.
@@ -58,6 +59,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - ParticleField (@sukunagg/fx): An always-dark hero stage where crimson embers rise out of a glowing haze behind your overlay content, for season launches, event banners, landing heroes and "play now" panels.
 - Popover: Show a small, interactive panel next to the element that opened it — filters, quick settings, a share box, a date picker later.
 - Progress: A horizontal progress bar, determinate or indeterminate.
+- Prose: Styles long-form text you don't control element by element: rules, legal drafts, patch notes, help articles rendered from Markdown, MDX or a CMS.
 - RadialGauge (@sukunagg/charts): One value against a range, drawn as a 270° arc with the number in the middle: LP to the next division, plan usage, a score out of 100.
 - RadioGroup: Choose one option from a small set.
 - RankReveal: Celebrates a new rank with a crest that bursts in over a ray field while an orbit draws around it and the rank name rises into place.
@@ -78,6 +80,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - Tabs: Switch between panels of related content.
 - Text: The typographic primitive.
 - Textarea: Multi-line free text: comments, descriptions, messages.
+- Timeline: Lists things in the order they happened or will happen, with a time or label on the left: a match's objectives, a team's night at a tournament, an audit log, a changelog.
 - Toast: Transient notifications.
 - ToggleGroup: Pick one option from a small, mutually-exclusive set (segmented control), or toggle several independent options (a formatting toolbar).
 - Tooltip: A hover/focus tooltip for supplementary text.
@@ -2944,6 +2947,86 @@ Sukuna has one red (crimson), so the invalid border reuses `--sk-accent` (see `d
 
 ---
 
+# Kbd — @sukunagg/ui
+
+> Shows a key or a shortcut the way it looks on a keyboard: Esc, ⌘ K, Ctrl + Shift + L.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { Kbd } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/kbd · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-kbd.md
+
+## Purpose
+
+Shows a key or a shortcut the way it looks on a keyboard: `Esc`, `⌘ K`, `Ctrl + Shift + L`. Use it
+in tooltips, menus, the command palette and help pages. `mod` means ⌘ on a Mac and Ctrl
+everywhere else, and screen readers hear the key's name ("Command + K"), not the symbol.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef } from 'react'
+
+export type KbdPlatform = 'mac' | 'other' | 'auto'
+
+interface KbdOwnProps {
+  /**
+   * A chord ('mod+K', 'shift+?') or a sequence of chords (['G', 'M'] = G then M).
+   * Named keys: mod, ctrl, alt, shift, enter, esc, tab, space, up, down, left, right,
+   * backspace, delete. Anything else prints as given (letters uppercased).
+   * Omit it and pass children for a single literal key: <Kbd>Esc</Kbd>.
+   */
+  keys?: string | readonly string[]
+  /** 'auto' (default) reads the browser after mount; pass 'mac' / 'other' from the server
+   *  (e.g. from the user-agent header) for an exact first paint. */
+  platform?: KbdPlatform
+  size?: 'sm' | 'md' | 'lg'                  // default 'md'
+  /** Word between steps of a sequence. Default 'then'. */
+  thenLabel?: string
+}
+
+export type KbdProps = KbdOwnProps & ComponentPropsWithoutRef<'kbd'>
+```
+
+```tsx
+<Kbd keys="mod+K" />                    // ⌘ K on a Mac, Ctrl + K elsewhere
+<Kbd keys={['G', 'M']} size="sm" />    // G then M
+<Kbd>Esc</Kbd>
+```
+
+Deliberately **not** in v1: listening for the shortcut (that's the caller's or CommandPalette's
+job), localized key names beyond `thenLabel` (key names come from a fixed English table, overridable
+later if an app asks), a `Menu` shortcut column (a follow-up on Menu once Kbd ships).
+
+## Variants & tokens
+
+| Part | Treatment |
+|---|---|
+| key | `--sk-surface-2` bg, 1px `--sk-line` border with a 2px bottom border (the key's edge), radius ¾ of `--sk-radius-sm` (6px; ⅝ at `sm`, full at `lg`), `--sk-text`, semibold, tabular-nums |
+| join | `+` between chord keys on non-Mac platforms, `--sk-text-faint`; Mac chords sit side by side with no visible `+` (⌘⇧L), as macOS menus do, but keep a screen-reader-only `+` |
+| then | the `thenLabel` word between sequence steps, `--sk-text-faint` |
+
+| Size | Height | Min width | Font |
+|---|---|---|---|
+| sm | 18px | 18px | 10.5px |
+| md | 22px | 22px | 11.5px |
+| lg | 28px | 28px | 13px |
+
+## States
+
+Static. With `platform="auto"`, the server renders the non-Mac glyphs (`Ctrl`, `Alt`) and the
+island swaps them to `⌘`/`⌥` after mount on Apple platforms. Keys without `mod`/`alt` never change.
+No motion.
+
+## Accessibility
+
+- [ ] Nested `<kbd>` markup; each key has a spoken name; glyphs are `aria-hidden`.
+- [ ] Never the only way to learn a shortcut's action: the label next to it says what it does.
+- [ ] Text ≥ 4.5:1 on `surface-2` in both themes. The key edge is decoration.
+- [ ] No hydration warning on Mac with `platform="auto"` (server snapshot = other).
+
+---
+
 # Lightning — @sukunagg/fx
 
 > A crackling crimson lightning bolt behind a hero banner, drawn by one WebGL shader over a server-rendered SVG poster.
@@ -4075,6 +4158,82 @@ determinate (width = value) · indeterminate (pulsing partial bar).
 - [ ] `role="progressbar"` with `aria-valuenow/min/max` (determinate) from Base UI.
 - [ ] Accessible name via `aria-label` or a visible `label`.
 - [ ] Indeterminate omits `aria-valuenow`.
+
+---
+
+# Prose — @sukunagg/ui
+
+> Styles long-form text you don't control element by element: rules, legal drafts, patch notes, help articles rendered from Markdown, MDX or a CMS.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { Prose } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/prose · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-prose.md
+
+## Purpose
+
+Styles long-form text you don't control element by element: rules, legal drafts, patch notes,
+help articles rendered from Markdown, MDX or a CMS. Headings, lists, tables, quotes and code get
+the Sukuna look, and lines stay near 70 characters. It styles only; your app keeps its own
+Markdown renderer (Q42, recommendation 2).
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef } from 'react'
+
+interface ProseOwnProps {
+  size?: 'sm' | 'md' | 'lg'          // default 'md' (16px / 1.7)
+  /** Cap lines near 70 characters. Default true. */
+  measure?: boolean
+  as?: 'div' | 'article' | 'section' // default 'div'
+}
+
+export type ProseProps = ProseOwnProps & ComponentPropsWithoutRef<'div'>
+```
+
+```tsx
+<Prose as="article">
+  <SimpleMarkdown source={doc.body} baseLevel={1} />   {/* Pitaya keeps its safe subset */}
+</Prose>
+```
+
+Deliberately **not** in v1: a Markdown renderer (owner, Q42), an `h1` style (the page owns its
+title; Prose starts at `h2`), syntax highlighting for `pre`, an inverted variant.
+
+## Variants & tokens
+
+| Element | Treatment |
+|---|---|
+| body text | `--sk-text-dim`, size per variant; paragraphs and blocks separated by `1em` |
+| `h2` | display face, extra-bold, 1.5em, `--sk-text`; a `--sk-line` rule and padding above, except the first child (Pitaya's section look) |
+| `h3`, `h4` | display face, 1.15em / 1em, `--sk-text`, tighter space after |
+| `strong` | `--sk-text`, semibold |
+| `a` | `--sk-accent`, 1px underline offset 3px, 2px on hover; focus ring `--sk-focus-ring` |
+| `ul` / `ol` | 1.3em indent, `0.45em` between items; markers `--sk-accent`, `ol` markers bold tabular-nums |
+| `blockquote` | `--sk-surface-2` panel, `--sk-radius-sm`, `--sk-text` (used for notices in rules: no side bar) |
+| `code` | mono, 0.86em, `--sk-surface-2`, 5px radius; `pre` scrolls sideways in its own box |
+| `kbd` | a class-less `<kbd>` (Markdown output) gets a key-cap look; the `Kbd` component is left alone |
+| `table` | class-less tables only (our `Table` is left alone): content width, scrolling sideways in their own box when too wide (`display: block; overflow-x: auto`, GitHub's approach); tabular-nums; head `--sk-text-faint` with a `--sk-line` rule; rows `--sk-line-soft` |
+| `hr` | 1px `--sk-line` |
+| `img`, `figure` | `max-width: 100%`, `--sk-radius-md`; `figcaption` `text-sm --sk-text-faint` |
+
+| Size | Font | Line height |
+|---|---|---|
+| sm | 14px (`text-md`) | 1.6 |
+| md | 16px (`text-lg`) | 1.7 |
+| lg | 18px (`text-xl`) | 1.75 |
+
+## States
+
+Static. No motion.
+
+## Accessibility
+
+- [ ] Body text ≥ 4.5:1 (`--sk-text-dim` on `bg`/`surface`/`surface-2`, both themes).
+- [ ] Links are distinguishable without color (underlined) and have a visible focus ring.
+- [ ] Heading levels are the content's; Prose never changes them.
+- [ ] Wide tables scroll in their own region instead of the page.
 
 ---
 
@@ -5713,6 +5872,97 @@ disabled · readOnly (native). Reduced motion: only a color transition, no motio
 - [ ] Native `<textarea>`; name from `<label htmlFor>`, `Field.Label` or `aria-label`.
 - [ ] `invalid` → `aria-invalid="true"`; pair with `Field.Error` for the message.
 - [ ] Focus ring ≥3:1 both themes; text/placeholder contrast per tokens.
+
+---
+
+# Timeline — @sukunagg/ui
+
+> Lists things in the order they happened or will happen, with a time or label on the left: a match's objectives, a team's night at a tournament, an audit log, a changelog.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { Timeline } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/timeline · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-timeline.md
+
+## Purpose
+
+Lists things in the order they happened or will happen, with a time or label on the left: a
+match's objectives, a team's night at a tournament, an audit log, a changelog. Done steps are
+solid, the current one pulses, and upcoming ones are dashed, so people see at a glance where things
+stand.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+
+export interface TimelineItem {
+  id: string
+  /** Left column: '20:31', a date, a version Badge… */
+  time?: ReactNode
+  /** Machine-readable time for <time dateTime>, when `time` is a date or a clock time. */
+  dateTime?: string
+  title: ReactNode
+  description?: ReactNode
+  /** Small icon in the dot (an icon from the set, or the app's own). Omit for a plain dot. */
+  icon?: ReactNode
+  /** Dot color (CSS color), e.g. a side or game color. Default var(--sk-text-dim). */
+  color?: string
+  /** Default 'done'. */
+  status?: 'done' | 'current' | 'upcoming'
+  /** Trailing element on the title line, e.g. <Badge>Victoria</Badge>. */
+  badge?: ReactNode
+  /** Anything else under the description: a list of changes, a link. */
+  children?: ReactNode
+}
+
+interface TimelineOwnProps {
+  items: readonly TimelineItem[]
+  density?: 'default' | 'compact'      // default 'default' (18px between items; compact 10px)
+  timeWidth?: 'sm' | 'md' | 'lg'       // left column: 52 / 64 / 84px; default 'sm'
+  /** Name for the current item's state, read by screen readers. Default 'current step'. */
+  currentLabel?: string
+  /** Word read after each upcoming item. Default 'upcoming'. */
+  upcomingLabel?: string
+}
+
+export type TimelineProps = TimelineOwnProps & Omit<ComponentPropsWithoutRef<'ol'>, 'children'>
+```
+
+```tsx
+<Timeline density="compact" aria-label="Objectives" items={objectives.map((o) => ({
+  id: o.id, time: mmss(o.at), title: o.name, description: o.teamName,
+  color: o.team === 'blue' ? 'var(--l-blue)' : 'var(--l-red)', icon: <ObjectiveIcon type={o.type} />,
+}))} />
+```
+
+Deliberately **not** in v1: horizontal layout (use `Stepper` for steps across), alternating
+left/right, collapsing long runs, lazy loading.
+
+## Variants & tokens
+
+| Part | Treatment |
+|---|---|
+| time | `text-xs` semibold tabular-nums `--sk-text-faint`, right-aligned |
+| rail | 2px `--sk-line` between dots; dashed after the current item |
+| dot, plain | 12px circle in `color`, ringed by the container's surface |
+| dot, with icon | 22px circle, `--sk-surface-2`, 1px `--sk-line`, icon in `color` |
+| current | dot `bg-gradient-accent` + `--sk-on-accent` icon; a halo behind it (`--sk-accent` at 20%, 4px wider than the dot) that fades in and out |
+| upcoming | dot `--sk-surface` with a 1.5px dashed `--sk-text-faint` ring; title `--sk-text-dim` |
+| title | semibold `--sk-text`; description `text-sm` (12px) `--sk-text-dim` |
+
+## States
+
+done / current / upcoming per item, as above. **Motion:** only the current dot's halo pulses, with
+Tailwind's built-in `animate-pulse` behind `motion-safe:` (no new keyframe, so `theme.css` is
+unchanged); under reduced motion the halo stays still.
+
+## Accessibility
+
+- [ ] Ordered list; the order is the meaning.
+- [ ] Current item: `aria-current="step"` + spoken label; upcoming: spoken "upcoming".
+- [ ] Color never carries meaning alone: the title/description names the side or result.
+- [ ] Icons `aria-hidden`; text ≥ 4.5:1 both themes; pulse respects reduced motion.
 
 ---
 

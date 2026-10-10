@@ -15,7 +15,7 @@
 
 **SSR-safe, accessible React components for dark-first products — and for the AI agents that build them.**
 
-<!-- count -->70<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
+<!-- count -->73<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
 contrast in both themes, `prefers-reduced-motion` honored, zero runtime styling, React Server
 Components-ready, React 18 and 19. Dark is the identity; light is a mode.
 
@@ -154,6 +154,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `HoverCard` | Preview richer context for a link without a click — a user card, a repo summary, a footnote. | [docs/llms/hover-card.md](docs/llms/hover-card.md) |
 | `AlertIcon`, `ChartIcon`, `CheckIcon`, `ChevronDownIcon`, `ChevronLeftIcon`, `ChevronRightIcon`, `ChevronUpIcon`, `ClockIcon`, `CloseIcon`, `ExternalIcon`, `InfoIcon`, `LockIcon`, `MoonIcon`, `RefreshIcon`, `SearchIcon`, `SunIcon`, `UserIcon` | A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links. | [docs/llms/icon.md](docs/llms/icon.md) |
 | `Input` | A single-line text input. | [docs/llms/input.md](docs/llms/input.md) |
+| `Kbd` | Shows a key or a shortcut the way it looks on a keyboard: Esc, ⌘ K, Ctrl + Shift + L. | [docs/llms/kbd.md](docs/llms/kbd.md) |
 | `Lightning` · @sukunagg/fx | A crackling crimson lightning bolt behind a hero banner, drawn by one WebGL shader over a server-rendered SVG poster. | [docs/llms/lightning.md](docs/llms/lightning.md) |
 | `AreaChart`, `LineChart` · @sukunagg/charts | Shows change across an ordered axis: rating over the last 30 matches, damage per round by role per week, placement per game, gold difference per minute. | [docs/llms/line-chart.md](docs/llms/line-chart.md) |
 | `LootReveal` | Flips a row of face-down item cards to reveal what a player won, one after another, with a rarity glow per card and a spark burst for legendaries. | [docs/llms/loot-reveal.md](docs/llms/loot-reveal.md) |
@@ -165,6 +166,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `ParticleField` · @sukunagg/fx | An always-dark hero stage where crimson embers rise out of a glowing haze behind your overlay content, for season launches, event banners, landing heroes and "play now" panels. | [docs/llms/particle-field.md](docs/llms/particle-field.md) |
 | `Popover` | Show a small, interactive panel next to the element that opened it — filters, quick settings, a share box, a date picker later. | [docs/llms/popover.md](docs/llms/popover.md) |
 | `Progress` | A horizontal progress bar, determinate or indeterminate. | [docs/llms/progress.md](docs/llms/progress.md) |
+| `Prose` | Styles long-form text you don't control element by element: rules, legal drafts, patch notes, help articles rendered from Markdown, MDX or a CMS. | [docs/llms/prose.md](docs/llms/prose.md) |
 | `RadialGauge` · @sukunagg/charts | One value against a range, drawn as a 270° arc with the number in the middle: LP to the next division, plan usage, a score out of 100. | [docs/llms/radial-gauge.md](docs/llms/radial-gauge.md) |
 | `RadioGroup` | Choose one option from a small set. | [docs/llms/radio-group.md](docs/llms/radio-group.md) |
 | `RankReveal` | Celebrates a new rank with a crest that bursts in over a ray field while an orbit draws around it and the rank name rises into place. | [docs/llms/rank-reveal.md](docs/llms/rank-reveal.md) |
@@ -185,6 +187,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `Tabs` | Switch between panels of related content. | [docs/llms/tabs.md](docs/llms/tabs.md) |
 | `Text` | The typographic primitive. | [docs/llms/text.md](docs/llms/text.md) |
 | `Textarea` | Multi-line free text: comments, descriptions, messages. | [docs/llms/textarea.md](docs/llms/textarea.md) |
+| `Timeline` | Lists things in the order they happened or will happen, with a time or label on the left: a match's objectives, a team's night at a tournament, an audit log, a changelog. | [docs/llms/timeline.md](docs/llms/timeline.md) |
 | `ToastProvider`, `useToast` | Transient notifications. | [docs/llms/toast.md](docs/llms/toast.md) |
 | `Toggle`, `ToggleGroup` | Pick one option from a small, mutually-exclusive set (segmented control), or toggle several independent options (a formatting toolbar). | [docs/llms/toggle-group.md](docs/llms/toggle-group.md) |
 | `Tooltip` | A hover/focus tooltip for supplementary text. | [docs/llms/tooltip.md](docs/llms/tooltip.md) |

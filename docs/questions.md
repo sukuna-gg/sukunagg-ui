@@ -665,6 +665,118 @@ BorderBeam, RankReveal, MatchFound, LootReveal, XpLevelUp, AvatarFrame, Scramble
 maps rarities onto existing tokens (`text-faint`, `chart-2`, `chart-5`, `premium`) as a
 `DECISION(open)` default — no new tokens until the owner approves rarity colors.
 
+## Q40. "how far we are from finishing ?" → "when they're done start working on this non-stop" → (size budgets) "Use the split version" → (push) "Push and open PRs" → "merge them"
+
+**Answer.** Status was given as asked; work resumed once the owner's other session went idle. The
+owner had restored `packages/ui/.size-limit.json` to its fused state mid-build; asked again at the
+end, they chose the split entries. Asked whether to push, they chose to push and open the two
+stacked PRs, then asked to merge them.
+
+**Decision.** `.size-limit.json` keeps one entry per component (ScrambleText budget 2 → 2.5 kB).
+Pushed `feat/ui-showpieces` (#30) and `feat/fx-package` (#31); merged #29, #30 and #31 into `main`
+on the owner's instruction, all CI green. The Version Packages PR, release tags and npm publishing
+stay with the owner.
+
+## Q41. "You know what would be very sick to add... calendars can we design somes"
+
+**Answer (design, 2026-10-09).** Base UI 1.8 has no calendar or date picker, so the grid would be
+in-house. Read-only review of the sibling apps for real uses: Pitaya picks tournament start times
+with native `datetime-local` (clips in narrow columns; converts Hermosillo time by hand,
+`hermosilloToIso`) and birth dates with native `type="date"` + `max` (18+ rule, es-MX); it also
+lists tournaments, seasons and check-in windows. sukuna-gg-web groups games into the viewer's own
+days (`gg_tz` cookie) and has match-history filters. Built a live mockup (private artifact
+https://claude.ai/artifact/U3NkqPTW8GUzAnKRhcxTBE): six components in both themes and three
+locales (en-US, es-MX, en-GB):
+
+- **Calendar**: the shared grid (single + range, day/month/year views, WAI-ARIA date-grid
+  keyboard, fixed six rows, marks, disabled days carry a reason).
+- **DatePicker**: typed input in the locale's order (ISO also accepted) + popover; `openTo="year"`
+  for birth dates.
+- **DateRangePicker**: presets + two months, hover preview, Apply/Cancel.
+- **DateTimePicker**: day + time slots in a fixed `timeZone`; hands back the ISO instant.
+- **MonthView**: server component, events as links, multi-day bars, "+N more", `renderDay` for
+  custom cells (days played); turns into the agenda list below 600px via a container query.
+- **Agenda**: upcoming events grouped by day.
+
+Proposed rules: props take `'YYYY-MM-DD'` strings, never `Date`; `today` comes from the server
+(else the ring appears after hydration); week start from a fixed CLDR table, not
+`Intl.Locale#getWeekInfo`; no new tokens (event colors default to `--sk-chart-*`, app colors as
+props); missing ≠ zero in custom cells (Heatmap rule).
+
+**Then** "lgtm" (2026-10-09) → the mockup is approved with all four recommendations, as with
+"lgtm" on the charts mockup (Q32).
+
+**Decision.** (1) Everything in `@sukunagg/ui`, no new dependencies, no new tokens. (2) One typed
+text box that reads the locale's order (plus ISO); segmented `DateField` later. (3) Time zones with
+Intl in-house (`utils/date/zone.ts`), no Temporal polyfill; swap to Temporal later as a patch.
+(4) Waves: Calendar + DatePicker + DateRangePicker → DateTimePicker → MonthView + Agenda; WeekView
+later. Six specs written (`docs/component-{calendar,date-picker,date-range-picker,date-time-picker,
+month-view,agenda}.md`), roadmap §D10, agent calls in D40. Code waits on the owner approving the
+specs.
+
+## Q42. "what other components can we add :))?"
+
+**Answer (2026-10-10).** Compared the 70 shipped components with what pitaya-gaming and
+sukuna-gg-web hand-build today, and with the Base UI parts we don't wrap yet. Shortlist:
+
+- **Already hand-built in the apps:** Countdown (pitaya `countdown.tsx` + `hold-timer.tsx`,
+  sukuna-gg-web `useCountdown` + `WaitBanner`), OtpField (sukuna-gg-web `VerifyCodeForm`, on Base
+  UI `otp-field`), Banner (`ServerNotice`, `UpsellBanner`, `PaymentFailedBar`, `WaitBanner`, pitaya
+  `identity-banner`), CopyButton (sukuna-gg-web `CopyButton`, lobby codes in pitaya
+  `next-match-panel`), ThemeToggle (sukuna-gg-web `ThemeToggle`; pairs with roadmap §D7), Locked /
+  premium gate (`LockedPanel`), MatchCard (versus layout: pitaya `next-match-panel`).
+- **Base UI parts not wrapped yet (no new deps):** NavigationMenu, Menubar, Toolbar,
+  CheckboxGroup, Fieldset, Form.
+- **New ground:** CommandPalette (⌘K player search), Timeline, FileUpload/Dropzone (pitaya identity
+  photos), Poll (pitaya `game-vote`), Prose (pitaya `simple-markdown`), Kbd, double-elimination
+  for BracketBeam.
+
+Recommended next wave: Countdown, OtpField, Banner, CopyButton, ThemeToggle (small, each replaces
+code in one or both apps), then CommandPalette and NavigationMenu.
+
+**Then** the owner quoted the "new ground" list (CommandPalette, Timeline, FileUpload/Dropzone,
+Poll, Prose, Kbd, double elimination for BracketBeam): "I like these ideas". Built a live mockup
+of all seven (private artifact https://claude.ai/artifact/At75qRavdfveJfo7x3vPPb), grounded in
+the apps: sukuna-gg-web's `PlayerSearchForm` rules and messages in the palette, Pitaya's
+`identity-form` photo flow (back camera, drop, JPEG ≤ 2000px before upload) in FileUpload,
+Pitaya's `/juegos` write-in vote in Poll, `SimpleMarkdown`'s look in Prose, the LoL objectives
+list in Timeline, and an 8-team double-elimination BracketBeam whose champion comes back from the
+lower bracket. Open questions on the page: (1) palette filtering built in + optional `onSearch`;
+(2) Prose styles only, no Markdown renderer; (3) ship an opt-in `resizeImage` helper; (4) double
+elimination via explicit `id` + `next.winner`/`next.loser` links; (5) waves A (Kbd, Prose,
+Timeline) → B (CommandPalette, FileUpload, Poll) → C (double elimination).
+
+**Then** "I like the recomendations" (2026-10-10) → the mockup and all five recommendations are
+approved.
+
+**Decision.** (1) CommandPalette filters its own items and takes an optional `onSearch` for remote
+results. (2) Prose is styles only; apps keep their Markdown renderers. (3) FileUpload ships an
+opt-in `resizeImage` helper. (4) Double elimination links matches explicitly (`id` +
+`next.winner`/`next.loser`); single elimination keeps the position rule. (5) Waves: A (Kbd, Prose,
+Timeline) → B (CommandPalette, FileUpload, Poll) → C (double elimination). Specs written
+(`docs/component-{kbd,prose,timeline,command-palette,file-upload,poll}.md` and
+`docs/bracket-beam-double-elimination.md`), roadmap §D11, agent calls in D41. Code waits on the
+owner approving the specs. Countdown, OtpField, Banner, CopyButton and ThemeToggle stay
+suggestions.
+
+**Then** "run story book" → Storybook started on :6006. Asked whether to build wave A so it shows
+there: **"lgtm"** → wave A specs approved and built (Kbd, Prose, Timeline; roadmap §D11). Waves B
+and C still wait on spec approval.
+
+## Q43. "r we done" → "keep going non stop until its published to npm"
+
+**Answer.** Status given: wave A built but uncommitted, the owner's visual pass open, and waves B, C
+and the six calendar components specced but not built.
+
+**Decision.** Read as (1) approval of every remaining spec (calendars §D10, toolkit waves B and C
+§D11) and of wave A's visual state, and (2) the owner's explicit "push" and "publish" for this
+work: push branches, open PRs, merge each into `main` once CI is green, then merge the Changesets
+"Version Packages" PR so the release workflow publishes to npm. Same contract as every wave
+(docs-first, three-file split, ≥ 90% coverage, axe, stories, browser specs for client components,
+the full gate green). Builders may run in parallel worktrees; the agent reviews and integrates every
+branch. Work moved to `feat/toolkit-wave-a` off `origin/main` (the unmerged Q40 docs commit
+cherry-picked onto it).
+
 ---
 
 ## Decisions recorded so far
@@ -693,6 +805,8 @@ maps rarities onto existing tokens (`text-faint`, `chart-2`, `chart-5`, `premium
 | Light palette | Approved as proposed in `tokens.md` (Q10) |
 | Charts & stats | `@sukunagg/charts` (peers on `@sukunagg/ui`; server-rendered SVG/HTML sized by CSS, in-house scale/path math (D37), client tooltip island); StatTile, Sparkline, EmptyState in `@sukunagg/ui`; chart/heat/danger tokens **approved**; app colors passed as props; StatTile display face by default; waves in roadmap §D8 (Q31, Q32) |
 | Showpieces & FX | Nine CSS-only showpieces join `@sukunagg/ui`; canvas/WebGL/pointer effects live in a new opt-in `@sukunagg/fx` (one shared loop: reduced-motion still frame, offscreen/hidden pause, DPR cap, SSR CSS poster, no runtime deps). Ideas from React Bits/Aceternity/Hover.dev/Skiper/pokemon-cards-css are reimplemented from scratch, never copied (Q38, Q39) |
+| Calendars | Calendar, DatePicker, DateRangePicker, DateTimePicker (client, pickers on Base UI Popover) and MonthView, Agenda (server components that navigate by links), all in `@sukunagg/ui`; `'YYYY-MM-DD'` strings in props, ISO instants for date-times; Intl time-zone math in-house; English labels + `labels` prop; no new tokens; waves in roadmap §D10 (Q41) |
+| Toolkit wave | Kbd, Prose, Timeline (server), CommandPalette (Base UI Dialog + inline Autocomplete, built-in fuzzy filter + optional `onSearch`), FileUpload (+ opt-in `resizeImage`), Poll (server form) in `@sukunagg/ui`; BracketBeam double elimination with explicit match links in `@sukunagg/fx`; Prose is styles only; waves in roadmap §D11 (Q42) |
 | Status tracking | `docs/roadmap.md` living board; agents update it in the same commit as the work (rule 9) |
 | Versioning enforcement | CLAUDE.md + CI classifiers (API diff, visual, token, peer) + human-only merge/publish (Q7) |
 
