@@ -425,10 +425,8 @@ Wave A approved and built ("lgtm", 2026-10-10); Review = the owner's visual pass
 
 | Item | Status |
 |---|---|
-| Icons `CameraIcon`, `UploadIcon`, `ImageIcon` (component-icon.md) | [ ] |
-| Motion: `sk-poll-bar` (`scripts/motion/poll.ts`). Timeline needed none: its halo uses Tailwind's built-in `animate-pulse` | [x] |
 | Icons `CameraIcon`, `UploadIcon`, `ImageIcon` (component-icon.md) | [x] 20 icons, one icon 481 B |
-| Motion: `sk-poll-bar` (`scripts/motion/poll.ts`). Timeline needed none: its halo uses Tailwind's built-in `animate-pulse` | [ ] |
+| Motion: `sk-poll-bar` (`scripts/motion/poll.ts`). Timeline needed none: its halo uses Tailwind's built-in `animate-pulse` | [x] |
 
 ### Wave A — read and scan (`@sukunagg/ui`, server)
 
@@ -443,10 +441,8 @@ Wave A approved and built ("lgtm", 2026-10-10); Review = the owner's visual pass
 | Item | Kind | Doc | Code | Review |
 |---|---|---|---|---|
 | CommandPalette | client, Base UI `dialog` + `autocomplete` (inline) | [x] component-command-palette.md | [ ] | [ ] |
-| FileUpload + `resizeImage` | client over a native file input | [x] component-file-upload.md | [ ] | [ ] |
-| Poll | server form + write-in island | [x] component-poll.md | [x] 50 tests, 100% cov, 3.56 kB (budget 3.9 kB; spec target 1.5 kB missed: four states + form + results) | [ ] |
 | FileUpload + `resizeImage` | client over a native file input | [x] component-file-upload.md | [x] 46 tests, 100% cov, 4 browser specs; 5.24 kB incl. Button/Spinner/icons (budget 5.8 kB; spec 3.5 kB missed), `resizeImage` 362 B | [ ] |
-| Poll | server form + write-in island | [x] component-poll.md | [ ] | [ ] |
+| Poll | server form + write-in island | [x] component-poll.md | [x] 50 tests, 100% cov, 3.56 kB (budget 3.9 kB; spec target 1.5 kB missed: four states + form + results) | [ ] |
 
 ### Wave C — double elimination (`@sukunagg/fx`)
 
