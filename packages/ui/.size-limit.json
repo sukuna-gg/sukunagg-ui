@@ -7,6 +7,20 @@
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
+    "name": "Agenda (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ Agenda }",
+    "limit": "3.6 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "Alert (static, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ Alert }",
@@ -362,6 +376,20 @@
     "import": "{ Meter }",
     "limit": "16 kB",
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
+  },
+  {
+    "name": "MonthView (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ MonthView }",
+    "limit": "8.4 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
   },
   {
     "name": "NumberField + deps",

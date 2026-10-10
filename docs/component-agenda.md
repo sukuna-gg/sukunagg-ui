@@ -13,7 +13,7 @@ schedule on a phone, and the list MonthView switches to when it gets narrow.
 
 ```
 packages/ui/src/components/agenda/
-├── agenda.styles.tsx   # tv() slots: root, day, heading, row, time, dot, text, title, meta, status.
+├── agenda.styles.tsx   # tv() slots: root, day, heading, list, row, time, dot, text, title, meta, status.
 ├── agenda.logic.tsx    # server component; forwardRef <section>; grouping by wall date, headings.
 ├── agenda.test.tsx
 ├── agenda.stories.tsx
@@ -24,8 +24,8 @@ packages/ui/src/components/agenda/
 
 ```ts
 import type { ComponentPropsWithoutRef } from 'react'
-import type { CalendarDate } from '../calendar'
-import type { CalendarEvent } from '../month-view'      // shared type (utils/date)
+import type { CalendarDate } from '../../utils/date/calendar-date'   // 'YYYY-MM-DD' (string)
+import type { CalendarEvent } from '../../utils/date/events'        // shared with MonthView
 import type { EmptyStateProps } from '../empty-state'
 
 export interface AgendaLabels {
@@ -42,11 +42,14 @@ interface AgendaOwnProps {
   locale?: string                // default 'en-US'; also "Today"/"Tomorrow" via Intl.RelativeTimeFormat
   headingLevel?: 2 | 3 | 4 | 5   // day headings; default 3
   stickyHeadings?: boolean       // default true: headings pin while the list scrolls
+  /** Shown when no event falls in the window. Omit it (or `false`) to render nothing. */
   empty?: Pick<EmptyStateProps, 'title' | 'children' | 'actions' | 'icon'> | false
   loading?: boolean
   labels?: Partial<AgendaLabels>
 }
 
+// In the source: `interface AgendaProps extends Omit<ComponentPropsWithoutRef<'section'>,
+// 'children'>` holding the own props above (the same shape).
 export type AgendaProps = AgendaOwnProps & Omit<ComponentPropsWithoutRef<'section'>, 'children'>
 ```
 
@@ -75,8 +78,9 @@ title.
 | State | Behavior |
 |---|---|
 | data | days with events, headings "Today ·", "Tomorrow ·" (from `RelativeTimeFormat`, numeric: 'auto'), then weekday + date |
-| multi-day event | listed on its first day in range, time column "—", meta shows its date range; if it started before `from`, it's listed first under `from` with `labels.ongoing` |
-| empty | `EmptyState` (`size="sm"`) |
+| multi-day event | listed on its first day in range, time column "—" (hidden from screen readers), meta shows its range ("Oct 12 – 16"; a timed one with wall times, "Oct 16, 8:00 PM – Oct 17, 6:00 AM"); if it started before `from`, it's listed first under `from` and its meta starts with `labels.ongoing` ("Continues · Sep 28 – Oct 25 · …") |
+| one-day all-day event | time column `labels.allDay` |
+| empty | `EmptyState` (`size="sm"`, `role="status"`) when `empty` is given; otherwise the section is empty |
 | loading | five skeleton rows, `aria-busy`; pulse stops under reduced motion |
 
 ## 6. Logic (`agenda.logic.tsx`)
@@ -91,14 +95,16 @@ title.
 
 ## 7. Styles (`agenda.styles.tsx`)
 
-`tv()` `slots`: `root` (`@container`), `day`, `heading`, `row`, `time`, `dot`, `text`, `title`,
-`meta`, `status`, `skeleton`. Variant `heading.today`, `row.link`. Event colors via the
-`--sk-event` custom property.
+`tv()` `slots`: `root` (`@container`), `day`, `heading`, `list`, `row`, `time`, `dot`, `text`,
+`title`, `meta`, `status`. Variants `today` (heading), `link` (row hover and focus ring), `sticky`
+(heading pinned on `--sk-surface`, rows `scroll-mt-9`). Loading draws `Skeleton`s inside the same
+`row` grid. Event colors via the `--sk-event` custom property.
 
 ## 8. Accessibility checklist
 
 - [ ] Each day is a group: a real heading (`headingLevel`) + an `<ol>` of events.
-- [ ] Rows with `href` are links named "6:00 PM, Copa Pitaya · Valorant 5v5, Open".
+- [ ] Rows with `href` are links named time, title, meta, status ("6:00 PM, Copa Pitaya,
+      Valorant · In person, Open"; visually hidden commas keep the parts apart).
 - [ ] Today's heading has `aria-current="date"`.
 - [ ] Colors are decoration only; status is text (the app's Badge).
 - [ ] Sticky headings don't cover focused rows (scroll-margin on rows = heading height).
@@ -120,4 +126,6 @@ height), `Empty`, `Loading`. Both `data-theme` values.
 - Own component (not only MonthView's narrow mode): "next tournaments" lists exist without a month
   grid (Q41 mockup).
 - Skip empty days rather than list them: the list is for scanning what's on.
-- Budget target ≤ 2 kB gzip on its own, measured +10% (P5).
+- Budget target ≤ 2 kB gzip on its own, measured +10% (P5). Built, it measures 3.3 kB brotli
+  with EmptyState, Skeleton and the date/zone utilities, so the size-limit entry is the measured
+  size +10%.

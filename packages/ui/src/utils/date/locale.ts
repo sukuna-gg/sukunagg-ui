@@ -5,7 +5,7 @@
  *
  * Pure and server-safe. Internal: not exported from the package root.
  */
-import { type CalendarDate, daysInMonth, fromParts, toUtcDate } from './calendar-date'
+import { type CalendarDate, daysBetween, daysInMonth, fromParts, toUtcDate } from './calendar-date'
 
 /*
  * First day of the week by region, from CLDR weekData (supplementalData.xml). Everything not
@@ -82,6 +82,35 @@ export const weekdayNames = (
     }
   })
 
+/**
+ * A wall time `'HH:mm'` as people read it: "6:00 PM" (en-US), "6:00 p.m." (es-MX), "18:00"
+ * (en-GB). `short` drops ":00" in 12-hour locales ("6 PM"), for tight cells.
+ */
+export const formatTime = (time: string, locale: string, short = false): string => {
+  const [hour, minute] = time.split(':').map(Number) as [number, number]
+  const at = new Date(Date.UTC(2000, 0, 1, hour, minute))
+  const full = utcFormatter(locale, { hour: 'numeric', minute: '2-digit' })
+  return short && minute === 0 && full.resolvedOptions().hour12
+    ? utcFormatter(locale, { hour: 'numeric' }).format(at)
+    : full.format(at)
+}
+
+/**
+ * "Today", "Tomorrow" or "Yesterday" ("Hoy", "Mañana", "Ayer") from `Intl.RelativeTimeFormat`,
+ * capitalized, for a date one day around `today`; undefined for anything further, so a cached
+ * page never shows a stale "in 3 days".
+ */
+export const relativeDayName = (
+  date: CalendarDate,
+  today: CalendarDate,
+  locale: string,
+): string | undefined => {
+  const diff = daysBetween(today, date)
+  if (diff < -1 || diff > 1) return undefined
+  const name = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' }).format(diff, 'day')
+  return name.charAt(0).toLocaleUpperCase(locale) + name.slice(1)
+}
+
 /** Short month names, January first ("Jan" / "ene"), trailing "." removed. */
 export const monthNames = (locale: string): string[] =>
   Array.from({ length: 12 }, (_, i) =>
@@ -128,7 +157,7 @@ export const typedDatePlaceholder = (
  */
 export const parseTypedDate = (text: string, locale: string): CalendarDate | null => {
   const trimmed = text.trim()
-  let groups = trimmed.match(/\d+/g) ?? []
+  let groups: string[] = trimmed.match(/\d+/g) ?? []
   const { order } = typedDateFormat(locale)
   if (groups.length === 1 && groups[0]?.length === 8) {
     // Compact: split by the locale's order, the year taking four digits.

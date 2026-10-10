@@ -46,6 +46,8 @@ export {
 } from '@sukunagg/video'
 export type { AccordionItemData, AccordionProps } from './components/accordion'
 export { Accordion } from './components/accordion'
+export type { AgendaLabels, AgendaProps, CalendarEvent } from './components/agenda'
+export { Agenda } from './components/agenda'
 export type { AlertProps } from './components/alert'
 export { Alert } from './components/alert'
 export type { AlertDialogButtonProps, AlertDialogProps } from './components/alert-dialog'
@@ -144,6 +146,12 @@ export type { MenuItemOption, MenuProps } from './components/menu'
 export { Menu } from './components/menu'
 export type { MeterProps } from './components/meter'
 export { Meter } from './components/meter'
+export type {
+  MonthViewDayInfo,
+  MonthViewLabels,
+  MonthViewProps,
+} from './components/month-view'
+export { MonthView } from './components/month-view'
 export type { NumberFieldProps } from './components/number-field'
 export { NumberField } from './components/number-field'
 export type { PaginationProps } from './components/pagination'
