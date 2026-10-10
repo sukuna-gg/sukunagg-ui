@@ -23,12 +23,14 @@ import {
 } from './calendar-date'
 import {
   formatDate,
+  formatTime,
   formatTypedDate,
   fullDateLabel,
   monthNames,
   monthYearLabel,
   parseTypedDate,
   regionOf,
+  relativeDayName,
   typedDateFormat,
   typedDatePlaceholder,
   weekdayNames,
@@ -173,6 +175,25 @@ describe('locale', () => {
     expect(parseTypedDate('hello', 'en-US')).toBeNull()
     expect(parseTypedDate('1/2', 'en-US')).toBeNull()
     expect(parseTypedDate('', 'en-US')).toBeNull()
+  })
+
+  it('formats wall times, dropping ":00" in short 12-hour form only', () => {
+    const plain = (s: string) => s.replace(/[  ]/g, ' ')
+    expect(plain(formatTime('18:00', 'en-US'))).toBe('6:00 PM')
+    expect(plain(formatTime('18:00', 'en-US', true))).toBe('6 PM')
+    expect(plain(formatTime('18:30', 'en-US', true))).toBe('6:30 PM')
+    expect(plain(formatTime('18:00', 'es-MX', true))).toMatch(/^6 p/)
+    expect(formatTime('18:00', 'en-GB', true)).toBe('18:00')
+    expect(formatTime('09:05', 'en-GB')).toBe('9:05')
+  })
+
+  it('names yesterday, today and tomorrow only, capitalized', () => {
+    expect(relativeDayName('2026-10-09', '2026-10-09', 'en-US')).toBe('Today')
+    expect(relativeDayName('2026-10-10', '2026-10-09', 'en-US')).toBe('Tomorrow')
+    expect(relativeDayName('2026-10-08', '2026-10-09', 'en-US')).toBe('Yesterday')
+    expect(relativeDayName('2026-10-10', '2026-10-09', 'es-MX')).toBe('Mañana')
+    expect(relativeDayName('2026-10-11', '2026-10-09', 'en-US')).toBeUndefined()
+    expect(relativeDayName('2026-10-07', '2026-10-09', 'en-US')).toBeUndefined()
   })
 })
 
