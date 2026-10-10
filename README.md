@@ -129,7 +129,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `Badge` | A small, pill-shaped label for status and metadata — "LIVE", counts, tags. | [docs/llms/badge.md](docs/llms/badge.md) |
 | `BarChart` · @sukunagg/charts | Compares amounts across categories: games per placement, kills per weapon by season, revenue per plan per month, pick rate per agent. | [docs/llms/bar-chart.md](docs/llms/bar-chart.md) |
 | `BorderBeam` | Sends a short light around the border of a card, a featured match, a season pass or a plan tile, to mark the one thing on a screen that deserves attention. | [docs/llms/border-beam.md](docs/llms/border-beam.md) |
-| `BracketBeam` · @sukunagg/fx | Shows a single-elimination tournament bracket and sends a beam of light along the champion's path, round by round, until the trophy card ignites. | [docs/llms/bracket-beam.md](docs/llms/bracket-beam.md) |
+| `BracketBeam` · @sukunagg/fx | Shows a tournament bracket and sends a beam of light along the champion's path, round by round, until the trophy card ignites. | [docs/llms/bracket-beam.md](docs/llms/bracket-beam.md) |
 | `Breadcrumbs` | Show the path to the current page and let users jump back up it. | [docs/llms/breadcrumbs.md](docs/llms/breadcrumbs.md) |
 | `Button` | Triggers an action. | [docs/llms/button.md](docs/llms/button.md) |
 | `Calendar` | Shows one or two months and lets people pick a day or a range with a mouse, touch or the keyboard. | [docs/llms/calendar.md](docs/llms/calendar.md) |

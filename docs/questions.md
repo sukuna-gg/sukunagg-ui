@@ -755,7 +755,8 @@ opt-in `resizeImage` helper. (4) Double elimination links matches explicitly (`i
 `next.winner`/`next.loser`); single elimination keeps the position rule. (5) Waves: A (Kbd, Prose,
 Timeline) → B (CommandPalette, FileUpload, Poll) → C (double elimination). Specs written
 (`docs/component-{kbd,prose,timeline,command-palette,file-upload,poll}.md` and
-`docs/bracket-beam-double-elimination.md`), roadmap §D11, agent calls in D41. Code waits on the
+`docs/bracket-beam-double-elimination.md`, merged into `component-bracket-beam.md` when built),
+roadmap §D11, agent calls in D41. Code waits on the
 owner approving the specs. Countdown, OtpField, Banner, CopyButton and ThemeToggle stay
 suggestions.
 

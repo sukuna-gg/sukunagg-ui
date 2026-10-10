@@ -448,7 +448,7 @@ Wave A approved and built ("lgtm", 2026-10-10); Review = the owner's visual pass
 
 | Item | Kind | Doc | Code | Review |
 |---|---|---|---|---|
-| BracketBeam `format="double"` | addition to a shipped component | [x] bracket-beam-double-elimination.md (merged into component-bracket-beam.md when built) | [ ] | [ ] |
+| BracketBeam `format="double"` | addition to a shipped component | [x] component-bracket-beam.md (pending spec merged in) | [x] 88 tests (39 new), 100% cov, 9.94 kB (budget 10.5 kB) | [ ] |
 
 ### Still suggestions (Q42, not designed)
 
@@ -557,3 +557,4 @@ Agents append one line per meaningful status change: `YYYY-MM-DD · <what flippe
 - 2026-10-10 · Q43 — Poll built (parallel builder, reviewed): server `<form>` + write-in island, 50 tests, 100% cov, 5 browser specs, 3.56 kB; React 18 matrix green; changeset patch · (feat/poll)
 - 2026-10-10 · Q43 — calendar pickers built: shared date utilities (19 tests), Calendar, DatePicker, DateRangePicker, DateTimePicker (exported, stories, browser specs, 100% cov each); 779 ui tests green; changeset patch · (feat/calendars)
 - 2026-10-10 · Q43 — MonthView + Agenda built (parallel builder, reviewed): `utils/date/events.ts`, lanes, native-popover "+N more", container-query list; 47 tests + 8 util tests, 100% cov; React 18 matrix green · (feat/calendars)
+- 2026-10-10 · Q43 — BracketBeam double elimination built (parallel builder, reviewed): `format="double"` with explicit `id`/`next` links, upper + lower bands, grand final, drop chips; single-elimination markup unchanged; 88 tests, 100% cov, 9.94 kB; changeset patch · (feat/bracket-double)
