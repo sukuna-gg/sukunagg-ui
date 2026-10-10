@@ -24,6 +24,29 @@ export interface BracketMatch {
   scores?: readonly [number | string, number | string]
   /** The winning row: `0` (top) or `1` (bottom). Omit while undecided. */
   winner?: 0 | 1
+  /**
+   * The match's id, unique in the bracket: what `next` links name. Required on every upper,
+   * lower and grand-final match in double elimination (`format="double"`); ignored in single.
+   */
+  id?: string
+  /**
+   * Where this match's winner and loser play next, by match `id`. Double elimination only (single
+   * elimination follows match positions): an upper match sends its winner up the upper bracket
+   * and its loser down to the lower one; both finals send their winner to the grand final.
+   * Ignored on the grand final and the reset, whose winners go to the reset and the trophy.
+   */
+  next?: BracketNext
+}
+
+/** Where a double-elimination match's teams go next: {@link BracketMatch.next}. */
+export interface BracketNext {
+  /** The `id` of the match the winner plays next. Its connector is drawn. */
+  winner?: string
+  /**
+   * The `id` of the lower-bracket match the loser drops to. No connector is drawn: the team's
+   * row there shows a drop chip ("▼ SF1") naming this match.
+   */
+  loser?: string
 }
 
 /** One column of the bracket. */
@@ -44,10 +67,19 @@ export const ROW = 13.5
 export const SLOT = 79
 
 /**
- * A connector: from a match (`'<round>-<index>'`) to a match of the next round, landing on `row`
- * (0 top, 1 bottom), or to the trophy card (`to = 'champion'`, `row = -1`: its centre).
+ * A connector: from a match (its `data-match`, e.g. `'<round>-<index>'`) to a match of a later
+ * column, landing on `row` (0 top, 1 bottom), or to the trophy card (`to = 'champion'`,
+ * `row = -1`: its centre). It leaves the source's winning row, or row `fromRow` when given (`-1`:
+ * the box's centre). `drop` marks a double-elimination drop into the lower bracket: no wire, the
+ * beam lands on the destination row's drop chip.
  */
-export type BracketLink = readonly [from: string, to: string, row: number]
+export type BracketLink = readonly [
+  from: string,
+  to: string,
+  row: number,
+  fromRow?: number,
+  drop?: 1,
+]
 
 /** How the server draws one connector in CSS (the poster): numbers for inline custom properties. */
 export interface PosterWire {
@@ -61,6 +93,14 @@ export interface PosterWire {
   /** Height: `hs` slot heights plus `h` px. */
   hs: number
   h: number
+  /**
+   * Double elimination: the wire is a child of the grid, not of its match, placed at this
+   * `grid-column` over both bands, so `ys`/`hs` are fractions of the bands' height. The area is
+   * the destination's column (the wire fills the gap on its left), or with `over` the columns it
+   * crosses (a final into the grand final: one gap past each side).
+   */
+  grid?: string
+  over?: boolean
 }
 
 /** What {@link bracketModel} derives from the rounds. */
@@ -69,7 +109,7 @@ export interface BracketModel {
   links: BracketLink[]
   /** Indices into `links` of the champion's path, in travel order (the last one ends at the card). */
   trail: number[]
-  /** `'<round>-<index>-<row>'` of every row on the champion's path. */
+  /** `'<round>-<index>-<row>'` of every row on the champion's path, in travel order. */
   trailRows: ReadonlySet<string>
   /** The poster wire leaving each match, by match id. */
   wires: ReadonlyMap<string, PosterWire>
@@ -82,7 +122,8 @@ export const teamName = (team: BracketTeam): string => (typeof team === 'string'
 export const teamSeed = (team: BracketTeam): number | string | undefined =>
   typeof team === 'string' ? undefined : team.seed
 
-const winnerOf = (match: BracketMatch | undefined): string | undefined =>
+/** The winning team's name, if decided. */
+export const winnerOf = (match: BracketMatch | undefined): string | undefined =>
   match?.winner === undefined ? undefined : teamName(match.teams[match.winner])
 
 const rowOffset = (row: number | undefined): number =>

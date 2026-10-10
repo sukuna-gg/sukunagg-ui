@@ -35,6 +35,18 @@ export const bracketBeamStyles = tv({
       '@max-[640px]/bracket-beam:[--sk-bracket-beam-gap:36px]',
     ],
     column: 'flex min-w-[146px] flex-col',
+    // Double elimination: a band (upper or lower bracket) spans the first --sk-bracket-beam-band
+    // columns as a subgrid, so both bands share one set of column tracks. Its label row is
+    // `bracket-beam-band` (bracket-beam.css): 18px + a 6px gap, the BAND_HEAD of the double model.
+    // Both rows are explicit, so the columns spanning both bands are placed after them, from row 1.
+    band: 'col-[1/span_var(--sk-bracket-beam-band)] row-start-1 grid grid-cols-subgrid',
+    bandLabel: 'col-span-full bracket-beam-band',
+    // The drop chip ("▼ SF1") before a lower-bracket team's name: where it fell from. A 4px gap to
+    // the name (the row's 8px less 4px), so the name keeps what room it can.
+    drop: [
+      'bracket-beam-drop -me-1 border-line text-text-faint',
+      'transition-colors duration-slow motion-reduce:transition-none',
+    ],
     heading: [
       'mb-2 box-border flex h-[21px] shrink-0 justify-between gap-1.5 overflow-hidden',
       'border-b border-line-soft pb-1.5 font-sans text-[10px] leading-[14px] font-medium',
@@ -139,6 +151,24 @@ export const bracketBeamStyles = tv({
         ],
       },
     },
+    // Double elimination: two band rows that keep their content height, so the poster's px wires
+    // line up, and fixed 176px tracks under 640px (bracket-beam.css); 176px column floors (the
+    // mockup's), so a name still fits next to a drop chip.
+    double: { true: { grid: 'bracket-beam-double', column: 'min-w-44' } },
+    // The grand-final, reset and trophy columns: they span both bands, their headings level with
+    // the upper band's (below its 24px label).
+    span: { true: { column: 'row-[1/3] pt-6' } },
+    // The lower band: the second row, BAND_GAP (14px) below the upper one.
+    lower: { true: { band: 'row-start-2 pt-3.5' } },
+    // Double elimination: a poster wire is a grid child over both bands (inline `grid-column`), so
+    // a column's width never moves it. `end`: the gap left of its destination's column. `over`:
+    // across the columns between source and destination, one gap past each side.
+    place: {
+      end: { wire: 'row-[1/3] left-auto right-full' },
+      over: {
+        wire: 'row-[1/3] -left-(--sk-bracket-beam-gap) -right-(--sk-bracket-beam-gap) w-auto',
+      },
+    },
     winner: {
       // Bold, not the mockup's 750: without Archivo, a fallback family with no 750 face resolves
       // to its 900 face by the CSS matching rules (Arial Black in Firefox on Windows), which
@@ -161,6 +191,11 @@ export const bracketBeamStyles = tv({
         // On the lit wash the faint seed would drop under AA: lift it while lit.
         seed: 'text-text/70 group-data-[dim]/row:text-text-faint',
         score: 'text-(--sk-bracket-beam-ink) group-data-[dim]/row:text-text',
+        // The champion's drop chip: ink text, an accent border at 50%.
+        drop: [
+          'border-accent/50 text-(--sk-bracket-beam-ink)',
+          'group-data-[dim]/row:border-line group-data-[dim]/row:text-text-faint',
+        ],
       },
     },
     dir: {
@@ -188,7 +223,16 @@ export const bracketBeamStyles = tv({
       },
     },
   },
-  defaultVariants: { champion: true, winner: false, trail: false, dir: 'flat', lit: false },
+  defaultVariants: {
+    champion: true,
+    winner: false,
+    trail: false,
+    dir: 'flat',
+    lit: false,
+    double: false,
+    span: false,
+    lower: false,
+  },
 })
 
 export type BracketBeamStyleProps = VariantProps<typeof bracketBeamStyles>
