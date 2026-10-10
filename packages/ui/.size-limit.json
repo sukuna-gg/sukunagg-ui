@@ -7,6 +7,20 @@
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
+    "name": "Agenda (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ Agenda }",
+    "limit": "3.6 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "Alert (static, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ Alert }",
@@ -95,6 +109,20 @@
     "path": "dist/index.js",
     "import": "{ Button }",
     "limit": "2 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "Calendar (our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ Calendar }",
+    "limit": "6.2 kB",
     "ignore": [
       "react",
       "react-dom",
@@ -194,6 +222,27 @@
       "tailwind-variants",
       "clsx"
     ]
+  },
+  {
+    "name": "DatePicker + deps",
+    "path": "dist/index.js",
+    "import": "{ DatePicker }",
+    "limit": "54 kB",
+    "ignore": ["react", "react-dom", "react/jsx-runtime"]
+  },
+  {
+    "name": "DateRangePicker + deps",
+    "path": "dist/index.js",
+    "import": "{ DateRangePicker }",
+    "limit": "55 kB",
+    "ignore": ["react", "react-dom", "react/jsx-runtime"]
+  },
+  {
+    "name": "DateTimePicker + deps",
+    "path": "dist/index.js",
+    "import": "{ DateTimePicker }",
+    "limit": "56 kB",
+    "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
     "name": "Dialog + deps",
@@ -390,6 +439,20 @@
     "import": "{ Meter }",
     "limit": "16 kB",
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
+  },
+  {
+    "name": "MonthView (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ MonthView }",
+    "limit": "8.4 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
   },
   {
     "name": "NumberField + deps",

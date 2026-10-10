@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt). This file concatenates every component page plus the design-token reference; the index is at https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt.
 
-@sukunagg/ui is a React 18/19 component library: 75 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 81 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -14,6 +14,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 ## Components
 
 - Accordion: Vertically stacked, expandable sections.
+- Agenda: Lists what's coming up, one heading per day ("Today · Friday, October 9", "Tomorrow · Saturday, October 10"), each event with its time, title, details and status.
 - Alert: An inline message that draws attention to information, success, a caution, or an error.
 - AlertDialog: Ask the user to confirm something that is hard to undo ("Delete project?", "Discard changes?").
 - Avatar: A user/entity image with a graceful fallback (initials or icon) while loading or on error.
@@ -24,6 +25,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - BracketBeam (@sukunagg/fx): Shows a single-elimination tournament bracket and sends a beam of light along the champion's path, round by round, until the trophy card ignites.
 - Breadcrumbs: Show the path to the current page and let users jump back up it.
 - Button: Triggers an action.
+- Calendar: Shows one or two months and lets people pick a day or a range with a mouse, touch or the keyboard.
 - Card: A surface container that groups related content on an elevation.
 - Carousel: A horizontal, one-slide-at-a-time content carousel for images, cards, or arbitrary nodes — the gap Slider (a range input) doesn't fill.
 - Checkbox: A boolean checkbox.
@@ -33,6 +35,9 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - ContextMenu: Offer contextual actions where the pointer is — right-click on desktop, long-press on touch.
 - Counter: Animates a number from a start to a target value — for stat tiles, KPIs, pricing, and dashboards.
 - DataBar (@sukunagg/charts): A number with a small bar under it, for comparing rows of a table at a glance: damage to champions in a scoreboard, pick rate in a meta table.
+- DatePicker: Lets people type a date or pick it from a calendar, for forms like a birth date or a deadline.
+- DateRangePicker: Picks a start and end day, for filters like "games from Sep 10 to Oct 9".
+- DateTimePicker: Picks a day and a start time in a given time zone, such as a tournament at 6:00 PM Hermosillo time, and hands back the exact moment as an ISO string.
 - Dialog: A modal dialog.
 - Divider: A thin rule that separates content, horizontally or vertically.
 - DonutChart (@sukunagg/charts): Shows a part-to-whole split with few parts: time played by role, games by queue, plans by share.
@@ -55,6 +60,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - MatchFound: The ready-check prompt a game client shows when the queue pops: a draining countdown ring, who on the team has accepted, and the Accept / Decline actions.
 - Menu: A dropdown menu of actions triggered by a button.
 - Meter: Show a scalar measurement within a known range: storage used, quota, password strength, a score.
+- MonthView: Shows a whole month at once: a tournament schedule, a release calendar, or days played with a result in each cell.
 - NumberField: Enter a number precisely.
 - Pagination: Navigate between pages of results, with first/last always shown and ellipses in between.
 - ParticleField (@sukunagg/fx): An always-dark hero stage where crimson embers rise out of a glowing haze behind your overlay content, for season launches, event banners, landing heroes and "play now" panels.
@@ -134,6 +140,96 @@ collapsed · expanded (chevron rotated) · focus-visible · disabled item.
 - [ ] Trigger is a `<button>` with `aria-expanded`/`aria-controls` (Base UI); panels are regions.
 - [ ] Enter/Space toggle; arrow keys move between headers.
 - [ ] Expanded state shown by more than the chevron (content visibility).
+
+---
+
+# Agenda — @sukunagg/ui
+
+> Lists what's coming up, one heading per day ("Today · Friday, October 9", "Tomorrow · Saturday, October 10"), each event with its time, title, details and status.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { Agenda } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/agenda · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-agenda.md
+
+## Purpose
+
+Lists what's coming up, one heading per day ("Today · Friday, October 9", "Tomorrow · Saturday,
+October 10"), each event with its time, title, details and status. It's the quickest way to read a
+schedule on a phone, and the list MonthView switches to when it gets narrow.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef } from 'react'
+import type { CalendarDate } from '../../utils/date/calendar-date'   // 'YYYY-MM-DD' (string)
+import type { CalendarEvent } from '../../utils/date/events'        // shared with MonthView
+import type { EmptyStateProps } from '../empty-state'
+
+export interface AgendaLabels {
+  allDay: string                 // 'All day'
+  ongoing: string                // 'Continues' (multi-day event that started before `from`)
+}
+
+interface AgendaOwnProps {
+  events: readonly CalendarEvent[]
+  from?: CalendarDate            // first day listed; default `today`
+  days?: number                  // how many days from `from`; default 14
+  timeZone?: string              // default 'UTC'
+  today?: CalendarDate           // default: today in `timeZone` at render
+  locale?: string                // default 'en-US'; also "Today"/"Tomorrow" via Intl.RelativeTimeFormat
+  headingLevel?: 2 | 3 | 4 | 5   // day headings; default 3
+  stickyHeadings?: boolean       // default true: headings pin while the list scrolls
+  /** Shown when no event falls in the window. Omit it (or `false`) to render nothing. */
+  empty?: Pick<EmptyStateProps, 'title' | 'children' | 'actions' | 'icon'> | false
+  loading?: boolean
+  labels?: Partial<AgendaLabels>
+}
+
+// In the source: `interface AgendaProps extends Omit<ComponentPropsWithoutRef<'section'>,
+// 'children'>` holding the own props above (the same shape).
+export type AgendaProps = AgendaOwnProps & Omit<ComponentPropsWithoutRef<'section'>, 'children'>
+```
+
+```tsx
+<Agenda events={upcoming} today={today} days={21} timeZone="America/Hermosillo" locale="es-MX"
+  className="max-h-[420px] overflow-y-auto"
+  empty={{ title: 'No hay torneos en las próximas 3 semanas' }} />
+```
+
+Only days with events get a heading; a gap of empty days is skipped, not listed. Deliberately
+**not** in v1: infinite loading, grouping by week or month, past events (pass `from` earlier to
+show them).
+
+## Variants & tokens
+
+No variants. Day heading: `text-xs` bold uppercase, tracking `.12em`, `--sk-text-faint`; today's
+heading `--sk-accent`; sticky with a `--sk-surface` background (the agenda's container color, set
+by `className` if it differs). Row: 4-column grid (time 64px · 10px dot · text · status),
+`py-2 px-2 rounded-sm`, hover `--sk-surface-2` when it's a link. Time `text-sm` semibold
+tabular-nums `--sk-text-dim`; dot in the event color; title `text-sm` semibold `--sk-text`
+(ellipsis); meta `text-xs --sk-text-faint`. Below 420px container width the status drops under the
+title.
+
+## States
+
+| State | Behavior |
+|---|---|
+| data | days with events, headings "Today ·", "Tomorrow ·" (from `RelativeTimeFormat`, numeric: 'auto'), then weekday + date |
+| multi-day event | listed on its first day in range, time column "—" (hidden from screen readers), meta shows its range ("Oct 12 – 16"; a timed one with wall times, "Oct 16, 8:00 PM – Oct 17, 6:00 AM"); if it started before `from`, it's listed first under `from` and its meta starts with `labels.ongoing` ("Continues · Sep 28 – Oct 25 · …") |
+| one-day all-day event | time column `labels.allDay` |
+| empty | `EmptyState` (`size="sm"`, `role="status"`) when `empty` is given; otherwise the section is empty |
+| loading | five skeleton rows, `aria-busy`; pulse stops under reduced motion |
+
+## Accessibility
+
+- [ ] Each day is a group: a real heading (`headingLevel`) + an `<ol>` of events.
+- [ ] Rows with `href` are links named time, title, meta, status ("6:00 PM, Copa Pitaya,
+      Valorant · In person, Open"; visually hidden commas keep the parts apart).
+- [ ] Today's heading has `aria-current="date"`.
+- [ ] Colors are decoration only; status is text (the app's Badge).
+- [ ] Sticky headings don't cover focused rows (scroll-margin on rows = heading height).
+- [ ] Loading `aria-busy`; empty state is a `status`.
 
 ---
 
@@ -1080,6 +1176,166 @@ Font: `--sk-font-display`, weight `--sk-weight-bold`, `--sk-tracking-tight`.
 
 ---
 
+# Calendar — @sukunagg/ui
+
+> Shows one or two months and lets people pick a day or a range with a mouse, touch or the keyboard.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { Calendar } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/calendar · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-calendar.md
+
+## Purpose
+
+Shows one or two months and lets people pick a day or a range with a mouse, touch or the keyboard.
+It is the grid inside every date picker, and it also works on its own, inline on a page, for example
+to choose a tournament day. Dates go in and come out as `'YYYY-MM-DD'` strings, so a picked day
+never shifts with the viewer's time zone.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef } from 'react'
+
+/** A calendar date, 'YYYY-MM-DD'. Never a Date: no time zone, no drift. */
+export type CalendarDate = string
+export interface DateRange { start: CalendarDate; end: CalendarDate }   // inclusive, start <= end
+export type CalendarView = 'day' | 'month' | 'year'
+
+/** A small dot under the day number. `label` is read by screen readers and shown on hover. */
+export interface CalendarMark { label: string; color?: string }        // CSS color; default var(--sk-text-faint)
+
+export interface CalendarLabels {
+  previousMonth: string     // 'Previous month'
+  nextMonth: string         // 'Next month'
+  previousYear: string      // 'Previous year'   (month view)
+  nextYear: string          // 'Next year'
+  previousYears: string     // 'Earlier years'   (year view)
+  nextYears: string         // 'Later years'
+  chooseYear: string        // 'Choose year'     (appended to the caption button's name)
+  selected: string          // 'selected'
+  rangeStart: string        // 'range start'
+  rangeEnd: string          // 'range end'
+  unavailable: string       // 'unavailable'     (used when isDateDisabled returns true, not a reason)
+}
+
+interface CalendarOwnProps {
+  /** Visible month, controlled. Any day in the month; reported back as 'YYYY-MM-01'. */
+  month?: CalendarDate
+  defaultMonth?: CalendarDate
+  onMonthChange?: (month: CalendarDate) => void
+  view?: CalendarView
+  defaultView?: CalendarView               // default 'day'
+  onViewChange?: (view: CalendarView) => void
+  min?: CalendarDate
+  max?: CalendarDate
+  /** Return a reason ('Full', 'In the past') or true to turn a day off. The reason is announced. */
+  isDateDisabled?: (date: CalendarDate) => string | boolean | null | undefined
+  marks?: (date: CalendarDate) => readonly CalendarMark[] | null | undefined   // first 3 drawn
+  months?: 1 | 2                           // default 1; two months hide outside days
+  fixedWeeks?: boolean                     // default true: always six rows, so height never jumps
+  showOutsideDays?: boolean                // default true (forced false when months={2})
+  weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6 // 0 = Sunday; default from `locale` (CLDR)
+  locale?: string                          // default 'en-US'; names, week start, label dates
+  /** Today in the viewer's zone. Pass it from the server for an exact first paint (see §6). */
+  today?: CalendarDate
+  labels?: Partial<CalendarLabels>         // English defaults
+  autoFocus?: boolean                      // focus the focused day on mount (the pickers' popovers)
+}
+
+type CalendarSingleProps = {
+  mode?: 'single'
+  value?: CalendarDate | null
+  defaultValue?: CalendarDate | null
+  onValueChange?: (value: CalendarDate | null) => void
+}
+type CalendarRangeProps = {
+  mode: 'range'
+  value?: DateRange | null
+  defaultValue?: DateRange | null
+  /** Fires with a complete range only. The first click is held inside the calendar. */
+  onValueChange?: (value: DateRange | null) => void
+  minDays?: number                         // inclusive length limits; days outside turn off
+  maxDays?: number                         //   while the range is half picked
+}
+
+export type CalendarProps = CalendarOwnProps &
+  (CalendarSingleProps | CalendarRangeProps) &
+  Omit<ComponentPropsWithoutRef<'div'>, 'defaultValue' | 'onChange'>
+```
+
+Discriminated on `mode`, so a range calendar can't receive a single date. Clicking the selected day
+again keeps it (no toggle-off); clearing is the app's call (`value={null}`). Clicking an outside day
+moves to its month and picks it.
+
+Deliberately **not** in v1: `mode="multiple"`, week numbers, a per-day render prop (that is
+MonthView's `renderDay`), right-to-left key mirroring (RTL audit is backlog §D2), non-Gregorian
+calendars.
+
+## Variants & tokens
+
+No visual variants. Every state maps to an existing token (no new tokens, Q41):
+
+| Part / state | Treatment |
+|---|---|
+| caption | `--sk-font-display`, `--sk-weight-black`, italic, uppercase, `text-sm`, tracking `.06em` (the HUD treatment StatTile uses) |
+| weekday header | `text-xs` (11px), `--sk-weight-semibold`, uppercase, tracking `.08em`, `--sk-text-faint` |
+| day (default) | `--sk-text`, `text-sm` tabular-nums, `--sk-radius-sm`, square cell |
+| hover | bg `--sk-surface-2` |
+| today | 1px inset ring `--sk-text-faint`, bold; `aria-current="date"` |
+| selected / range ends | `bg-gradient-accent` + `--sk-on-accent`, bold (see §11: not flat `--sk-accent`) |
+| in range | band behind the days: `--sk-accent` at 18% (`bg-accent/18`), rounded at row and month edges; the band starts and ends at the centre of the end cells |
+| range preview (half picked) | same band at 9% |
+| marked | up to three 4px dots under the number, `color` per mark; dots turn `--sk-on-accent` on selected days |
+| disabled | `--sk-text-faint` at 45% opacity, `cursor-not-allowed`, still focusable |
+| outside month | `--sk-text-faint` |
+| focus-visible | 2px `--sk-focus-ring`, offset 1px (on selected days the ring is `--sk-text`) |
+| nav button | 32px square, `--sk-surface-2`, `--sk-line` border, `--sk-text-dim` → `--sk-text` on hover |
+| month / year pickers | a labelled group of buttons with `aria-pressed`, same day states, filling the six-row height (3×4 months, 4×5 years) |
+
+Sizing: cells are square and fluid, `max-width` 40px each, so the grid is 280px wide at most and
+shrinks inside a 320px phone popover instead of overflowing. Two months sit side by side with a
+`--sk-space-7` gap.
+
+## States
+
+| State | Behavior |
+|---|---|
+| day view | default. Caption button opens the year view. |
+| year view | 20 years per page (4×5); pages end at `max`'s year, or align to multiples of 20 without `max`; the focused year never leaves `min`/`max`, and years outside them are off. Picking a year opens the month view. |
+| month view | the 12 months of that year (3×4). Picking a month returns to the day view on that month. |
+| range, half picked | first click sets the anchor; hover or keyboard focus previews the band; second click completes it (ends swap if needed) and fires `onValueChange` |
+| `minDays`/`maxDays` | while half picked, days that would make the range too short or long turn off with a reason |
+| disabled day | not selectable; reason in its accessible name and `title` |
+| no anchor date | no `value`, `defaultMonth`, `month` or `today`: the server and the hydration render draw the frame with empty cells and `aria-busy`, and the month fills in after mount (see §6) |
+
+**Motion (`docs/motion.md`):** a month change slides the grid 12px in the direction of travel with a
+fade, `--sk-duration-base`, `--sk-ease`; switching between day, month and year views scales from
+97%. Keyframes `sk-calendar-next`, `sk-calendar-prev`, `sk-calendar-zoom` and their
+`animate-calendar-*` utilities (new, `scripts/motion/calendar.ts`).
+Reduced motion: instant.
+
+## Accessibility
+
+- [ ] Each month is a `<table role="grid">` labelled by its caption; `<th scope="col" abbr>` headers.
+- [ ] The year and month pickers are labelled groups of buttons with `aria-pressed` (one tab stop,
+      arrow keys inside).
+- [ ] Days are `<button>`s inside `role="gridcell"` cells; `aria-selected` on the cell; the button's
+      name is the full date plus marks, state and reason ("Saturday, November 14, 2026, Copa
+      Pitaya, selected").
+- [ ] `aria-current="date"` on today; `aria-disabled="true"` (not `disabled`) on off days, which
+      stay focusable.
+- [ ] One tab stop for the whole grid (roving tabindex); the APG key map in §6.
+- [ ] Month changes announced once through the persistent live region.
+- [ ] Nav buttons have names ("Previous month"); the caption button's name includes "Choose year"
+      and it carries `aria-expanded` while the year/month grid is open.
+- [ ] Selected day text ≥ 4.5:1 on the gradient's lightest stop (4.95:1) in both themes; range band
+      text ≥ 4.5:1; today ring and focus ring ≥ 3:1.
+- [ ] Marks are never the only signal: their labels are in the day's name.
+- [ ] `prefers-reduced-motion` honored.
+
+---
+
 # Card — @sukunagg/ui
 
 > A surface container that groups related content on an elevation.
@@ -1696,6 +1952,393 @@ Not here: negative values, a target marker, labels inside the bar.
 - [ ] `null` announces `missingLabel`, never "dash" or "0".
 - [ ] Bar-only usage requires an `aria-label` (dev error).
 - [ ] Fill ≥ 3:1 against `surface-2` with default tokens.
+
+---
+
+# DatePicker — @sukunagg/ui
+
+> Lets people type a date or pick it from a calendar, for forms like a birth date or a deadline.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { DatePicker } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/date-picker · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-date-picker.md
+
+## Purpose
+
+Lets people type a date or pick it from a calendar, for forms like a birth date or a deadline.
+Typing follows the locale's order (04/12/1998 in the US, 12/04/1998 in Mexico) and also accepts
+ISO, and the field submits a plain `'YYYY-MM-DD'`. With no value it can open on the year grid, so
+nobody clicks back through 18 years of months to reach a birth year.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef } from 'react'
+import type { CalendarDate, CalendarLabels, CalendarMark, CalendarView } from '../calendar'
+
+export interface DatePickerLabels extends CalendarLabels {
+  chooseDate: string        // 'Choose date' (trigger button + dialog name)
+  clear: string             // 'Clear'
+  placeholderParts: { day: string; month: string; year: string }   // { 'DD', 'MM', 'YYYY' }
+}
+
+export interface DatePickerMessages {
+  /** Text that isn't a date. Receives an example in the locale's format. */
+  invalid?: string | ((example: string) => string)   // 'Enter a date like 04/12/1998.'
+  min?: string              // 'Pick a date on or after Oct 9, 2026.'
+  max?: string              // 'Pick a date on or before Oct 9, 2008.'
+  disabled?: string         // default: the isDateDisabled reason
+}
+
+interface DatePickerOwnProps {
+  value?: CalendarDate | null
+  defaultValue?: CalendarDate | null
+  onValueChange?: (value: CalendarDate | null) => void
+  /** Hidden input carrying 'YYYY-MM-DD' (or '' when empty). The visible text has no name. */
+  name?: string
+  min?: CalendarDate
+  max?: CalendarDate
+  isDateDisabled?: (date: CalendarDate) => string | boolean | null | undefined
+  marks?: (date: CalendarDate) => readonly CalendarMark[] | null | undefined
+  /** View the calendar opens on when there is no value. Default 'day'. */
+  openTo?: CalendarView
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  locale?: string                    // default 'en-US': typed order, separator, names
+  weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6
+  today?: CalendarDate
+  labels?: Partial<DatePickerLabels>
+  messages?: DatePickerMessages
+  /** Forces the invalid look (e.g. a server error). Typed-text errors set it on their own. */
+  invalid?: boolean
+  variant?: 'filled' | 'outline' | 'ghost'   // default 'filled' — shared form-control map
+  size?: 'sm' | 'md' | 'lg'                  // default 'md'
+}
+
+// The visible field is a native <input type="text">; own props are consumed, the rest spread onto
+// it (id, required, disabled, readOnly, aria-*, autoComplete, onBlur…). `className` styles the
+// outer wrapper (field + error line), not the input.
+export type DatePickerProps = DatePickerOwnProps &
+  Omit<ComponentPropsWithoutRef<'input'>, 'value' | 'defaultValue' | 'onChange' | 'type' | 'min' |
+    'max' | 'size' | 'name'>
+```
+
+Pitaya's identity form:
+
+```tsx
+<Field>
+  <Field.Label htmlFor="birth">Fecha de nacimiento</Field.Label>
+  <DatePicker id="birth" name="birthDate" locale="es-MX" labels={esLabels} max={maxBirthDate}
+    openTo="year" autoComplete="bday" messages={{ max: 'Pitaya es solo para mayores de 18 años.' }} />
+</Field>
+```
+
+Deliberately **not** in v1: segmented day/month/year boxes (later `DateField`, Q41), two-digit
+years, relative text ("tomorrow"), an inline (always-open) mode (use `Calendar`).
+
+## Variants & tokens
+
+Field: the shared form-control map (Input §4): `filled` `bg-surface-2 border-line` / `outline` /
+`ghost`; sizes `sm` 32px / `md` 40px / `lg` 48px; `rounded-md`; focus `ring-2 ring-focus-ring
+border-accent`; invalid `border-accent`. The input is borderless inside the field; placeholder
+`--sk-text-faint`; tabular-nums.
+
+Trigger: icon button inside the field's end (calendar icon from the icon set), 30px square,
+`--sk-text-dim`, hover/open bg `--sk-surface`.
+
+Popup: same as `Popover` content (`bg-surface border-line rounded-md shadow-card p-3`,
+`z-[var(--sk-z-popover)]`), width fits the 280px grid, `max-w-[calc(100vw-2rem)]`. Footer: a
+`ghost sm` "Clear" button, only when there is a value and the input isn't `required`.
+
+Error line: `text-sm text-accent` under the field (Field's error style), `role="alert"`.
+
+## States
+
+| State | Behavior |
+|---|---|
+| empty | placeholder in the locale's order (`MM/DD/YYYY`, `DD/MM/AAAA` with Spanish `placeholderParts`) |
+| typing | nothing commits while typing |
+| commit | on blur and on `Enter` (Enter commits and doesn't submit the form): parse → validate → set value, reformat the text in the locale's order |
+| invalid text | value unchanged, text kept so it can be fixed, `aria-invalid`, error line (`messages.invalid`) |
+| out of range / off day | same, with `messages.min`/`max`/the disabled reason |
+| cleared text | value becomes `null` (or the field reports `required` through native validation) |
+| open | Calendar on the value's month, else `openTo` view, else today's month; focus on the selected day (or today) |
+| pick | sets the value, closes, focus back on the input |
+| `Escape` in the popup | closes without change, focus back on the trigger |
+| disabled / readOnly | field dimmed (disabled) or text-only (readOnly); trigger disabled |
+
+**Motion:** popup uses Popover's directional entrance; the calendar's own month slide inside.
+Reduced motion: instant.
+
+## Accessibility
+
+- [ ] Label through `Field.Label htmlFor` (or `aria-label`); the input keeps its name when the
+      popover opens.
+- [ ] Trigger: `aria-label={labels.chooseDate}`, `aria-haspopup="dialog"`, `aria-expanded`,
+      `aria-controls`.
+- [ ] Popup is `role="dialog"` with a name; focus moves to the calendar and returns on close.
+- [ ] Error line linked through `aria-describedby`, announced (`role="alert"`) once per commit.
+- [ ] `aria-invalid` on the input while an error shows.
+- [ ] Placeholder shows the expected order; the description (via `Field.Description`) can repeat it.
+- [ ] Everything in Calendar's checklist applies inside the popup.
+
+---
+
+# DateRangePicker — @sukunagg/ui
+
+> Picks a start and end day, for filters like "games from Sep 10 to Oct 9".
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { DateRangePicker } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/date-range-picker · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-date-range-picker.md
+
+## Purpose
+
+Picks a start and end day, for filters like "games from Sep 10 to Oct 9". Common ranges are one
+click away as presets ("Last 7 days", "This month"), and two months show side by side for custom
+ranges. Nothing changes until the person presses Apply, so a filter doesn't reload the page halfway
+through a choice.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import type { CalendarDate, CalendarLabels, CalendarMark, DateRange } from '../calendar'
+
+export type DateRangePresetKey =
+  | 'today' | 'yesterday' | 'last7' | 'last30' | 'last90'
+  | 'thisWeek' | 'lastWeek' | 'thisMonth' | 'lastMonth' | 'thisYear'
+
+/** A built-in key, or your own: a fixed range or one computed from today. */
+export type DateRangePreset =
+  | DateRangePresetKey
+  | { label: string; range: DateRange | ((today: CalendarDate) => DateRange) }
+
+export interface DateRangePickerLabels extends CalendarLabels {
+  placeholder: string                                   // 'Pick dates'
+  apply: string                                         // 'Apply'
+  cancel: string                                        // 'Cancel'
+  custom: string                                        // 'Custom'
+  pickEnd: string                                       // 'Pick the last day'
+  presetsGroup: string                                  // 'Presets'
+  dialog: string                                        // 'Choose dates' (popup name)
+  days: (count: number) => string                       // n => `${n} days`
+  presets: Record<DateRangePresetKey, string>           // 'Last 7 days', …
+}
+
+interface DateRangePickerOwnProps {
+  value?: DateRange | null
+  defaultValue?: DateRange | null
+  onValueChange?: (value: DateRange | null) => void     // on Apply (or second click, see `commit`)
+  min?: CalendarDate
+  max?: CalendarDate
+  isDateDisabled?: (date: CalendarDate) => string | boolean | null | undefined
+  marks?: (date: CalendarDate) => readonly CalendarMark[] | null | undefined
+  minDays?: number
+  maxDays?: number
+  presets?: readonly DateRangePreset[]                  // default none
+  months?: 1 | 2                                        // default 2; one on screens < 640px wide
+  /** 'apply' (default): Apply/Cancel buttons. 'select': the second click commits and closes. */
+  commit?: 'apply' | 'select'
+  /** Footer text for the draft range, e.g. "30 days · 87 games". Default: the day count. */
+  summary?: (range: DateRange) => ReactNode
+  /** Hidden inputs carrying 'YYYY-MM-DD'. */
+  startName?: string
+  endName?: string
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  locale?: string
+  weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6
+  today?: CalendarDate
+  labels?: Partial<DateRangePickerLabels>
+  invalid?: boolean
+  variant?: 'filled' | 'outline' | 'ghost'              // default 'filled'
+  size?: 'sm' | 'md' | 'lg'                             // default 'md'
+}
+
+// The trigger is a native <button>; rest props spread onto it.
+export type DateRangePickerProps = DateRangePickerOwnProps &
+  Omit<ComponentPropsWithoutRef<'button'>, 'value' | 'defaultValue' | 'onChange' | 'type'>
+```
+
+sukuna-gg-web's match history:
+
+```tsx
+<DateRangePicker aria-label="Games played between" defaultValue={{ start: from, end: to }}
+  max={today} today={today} marks={(d) => (gamesByDay.get(d) ? [{ label: `${gamesByDay.get(d)} games` }] : null)}
+  presets={['last7', 'last30', 'thisMonth', 'lastMonth', 'last90']}
+  summary={(r) => `${days(r)} days · ${countGames(r)} games`}
+  onValueChange={(r) => router.push(qs({ ...params, from: r?.start, to: r?.end }))} />
+```
+
+Deliberately **not** in v1: typing a range (presets cover the common cases), time of day (use two
+DateTimePickers), comparing two ranges, open-ended ranges ("since Sep 10").
+
+## Variants & tokens
+
+Trigger: the shared form-control map (`filled`/`outline`/`ghost`, `sm`/`md`/`lg`), calendar icon
+`--sk-text-faint`, text `--sk-text` semibold tabular-nums (placeholder `--sk-text-faint`), chevron
+that turns 180° while open.
+
+Popup: Popover content styling, `p-0`, two columns: presets rail (≈172px, bg `--sk-surface-2` mixed
+toward `--sk-surface`, right border `--sk-line-soft`) and main (calendar + footer). Below 560px the
+rail becomes a horizontal, scrollable row above the calendar (`max-sm:`, the same 640px breakpoint
+that drops to one month; a container query on the shrink-to-fit popup would collapse it).
+
+Preset: `text-sm --sk-text-dim`, hover `--sk-text` on `--sk-surface-2`; active (`aria-pressed`)
+`--sk-text` semibold on `--sk-surface-2` with a 6px `--sk-accent` dot. "Custom" shows as active when
+the draft matches no preset.
+
+Footer: `border-t --sk-line-soft`; summary `text-sm --sk-text-dim` with the range in `--sk-text`;
+`ghost` Cancel and `primary` Apply buttons (Button styles).
+
+## States
+
+| State | Behavior |
+|---|---|
+| empty | trigger shows `labels.placeholder` |
+| committed | trigger shows `Intl.DateTimeFormat#formatRange` ("Sep 10 – Oct 9, 2026"; one date if start = end) |
+| open | draft = committed range; calendar shows the end month and the one before it |
+| preset clicked | draft = preset range, calendar jumps to it; nothing commits yet |
+| half picked | summary says `labels.pickEnd`; Apply disabled |
+| Apply | commits the draft, fires `onValueChange`, closes, focus to trigger |
+| Cancel / `Escape` / outside press | drops the draft, closes |
+| `commit="select"` | no footer buttons; the second click commits and closes |
+
+**Motion:** Popover entrance; calendar month slide. Reduced motion: instant.
+
+## Accessibility
+
+- [ ] Trigger named by `aria-label` or `Field.Label`; the range text is also its description, since a
+      `<label>` replaces the button's own text as its name.
+- [ ] Popup `role="dialog"`, named; focus to the first preset when presets exist, else the calendar.
+- [ ] Presets are buttons with `aria-pressed`; the group has a name ("Presets").
+- [ ] Summary is a polite live region, so the chosen range is announced.
+- [ ] Apply is disabled (not hidden) while half picked.
+- [ ] Calendar checklist applies.
+
+---
+
+# DateTimePicker — @sukunagg/ui
+
+> Picks a day and a start time in a given time zone, such as a tournament at 6:00 PM Hermosillo time, and hands back the exact moment as an ISO string.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { DateTimePicker } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/date-time-picker · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-date-time-picker.md
+
+## Purpose
+
+Picks a day and a start time in a given time zone, such as a tournament at 6:00 PM Hermosillo
+time, and hands back the exact moment as an ISO string. The person sees and picks the venue's wall
+time; the app stores `2026-11-15T01:00:00.000Z` and never converts zones by hand.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef } from 'react'
+import type { CalendarDate, CalendarLabels, CalendarMark } from '../calendar'
+
+export interface DateTimePickerLabels extends CalendarLabels {
+  placeholder: string                      // 'Pick a date and time'
+  time: string                             // 'Start time' (listbox name)
+  done: string                             // 'Done'
+  yourTime: (zone: string) => string       // z => `Your time (${z})`
+  skipped: string                          // 'Skipped by daylight saving'
+  dialog: string                           // 'Choose date and time' (popup name)
+}
+
+interface DateTimePickerOwnProps {
+  /** IANA zone the wall time is in, e.g. 'America/Hermosillo'. Required: no silent default. */
+  timeZone: string
+  /** ISO instant, e.g. '2026-11-15T01:00:00.000Z'. */
+  value?: string | null
+  defaultValue?: string | null
+  /** The instant plus the wall date/time it was picked as. */
+  onValueChange?: (value: string | null, wall: DateTimeWall | null) => void   // DateTimeWall = { date, time }
+  name?: string                            // hidden input: the ISO instant
+  min?: CalendarDate                       // wall dates in `timeZone`
+  max?: CalendarDate
+  isDateDisabled?: (date: CalendarDate) => string | boolean | null | undefined
+  marks?: (date: CalendarDate) => readonly CalendarMark[] | null | undefined
+  step?: 5 | 10 | 15 | 20 | 30 | 60        // minutes, default 30
+  minTime?: string                         // 'HH:mm' wall window, default '00:00'
+  maxTime?: string                         // default '23:59'
+  isTimeDisabled?: (date: CalendarDate, time: string) => string | boolean | null | undefined
+  /** Zone line under the trigger and in the popup. Default: city + offset, e.g. 'Hermosillo · GMT−7'. */
+  zoneLabel?: string
+  showZone?: boolean                       // default true
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  locale?: string
+  weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6
+  today?: CalendarDate                     // today in `timeZone`
+  labels?: Partial<DateTimePickerLabels>
+  invalid?: boolean
+  variant?: 'filled' | 'outline' | 'ghost'
+  size?: 'sm' | 'md' | 'lg'
+}
+
+export type DateTimePickerProps = DateTimePickerOwnProps &
+  Omit<ComponentPropsWithoutRef<'button'>, 'value' | 'defaultValue' | 'onChange' | 'type' | 'name'>
+```
+
+Pitaya's tournament form:
+
+```tsx
+<Field>
+  <Field.Label htmlFor="starts">Inicio</Field.Label>
+  <DateTimePicker id="starts" name="startsAt" timeZone="America/Hermosillo" zoneLabel="Hora de Hermosillo"
+    locale="es-MX" labels={esLabels} step={30} min={today} defaultValue={t.startsAt} />
+</Field>
+```
+
+Deliberately **not** in v1: typing a time, seconds, a duration/end time, letting the person change
+the zone, a 12/24-hour switch (the locale decides).
+
+## Variants & tokens
+
+Trigger: the shared form-control map; text "Sat, Nov 14 · 6:00 PM" (`--sk-text`, semibold,
+tabular-nums), calendar icon `--sk-text-faint`. Zone line under it: `text-sm --sk-text-dim` with a
+globe icon.
+
+Popup: Popover content styling. Body: Calendar (left) + time column (132px, right), stacked below
+480px. Time column: a listbox, 276px tall (= the six-row grid), scrolls; option 34px,
+`rounded-sm`, `text-sm` tabular-nums; hover `--sk-surface-2`; selected `bg-gradient-accent
+--sk-on-accent` bold (same as a selected day); disabled `--sk-text-faint` 45%. Footer: zone line,
+"your time" line, `primary sm` Done.
+
+## States
+
+| State | Behavior |
+|---|---|
+| empty | placeholder; zone line still shows (people need to know the zone before picking) |
+| open, empty | calendar on today's month (in `timeZone`); time list disabled until a day is picked |
+| pick a day | keeps the time if one exists, else moves focus to the time list |
+| pick a time | value = the instant for (day, time) in `timeZone`; fires `onValueChange`; popup stays open |
+| Done / `Escape` / outside | closes; focus to the trigger (Escape doesn't undo picks: each pick already committed) |
+| your time | footer line with the same instant in the browser's zone, only when it differs; client-only |
+| DST gap | wall times that don't exist that day (spring forward) are disabled with `labels.skipped` |
+| DST overlap | a repeated wall time resolves to the earlier instant (Temporal's `'compatible'`) |
+
+**Motion:** Popover entrance; calendar month slide; the time list scrolls the selected option to
+the middle (instant under reduced motion).
+
+## Accessibility
+
+- [ ] Trigger: named by its label (`Field.Label` or `aria-label`); the value and the zone are its
+      description ("Inicio, button, sáb, 14 nov · 6:00 p.m., Hora de Hermosillo"), because a
+      `<label>` replaces the button's own text as its name.
+- [ ] Popup `role="dialog"`; Calendar grid + a named `listbox`; Tab moves grid → list → Done.
+- [ ] Listbox: `↑/↓` move and select, `Home/End`, type-ahead on the hour digits.
+- [ ] Disabled times use `aria-disabled` with the reason in the option's name.
+- [ ] Zone is always visible and announced; it is never only in a tooltip.
 
 ---
 
@@ -3906,6 +4549,167 @@ Static — no hover/focus (not interactive). Indicator width transition on value
 - [ ] `role="meter"` with `aria-valuenow/min/max`; `aria-valuetext` from `format` or override.
 - [ ] Named by `label` (`aria-labelledby`) or `aria-label`.
 - [ ] Indicator color is not the only signal — pair with `showValue` or text when tone matters.
+
+---
+
+# MonthView — @sukunagg/ui
+
+> Shows a whole month at once: a tournament schedule, a release calendar, or days played with a result in each cell.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { MonthView } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/month-view · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-month-view.md
+
+## Purpose
+
+Shows a whole month at once: a tournament schedule, a release calendar, or days played with a
+result in each cell. Events that last several days draw as bars across the week, and a busy day
+collapses into "+2 more". It renders on the server, so the URL (`?month=2026-11`) is the whole
+navigation and the page works with JavaScript off. Below 600px wide the grid turns into an agenda
+list.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import type { CalendarDate } from '../../utils/date/calendar-date'   // 'YYYY-MM-DD' (string)
+import type { EmptyStateProps } from '../empty-state'
+
+export interface CalendarEvent {
+  id: string
+  title: string
+  /** 'YYYY-MM-DD' for an all-day event, or an ISO instant for a timed one. */
+  start: string
+  /** Same forms. All-day `end` is inclusive; a timed `end` at exactly midnight closes the day
+   *  before (18:00–00:00 is one day). Omit for a one-day / zero-length event. */
+  end?: string
+  color?: string            // CSS color for the dot / bar, e.g. a game color. Default var(--sk-chart-1)
+  href?: string             // the event becomes a link
+  meta?: string             // second line in the list layout: 'Valorant · In person'
+  status?: ReactNode        // trailing badge in the list layout, e.g. <Badge>Full</Badge>
+}
+
+export interface MonthViewDayInfo {
+  inMonth: boolean
+  isToday: boolean
+  events: readonly CalendarEvent[]   // events touching this day
+}
+
+export interface MonthViewLabels {
+  previousMonth: string     // 'Previous month'
+  nextMonth: string         // 'Next month'
+  today: string             // 'Today'
+  more: (count: number) => string   // n => `+${n} more`
+  untracked: string         // 'Not tracked'
+  allDay: string            // 'All day'
+  ongoing: string           // 'Continues' (narrow list: a multi-day event that began last month)
+}
+
+interface MonthViewOwnProps {
+  month: CalendarDate                       // any day in the month to show
+  events?: readonly CalendarEvent[]
+  /** Zone for timed events and for today. Default 'UTC', the same on every server. */
+  timeZone?: string
+  today?: CalendarDate                      // default: today in `timeZone` at render
+  locale?: string                           // default 'en-US'
+  weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6
+  /** Prev / next / today links. Omit to show the caption without navigation. */
+  monthHref?: (month: CalendarDate) => string
+  /** Day numbers become links; "+N more" goes here when set. */
+  dayHref?: (date: CalendarDate) => string | undefined
+  /** Custom content under the day number (e.g. average placement). */
+  renderDay?: (date: CalendarDate, info: MonthViewDayInfo) => ReactNode
+  /** Days with no data source yet: hatched and named "Not tracked", never shown as empty/zero. */
+  isDateUntracked?: (date: CalendarDate) => boolean
+  variant?: 'grid' | 'tiles'                // default 'grid'; 'tiles' = rounded day tiles for renderDay
+  maxLanes?: number                         // event rows per day before "+N more"; default 3
+  /** 'auto' (default): agenda list below 600px container width. */
+  list?: 'auto' | 'always' | 'never'
+  /** Shown over the kept grid when the month has no events. Omit it (or `false`) for none. */
+  empty?: Pick<EmptyStateProps, 'title' | 'children' | 'actions' | 'icon'> | false
+  loading?: boolean
+  labels?: Partial<MonthViewLabels>
+  /** The section's id and the prefix for inner ids ("+N more" popovers, caption).
+   *  Default prefix `sk-month-YYYY-MM` (no id on the section). */
+  id?: string
+}
+
+// In the source: `interface MonthViewProps extends Omit<ComponentPropsWithoutRef<'section'>,
+// 'children'>` holding the own props above (the same shape).
+
+export type MonthViewProps = MonthViewOwnProps & Omit<ComponentPropsWithoutRef<'section'>, 'children'>
+```
+
+Pitaya's `/torneos` page:
+
+```tsx
+<MonthView month={month} today={today} locale="es-MX" labels={esLabels} timeZone="America/Hermosillo"
+  events={tournaments.map((t) => ({ id: t.slug, title: t.name, start: t.startsAt, end: t.endsAt,
+    color: gameColor[t.game.slug], href: `/torneos/${t.slug}`, meta: `${t.game.name} · ${venue(t)}` }))}
+  monthHref={(m) => `?month=${m.slice(0, 7)}`}
+  empty={{ title: 'No hay torneos este mes', children: 'Anunciamos fechas primero en nuestras redes.' }} />
+```
+
+Deliberately **not** in v1: week and day views with hour rows (later `WeekView`), drag to move or
+resize, a click-to-create callback (it's a server component), recurring-event expansion (pass
+concrete events).
+
+## Variants & tokens
+
+`grid` (default):
+
+| Part | Treatment |
+|---|---|
+| frame | `border --sk-line rounded-md overflow-hidden`; weekday row `bg` `--sk-surface-2` mixed toward `--sk-surface`, `text-xs` uppercase `--sk-text-faint` |
+| week row | `min-h` 112px, bottom `--sk-line-soft`; day columns split by `--sk-line-soft` |
+| outside day | bg `--sk-well` at 35%, number `--sk-text-faint` |
+| today | column bg `--sk-accent` at 7%; number in a 22px `bg-gradient-accent` pill, `--sk-on-accent` |
+| timed event | 22px row: 7px dot in the event color, short time (`6 PM` / `18:00`) `--sk-text-dim`, title `--sk-text`, ellipsis; hover `--sk-surface-2` |
+| multi-day bar | event color at 22% over `--sk-surface`, inset 1px ring at 40%, semibold title; square ends where the bar continues into the next/previous week |
+| "+N more" | `--sk-text-dim` semibold, same row height |
+| untracked day | 135° hatch in `--sk-line-soft`, 1px `--sk-line` inset |
+
+`tiles`: no frame lines; each in-month day is a rounded tile (`--sk-radius-sm`, `--sk-surface-2`,
+4px gaps), number top-left `text-xs --sk-text-faint`, `renderDay` content below; tracked days with
+no content are lighter; future days are outlined only; untracked days hatched. Outside days are
+blank cells. Tiles don't draw events: `renderDay` gets them as `info.events`.
+
+A one-day all-day event draws as a one-column bar (it has no time to show).
+
+Caption: the Calendar caption treatment at `text-lg`. Nav: Calendar nav buttons as links; "Today"
+as a `secondary sm` Button link (`aria-disabled` on the current month).
+
+## States
+
+| State | Behavior |
+|---|---|
+| data | events laid out in lanes (§6) |
+| busy day | `maxLanes − 1` events + "+N more" in the last lane |
+| empty month | the grid stays, `EmptyState` (`size="sm"`, `surface="panel"`) centred over it (charts rule "empty keeps the frame"); only when `empty` is given, never while loading |
+| loading | the grid with skeleton bars in some cells, `aria-busy="true"`, pulse stops under reduced motion |
+| narrow (`list="auto"`, < 600px) | the grid hides and the `Agenda` list of the month's events shows (CSS container query, both rendered) |
+| untracked days | hatched + "Not tracked" in the day's name; `renderDay` isn't called for them |
+
+**Motion:** none of its own (server component). The "+N more" popover uses the native `popover`
+entrance (`@starting-style` fade, instant under reduced motion).
+
+## Accessibility
+
+- [ ] `<section>` named by the caption (`aria-labelledby`); nav links named "Previous month" /
+      "Next month"; current-month "Today" link `aria-disabled`.
+- [ ] Each day is a list (`<ol>` in reading order) with a visually hidden full-date heading, so
+      screen readers hear "Saturday, October 10, 2026: 4 PM, Relámpago TFT; …" in order (time
+      first, the visible order). The visual grid is CSS on top of that order. Days without events
+      have no list.
+- [ ] Multi-day bars are announced once per week row, with their date range.
+- [ ] Events with `href` are links whose name includes time and title; others are text.
+- [ ] "+N more" names the count and the day: the visible `labels.more` text plus the full date
+      ("+2 more, Saturday, October 10, 2026"), so no extra label is needed.
+- [ ] Today: `aria-current="date"` on its heading. Untracked days say "Not tracked".
+- [ ] Event colors are never the only signal (title is always text); text ≥ 4.5:1 on bars in both
+      themes.
+- [ ] Loading: `aria-busy`; empty: the EmptyState is a `status`.
 
 ---
 

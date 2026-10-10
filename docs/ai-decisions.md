@@ -63,7 +63,18 @@ agent's own calls. Newest first.
   when there is no `dayHref`, keeping MonthView a zero-JS server component. (6) **Utilities in
   `packages/ui/src/utils/date/`**, not a fourth file per component, because the server components
   reuse them. (7) **DateTimePicker's `timeZone` is required**: a silent browser-zone default would
-  recreate the bug it replaces.
+  recreate the bug it replaces. (8) **Built (Q43):** the year and month pickers are labelled groups
+  of `aria-pressed` buttons instead of `role="grid"` divs (simpler, lint-clean, same keyboard); the
+  day grid keeps the APG `<table role="grid">` with a justified Biome suppression. DateRangePicker
+  collapses to one month on screens under 640px (`matchMedia`), because the popup's own width comes
+  from its months. Calendar measured 5.55 kB (target was 5 kB) with the pickers; budget 6.2 kB.
+  `.claude/worktrees` (local agent worktrees) is excluded from Biome so local checks pass while
+  builders run. (9) **MonthView / Agenda as built:** the popover target attribute is spelled per
+  React major (`popovertarget` on 18, `popoverTarget` on 19, read from `react`'s `version`), since
+  React 19 warns about the lowercase one; `labels.ongoing` added so the narrow list translates;
+  week rows are 4–6 (not a fixed six); a timed event ending exactly at midnight belongs to the day
+  before. Sizes: MonthView 7.63 kB (includes Agenda, Button, icons), Agenda 3.25 kB, both above the
+  spec targets.
 - **Why:** the specs have to hold the library's rules (AA contrast, zero hydration warnings, server
   components stay JS-free) where the mockup could ignore them.
 - **Reverse:** (1) swap the selected-day class to `bg-accent` (fails AA in dark); (2) require
