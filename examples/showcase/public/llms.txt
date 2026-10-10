@@ -27,7 +27,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - [BorderBeam](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/border-beam.md): Sends a short light around the border of a card, a featured match, a season pass or a plan tile, to mark the one thing on a screen that deserves attention.
 - [Breadcrumbs](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/breadcrumbs.md): Show the path to the current page and let users jump back up it.
 - [Button](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/button.md): Triggers an action.
-- [Calendar](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/calendar.md): 
+- [Calendar](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/calendar.md): Shows one or two months and lets people pick a day or a range with a mouse, touch or the keyboard.
 - [Card](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/card.md): A surface container that groups related content on an elevation.
 - [Carousel](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/carousel.md): A horizontal, one-slide-at-a-time content carousel for images, cards, or arbitrary nodes — the gap Slider (a range input) doesn't fill.
 - [Checkbox](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/checkbox.md): A boolean checkbox.
@@ -36,9 +36,9 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - [Combobox](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/combobox.md): A text input with a filtered list of suggestions (free-text autocomplete).
 - [ContextMenu](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/context-menu.md): Offer contextual actions where the pointer is — right-click on desktop, long-press on touch.
 - [Counter](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/counter.md): Animates a number from a start to a target value — for stat tiles, KPIs, pricing, and dashboards.
-- [DatePicker](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/date-picker.md): 
-- [DateRangePicker](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/date-range-picker.md): 
-- [DateTimePicker](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/date-time-picker.md): 
+- [DatePicker](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/date-picker.md): Lets people type a date or pick it from a calendar, for forms like a birth date or a deadline.
+- [DateRangePicker](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/date-range-picker.md): Picks a start and end day, for filters like "games from Sep 10 to Oct 9".
+- [DateTimePicker](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/date-time-picker.md): Picks a day and a start time in a given time zone, such as a tournament at 6:00 PM Hermosillo time, and hands back the exact moment as an ISO string.
 - [Dialog](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/dialog.md): A modal dialog.
 - [Divider](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/divider.md): A thin rule that separates content, horizontally or vertically.
 - [Drawer](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/drawer.md): A panel that slides in from an edge (nav, filters, details).

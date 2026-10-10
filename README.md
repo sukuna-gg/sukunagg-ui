@@ -131,7 +131,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `BracketBeam` · @sukunagg/fx | Shows a single-elimination tournament bracket and sends a beam of light along the champion's path, round by round, until the trophy card ignites. | [docs/llms/bracket-beam.md](docs/llms/bracket-beam.md) |
 | `Breadcrumbs` | Show the path to the current page and let users jump back up it. | [docs/llms/breadcrumbs.md](docs/llms/breadcrumbs.md) |
 | `Button` | Triggers an action. | [docs/llms/button.md](docs/llms/button.md) |
-| `Calendar` |  | [docs/llms/calendar.md](docs/llms/calendar.md) |
+| `Calendar` | Shows one or two months and lets people pick a day or a range with a mouse, touch or the keyboard. | [docs/llms/calendar.md](docs/llms/calendar.md) |
 | `Card` | A surface container that groups related content on an elevation. | [docs/llms/card.md](docs/llms/card.md) |
 | `Carousel` | A horizontal, one-slide-at-a-time content carousel for images, cards, or arbitrary nodes — the gap Slider (a range input) doesn't fill. | [docs/llms/carousel.md](docs/llms/carousel.md) |
 | `Checkbox` | A boolean checkbox. | [docs/llms/checkbox.md](docs/llms/checkbox.md) |
@@ -141,9 +141,9 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `ContextMenu` | Offer contextual actions where the pointer is — right-click on desktop, long-press on touch. | [docs/llms/context-menu.md](docs/llms/context-menu.md) |
 | `Counter` | Animates a number from a start to a target value — for stat tiles, KPIs, pricing, and dashboards. | [docs/llms/counter.md](docs/llms/counter.md) |
 | `DataBar` · @sukunagg/charts | A number with a small bar under it, for comparing rows of a table at a glance: damage to champions in a scoreboard, pick rate in a meta table. | [docs/llms/data-bar.md](docs/llms/data-bar.md) |
-| `DatePicker` |  | [docs/llms/date-picker.md](docs/llms/date-picker.md) |
-| `DateRangePicker` |  | [docs/llms/date-range-picker.md](docs/llms/date-range-picker.md) |
-| `DateTimePicker` |  | [docs/llms/date-time-picker.md](docs/llms/date-time-picker.md) |
+| `DatePicker` | Lets people type a date or pick it from a calendar, for forms like a birth date or a deadline. | [docs/llms/date-picker.md](docs/llms/date-picker.md) |
+| `DateRangePicker` | Picks a start and end day, for filters like "games from Sep 10 to Oct 9". | [docs/llms/date-range-picker.md](docs/llms/date-range-picker.md) |
+| `DateTimePicker` | Picks a day and a start time in a given time zone, such as a tournament at 6:00 PM Hermosillo time, and hands back the exact moment as an ISO string. | [docs/llms/date-time-picker.md](docs/llms/date-time-picker.md) |
 | `Dialog` | A modal dialog. | [docs/llms/dialog.md](docs/llms/dialog.md) |
 | `Divider` | A thin rule that separates content, horizontally or vertically. | [docs/llms/divider.md](docs/llms/divider.md) |
 | `DonutChart` · @sukunagg/charts | Shows a part-to-whole split with few parts: time played by role, games by queue, plans by share. | [docs/llms/donut-chart.md](docs/llms/donut-chart.md) |
