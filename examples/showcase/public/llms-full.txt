@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt). This file concatenates every component page plus the design-token reference; the index is at https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt.
 
-@sukunagg/ui is a React 18/19 component library: 73 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 74 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -39,6 +39,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - Drawer: A panel that slides in from an edge (nav, filters, details).
 - EmptyState: Takes the place of content that isn't there: no results, nothing yet this season, a player not found, a service not answering.
 - Field: Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you.
+- FileUpload: Lets people add a file by tapping, picking or dropping it, and shows what they added.
 - FlowField (@sukunagg/fx): A matchmaking-screen backdrop where crimson particles stream along a drifting noise field and swirl around the content you centre on it.
 - GlitchText: Hits real text with short RGB-split glitch bursts, for elimination banners, match results and error or offline headings.
 - GradientText: Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases.
@@ -2067,6 +2068,137 @@ the control.
 
 ---
 
+# FileUpload — @sukunagg/ui
+
+> Lets people add a file by tapping, picking or dropping it, and shows what they added.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { FileUpload, resizeImage } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/file-upload · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-file-upload.md
+
+## Purpose
+
+Lets people add a file by tapping, picking or dropping it, and shows what they added. On a phone it
+can open the back camera straight away (an ID photo); on a computer it opens the file picker or
+takes a dropped file. Photos can be shrunk on the device before they upload, so a 12 MB phone photo
+becomes a ~400 KB JPEG (Pitaya does this by hand today).
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+
+export interface FileUploadItem {
+  id: string
+  file: File                    // after `prepare`
+  original: File                // as picked
+  status: 'preparing' | 'ready' | 'uploading' | 'uploaded' | 'error'
+  progress?: number             // 0–100 while uploading
+  error?: string
+  previewUrl?: string           // object URL for images (revoked on remove/unmount)
+}
+
+export interface FileUploadLabels {
+  title: string                 // 'Choose a file or drop it here'
+  titleTouch: string            // 'Tap to take a photo' (coarse pointer + capture)
+  gallery: string               // 'Or choose from your gallery' (coarse pointer + capture)
+  preparing: string             // 'Preparing…'
+  ready: string                 // 'Ready'
+  uploaded: string              // 'Uploaded'
+  change: string                // 'Change'
+  remove: (name: string) => string        // n => `Remove ${n}`
+  retry: string                 // 'Retry'
+  wrongType: (accept: string) => string   // "That file type isn't accepted. Use …"
+  tooBig: (size: string, max: string) => string
+  tooMany: (max: number) => string
+  unreadable: string            // "Couldn't read that file. Try a JPG or PNG."
+  uploadFailed: string          // "Couldn't upload. Check your connection."
+}
+
+// The real <input type="file"> receives `name`, `id`, `required`, `disabled`, `form`, aria-*…;
+// `className` and `style` go to the wrapper <div>.
+export interface FileUploadProps
+  extends Omit<ComponentPropsWithoutRef<'input'>, 'type' | 'accept' | 'capture' | 'multiple' | 'onChange' | 'size'> {
+  accept?: string               // native syntax: 'image/*', '.pdf'
+  capture?: 'user' | 'environment'
+  multiple?: boolean
+  maxFiles?: number             // with `multiple`; default 10
+  maxSize?: number              // bytes, checked on the original file
+  /** Runs on each accepted file before it's kept or uploaded, e.g. resizeImage(…). */
+  prepare?: (file: File) => Promise<File>
+  /** Upload each file yourself. Without it, files stay in the input for the form to submit. */
+  onUpload?: (file: File, ctx: { onProgress: (percent: number) => void; signal: AbortSignal }) => Promise<void>
+  onFilesChange?: (items: readonly FileUploadItem[]) => void
+  /** 'zone' (default): a tall drop zone, one-file preview. 'compact': a short zone + list (multiple). */
+  layout?: 'zone' | 'compact'
+  hint?: ReactNode              // under the title, e.g. 'JPG, PNG or HEIC · up to 10 MB'
+  labels?: Partial<FileUploadLabels>
+  invalid?: boolean
+}
+
+export interface ResizeImageOptions { maxSide?: number; type?: 'image/jpeg' | 'image/webp'; quality?: number }
+/** Fixes camera rotation, caps the long side (default 2000px), re-encodes (default JPEG 0.85). */
+export function resizeImage(options?: ResizeImageOptions): (file: File) => Promise<File>
+```
+
+Pitaya's identity form:
+
+```tsx
+<Field>
+  <Field.Label htmlFor="front">Frente</Field.Label>
+  <FileUpload id="front" name="front" accept="image/*" capture="environment" maxSize={10_000_000}
+    prepare={resizeImage()} hint="JPG, PNG o HEIC · hasta 10 MB" labels={esLabels} required />
+</Field>
+```
+
+Deliberately **not** in v1: chunked/resumable uploads, image cropping, paste-from-clipboard, folder
+upload, a camera viewfinder (the OS camera via `capture` is enough).
+
+## Variants & tokens
+
+| Part | Treatment |
+|---|---|
+| zone | min 172px (`zone`) / 92px (`compact`), 1.5px dashed `--sk-line`, `--sk-radius-md`, bg `--sk-surface-2` mixed toward `--sk-surface`; hover border `--sk-text-faint` |
+| dragging | solid `--sk-accent` border, bg `--sk-accent` at 9%, icon `--sk-accent` |
+| icon tile | 44px, `--sk-surface`, 1px `--sk-line-soft`, 12px radius |
+| invalid / error | border `--sk-accent`; message `text-sm` semibold `--sk-accent` (Field's error style) |
+| preview (`zone`, ready) | image 112×76 `object-fit: cover`, "Ready" with `CheckIcon` in `--sk-success`, size line `text-xs --sk-text-faint` (e.g. "3.4 MB → 412 KB · 2000×1262 JPEG"; the pixel size appears once the preview image loads), `secondary sm` Change + `ghost sm` icon-only Remove (`CloseIcon`, named `labels.remove(name)`) |
+| thumb fallback | no preview: the `Spinner` while preparing, `ImageIcon` for images the browser can't draw (HEIC, TIFF), else the file extension ("PDF") |
+| list row (`compact`) | 40px thumb, name semibold ellipsis, status line, 4px progress track `--sk-surface` with `bg-gradient-accent` fill; failed rows: border `--sk-accent` at 45%, message in `--sk-accent`, `secondary sm` Retry |
+| gallery link | coarse pointers only, `--sk-accent` underlined text: a `<label>` around a second hidden input |
+
+## States
+
+| State | Behavior |
+|---|---|
+| empty | zone: title + hint; on coarse pointers with `capture`, `titleTouch` + the gallery link |
+| dragging | zone highlights while a file is over it |
+| preparing | spinner + `labels.preparing` (`aria-busy`) while `prepare` runs; Remove cancels it |
+| ready | preview / row; the prepared file is in the input |
+| uploading | progress bar with `onProgress`; Remove aborts the request |
+| uploaded | row says `labels.uploaded` |
+| error | type, size, count or unreadable (prepare threw): one `role="alert"` message under the zone, the file isn't kept; upload failed: the file's row/preview turns crimson with Retry |
+| no JS | the label + native input work as a plain file field |
+
+**Motion:** border/background transitions `--sk-duration-fast`; spinner rotation stops under
+reduced motion (it becomes a still ring + the text).
+
+## Accessibility
+
+- [ ] The input is a real `type="file"` with a label (the zone, or `Field.Label`); keyboard users
+      tab to it and press Enter/Space.
+- [ ] Focus ring on the zone while the hidden input is focused (`:focus-within`).
+- [ ] Drag and drop is an extra; everything works without it.
+- [ ] Errors are `role="alert"` and linked through `aria-describedby`; `aria-invalid` on the input.
+- [ ] Progress bars are `role="progressbar"` with the file name; Remove/Retry buttons name the file.
+- [ ] Preview images have alt text: the file name in the one-file preview (the name isn't shown
+      as text there); list thumbnails are decorative (`alt=""`, the name is the row's text).
+- [ ] Text ≥ 4.5:1 in both themes. The zone is identified by its text and icon; the dashed
+      border is decoration, and keyboard focus shows as the 2px `--sk-focus-ring` (≥ 3:1).
+
+---
+
 # FlowField — @sukunagg/fx
 
 > A matchmaking-screen backdrop where crimson particles stream along a drifting noise field and swirl around the content you centre on it.
@@ -2811,7 +2943,7 @@ motion: enter/exit transforms collapse to instant (`motion-reduce:*`).
 > A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
-- **Import:** `import { AlertIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, InfoIcon, LockIcon, MoonIcon, RefreshIcon, SearchIcon, SunIcon, UserIcon } from '@sukunagg/ui'`
+- **Import:** `import { AlertIcon, CameraIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, ImageIcon, InfoIcon, LockIcon, MoonIcon, RefreshIcon, SearchIcon, SunIcon, UploadIcon, UserIcon } from '@sukunagg/ui'`
 - **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
 - **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/icon · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-icon.md
 
@@ -2838,9 +2970,10 @@ export interface IconProps extends Omit<ComponentPropsWithoutRef<'svg'>, 'childr
 }
 
 // One component per glyph, each a forwardRef<SVGSVGElement, IconProps>:
-AlertIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon,
-ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, InfoIcon, LockIcon, MoonIcon,
-RefreshIcon, SearchIcon, SunIcon, UserIcon
+AlertIcon, CameraIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon,
+ChevronRightIcon, ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, ImageIcon, InfoIcon,
+LockIcon, MoonIcon, RefreshIcon, SearchIcon, SunIcon, UploadIcon, UserIcon
+// CameraIcon, ImageIcon, UploadIcon: added with FileUpload (Q42).
 ```
 
 Exported from the main entry: the build is per-file and the package is side-effect free (except

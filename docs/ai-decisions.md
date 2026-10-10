@@ -11,6 +11,12 @@ agent's own calls. Newest first.
 
 ## D41 — Toolkit wave: how the seven specs keep the library's rules
 
+> **FileUpload as built (Q43):** the input mirrors the file list even with `onUpload` (so
+> `required` keeps working; leave out `name` if the form shouldn't send the files again); a pick
+> over the file limit is refused whole; an empty-type HEIC counts as `image/heic`; unmounting aborts
+> in-flight uploads; `resizeImage` passes non-images through. 5.24 kB against a 3.5 kB target:
+> about 2 kB is the reused Button, Spinner and icons.
+
 - **Decision:** (1) **Kbd takes a `platform` prop** (`'mac' | 'other' | 'auto'`). `auto` renders the
   non-Mac keys on the server and swaps ⌘/⌥ in a tiny island after mount (`useSyncExternalStore`
   with a non-Mac server snapshot), so a Mac never gets a hydration warning; apps that read the

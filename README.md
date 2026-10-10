@@ -15,7 +15,7 @@
 
 **SSR-safe, accessible React components for dark-first products — and for the AI agents that build them.**
 
-<!-- count -->73<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
+<!-- count -->74<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
 contrast in both themes, `prefers-reduced-motion` honored, zero runtime styling, React Server
 Components-ready, React 18 and 19. Dark is the identity; light is a mode.
 
@@ -146,13 +146,14 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `Drawer` | A panel that slides in from an edge (nav, filters, details). | [docs/llms/drawer.md](docs/llms/drawer.md) |
 | `EmptyState` | Takes the place of content that isn't there: no results, nothing yet this season, a player not found, a service not answering. | [docs/llms/empty-state.md](docs/llms/empty-state.md) |
 | `Field` | Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you. | [docs/llms/field.md](docs/llms/field.md) |
+| `FileUpload`, `resizeImage` | Lets people add a file by tapping, picking or dropping it, and shows what they added. | [docs/llms/file-upload.md](docs/llms/file-upload.md) |
 | `FlowField` · @sukunagg/fx | A matchmaking-screen backdrop where crimson particles stream along a drifting noise field and swirl around the content you centre on it. | [docs/llms/flow-field.md](docs/llms/flow-field.md) |
 | `GlitchText` | Hits real text with short RGB-split glitch bursts, for elimination banners, match results and error or offline headings. | [docs/llms/glitch-text.md](docs/llms/glitch-text.md) |
 | `GradientText` | Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases. | [docs/llms/gradient-text.md](docs/llms/gradient-text.md) |
 | `Heatmap` · @sukunagg/charts | A calendar of activity: one square per day, weeks as columns, darker or brighter by how much happened — games played per day, commits, sessions. | [docs/llms/heatmap.md](docs/llms/heatmap.md) |
 | `HoloCard` · @sukunagg/fx | A holographic foil card that wraps your card art and tilts toward the pointer or the arrow keys. | [docs/llms/holo-card.md](docs/llms/holo-card.md) |
 | `HoverCard` | Preview richer context for a link without a click — a user card, a repo summary, a footnote. | [docs/llms/hover-card.md](docs/llms/hover-card.md) |
-| `AlertIcon`, `ChartIcon`, `CheckIcon`, `ChevronDownIcon`, `ChevronLeftIcon`, `ChevronRightIcon`, `ChevronUpIcon`, `ClockIcon`, `CloseIcon`, `ExternalIcon`, `InfoIcon`, `LockIcon`, `MoonIcon`, `RefreshIcon`, `SearchIcon`, `SunIcon`, `UserIcon` | A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links. | [docs/llms/icon.md](docs/llms/icon.md) |
+| `AlertIcon`, `CameraIcon`, `ChartIcon`, `CheckIcon`, `ChevronDownIcon`, `ChevronLeftIcon`, `ChevronRightIcon`, `ChevronUpIcon`, `ClockIcon`, `CloseIcon`, `ExternalIcon`, `ImageIcon`, `InfoIcon`, `LockIcon`, `MoonIcon`, `RefreshIcon`, `SearchIcon`, `SunIcon`, `UploadIcon`, `UserIcon` | A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links. | [docs/llms/icon.md](docs/llms/icon.md) |
 | `Input` | A single-line text input. | [docs/llms/input.md](docs/llms/input.md) |
 | `Kbd` | Shows a key or a shortcut the way it looks on a keyboard: Esc, ⌘ K, Ctrl + Shift + L. | [docs/llms/kbd.md](docs/llms/kbd.md) |
 | `Lightning` · @sukunagg/fx | A crackling crimson lightning bolt behind a hero banner, drawn by one WebGL shader over a server-rendered SVG poster. | [docs/llms/lightning.md](docs/llms/lightning.md) |
