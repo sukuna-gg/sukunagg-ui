@@ -426,7 +426,7 @@ Wave A approved and built ("lgtm", 2026-10-10); Review = the owner's visual pass
 | Item | Status |
 |---|---|
 | Icons `CameraIcon`, `UploadIcon`, `ImageIcon` (component-icon.md) | [ ] |
-| Motion: `sk-poll-bar` (`scripts/motion/poll.ts`). Timeline needed none: its halo uses Tailwind's built-in `animate-pulse` | [ ] |
+| Motion: `sk-poll-bar` (`scripts/motion/poll.ts`). Timeline needed none: its halo uses Tailwind's built-in `animate-pulse` | [x] |
 
 ### Wave A — read and scan (`@sukunagg/ui`, server)
 
@@ -442,7 +442,7 @@ Wave A approved and built ("lgtm", 2026-10-10); Review = the owner's visual pass
 |---|---|---|---|---|
 | CommandPalette | client, Base UI `dialog` + `autocomplete` (inline) | [x] component-command-palette.md | [ ] | [ ] |
 | FileUpload + `resizeImage` | client over a native file input | [x] component-file-upload.md | [ ] | [ ] |
-| Poll | server form + write-in island | [x] component-poll.md | [ ] | [ ] |
+| Poll | server form + write-in island | [x] component-poll.md | [x] 50 tests, 100% cov, 3.56 kB (budget 3.9 kB; spec target 1.5 kB missed: four states + form + results) | [ ] |
 
 ### Wave C — double elimination (`@sukunagg/fx`)
 
@@ -554,3 +554,4 @@ Agents append one line per meaningful status change: `YYYY-MM-DD · <what flippe
 - 2026-10-09 · Q41 — calendars designed: live mockup approved ("lgtm") with all four recommendations; specs written for Calendar, DatePicker, DateRangePicker, DateTimePicker, MonthView, Agenda (§D10, D40). Code waits on spec approval · (docs/q41-calendars)
 - 2026-10-10 · Q42 — toolkit wave designed: mockup + recommendations approved; specs written for Kbd, Prose, Timeline, CommandPalette, FileUpload, Poll and BracketBeam double elimination (§D11, D41). Code waits on spec approval · (docs/q41-calendars)
 - 2026-10-10 · Q42 — toolkit wave A built: Kbd (server + platform island), Prose (CSS only), Timeline; exported, stories, 35 tests, 100% cov each; sizes 1.27 / 1.07 / 1.23 kB (budgets 1.5 kB); 678 ui tests green; check, test:coverage, build, check:pkg, size all pass; changeset patch. Owner visual review pending · (docs/q41-calendars)
+- 2026-10-10 · Q43 — Poll built (parallel builder, reviewed): server `<form>` + write-in island, 50 tests, 100% cov, 5 browser specs, 3.56 kB; React 18 matrix green; changeset patch · (feat/poll)
