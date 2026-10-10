@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt).
 
-@sukunagg/ui is a React 18/19 component library: 70 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 73 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -45,6 +45,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - [HoverCard](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/hover-card.md): Preview richer context for a link without a click — a user card, a repo summary, a footnote.
 - [Icon](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/icon.md): A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links.
 - [Input](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/input.md): A single-line text input.
+- [Kbd](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/kbd.md): Shows a key or a shortcut the way it looks on a keyboard: Esc, ⌘ K, Ctrl + Shift + L.
 - [LootReveal](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/loot-reveal.md): Flips a row of face-down item cards to reveal what a player won, one after another, with a rarity glow per card and a spark burst for legendaries.
 - [MatchFound](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/match-found.md): The ready-check prompt a game client shows when the queue pops: a draining countdown ring, who on the team has accepted, and the Accept / Decline actions.
 - [Menu](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/menu.md): A dropdown menu of actions triggered by a button.
@@ -53,6 +54,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - [Pagination](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/pagination.md): Navigate between pages of results, with first/last always shown and ellipses in between.
 - [Popover](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/popover.md): Show a small, interactive panel next to the element that opened it — filters, quick settings, a share box, a date picker later.
 - [Progress](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/progress.md): A horizontal progress bar, determinate or indeterminate.
+- [Prose](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/prose.md): Styles long-form text you don't control element by element: rules, legal drafts, patch notes, help articles rendered from Markdown, MDX or a CMS.
 - [RadioGroup](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/radio-group.md): Choose one option from a small set.
 - [RankReveal](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/rank-reveal.md): Celebrates a new rank with a crest that bursts in over a ray field while an orbit draws around it and the rank name rises into place.
 - [RetroGrid](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/retro-grid.md): A synthwave arena backdrop for hero sections: a crimson perspective grid scrolls toward the viewer under a glowing horizon, two spotlights sway in the sky and a light wave rolls out of the horizon every few seconds.
@@ -72,6 +74,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - [Tabs](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/tabs.md): Switch between panels of related content.
 - [Text](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/text.md): The typographic primitive.
 - [Textarea](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/textarea.md): Multi-line free text: comments, descriptions, messages.
+- [Timeline](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/timeline.md): Lists things in the order they happened or will happen, with a time or label on the left: a match's objectives, a team's night at a tournament, an audit log, a changelog.
 - [Toast](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/toast.md): Transient notifications.
 - [ToggleGroup](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/toggle-group.md): Pick one option from a small, mutually-exclusive set (segmented control), or toggle several independent options (a formatting toolbar).
 - [Tooltip](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/tooltip.md): A hover/focus tooltip for supplementary text.

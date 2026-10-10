@@ -9,6 +9,54 @@ agent's own calls. Newest first.
 
 ---
 
+## D41 — Toolkit wave: how the seven specs keep the library's rules
+
+- **Decision:** (1) **Kbd takes a `platform` prop** (`'mac' | 'other' | 'auto'`). `auto` renders the
+  non-Mac keys on the server and swaps ⌘/⌥ in a tiny island after mount (`useSyncExternalStore`
+  with a non-Mac server snapshot), so a Mac never gets a hydration warning; apps that read the
+  user-agent header pass the platform and get an exact first paint. (2) **Prose uses `:where()`
+  descendant selectors**, so a component inside an article (Table, Kbd, Alert) keeps its own styles
+  without `!important`. (3) **FileUpload writes prepared files back into the real input** with a
+  `DataTransfer`, so a plain form submit sends the resized JPEG, not the 12 MB original; the input
+  stays a real `type="file"` and works before JS. (4) **Poll is a server-rendered `<form>`** with a
+  one-job island (focusing the write-in selects its radio); percentages use largest-remainder
+  rounding so they add to 100. (5) **CommandPalette uses Base UI Autocomplete's `inline open` mode**
+  inside Base UI Dialog (verified in `@base-ui/react` 1.8 types) instead of a hand-rolled listbox,
+  with accent-insensitive fuzzy matching ("bahia" finds "Bahía"). (6) **Double elimination is
+  specced in `docs/bracket-beam-double-elimination.md`**, not in `component-bracket-beam.md`, because
+  that doc feeds the generated `llms.txt`/README and must not advertise an unshipped API; the PR that
+  builds it merges the two. (7) **Three new icons** (Camera, Upload, Image) for FileUpload, added to
+  the icon set rather than inlined. (8) **Built (wave A):** Timeline's halo uses Tailwind's built-in
+  `animate-pulse` instead of a new keyframe, so `theme.css` doesn't change; Prose sizes sit on the
+  14/16/18px text tokens instead of the mockup's 13.5/15/17px.
+- **Why:** the mockup could ignore SSR, forms without JS and generated docs; the specs can't.
+- **Reverse:** (1) always render the island, or drop `auto`; (3) leave the original file in the
+  input and require `onUpload` for resizing; (4) a client widget; (6) write it straight into
+  `component-bracket-beam.md` and accept that the generated docs list it early.
+
+## D40 — Calendars: how the six specs meet the SSR and contrast rules
+
+- **Decision:** (1) **Selected days use `bg-gradient-accent`, not flat `--sk-accent`.** White on dark
+  `#FF3B4E` is 3.5:1 and fails AA for 13px text; the gradient's lightest stop `#D8253A` is 4.95:1
+  and matches Button `primary`. The approved mockup used the flat color. (2) **An inline Calendar
+  with no date to anchor on renders an empty frame first** (`aria-busy`) and fills the month after
+  mount, instead of reading the server clock: a cached server render days older than the hydration
+  would mismatch. Pickers never hit this (their popovers mount after hydration). (3) **Week start
+  from a CLDR table**, not `Intl.Locale#getWeekInfo` (missing in some engines), so server and
+  browser agree. (4) **`suppressHydrationWarning` on exactly two text spans** (DateTimePicker's
+  trigger time, DateRangePicker's `formatRange` text): ICU versions differ between Node and browsers
+  ("p.m." vs "p. m.", thin spaces around the dash). Nothing else suppresses. (5) **MonthView's "+N
+  more" uses the native `popover` attribute** (lowercase attributes so React 18 passes them through)
+  when there is no `dayHref`, keeping MonthView a zero-JS server component. (6) **Utilities in
+  `packages/ui/src/utils/date/`**, not a fourth file per component, because the server components
+  reuse them. (7) **DateTimePicker's `timeZone` is required**: a silent browser-zone default would
+  recreate the bug it replaces.
+- **Why:** the specs have to hold the library's rules (AA contrast, zero hydration warnings, server
+  components stay JS-free) where the mockup could ignore them.
+- **Reverse:** (1) swap the selected-day class to `bg-accent` (fails AA in dark); (2) require
+  `today` or `defaultMonth` instead; (4) drop the attribute and accept rare warnings; (5) a small
+  client island; (7) default to `'UTC'`.
+
 ## D39 — @sukunagg/fx: one shared loop under five client islands
 
 - **Decision:** (1) **One loop for every effect** (`packages/fx/src/internal/loop.ts`): a CSS poster
