@@ -17,21 +17,24 @@ list.
 ```
 packages/ui/src/components/month-view/
 ├── month-view.styles.tsx   # tv() slots (see §7). Pure. Server-safe.
-├── month-view.logic.tsx    # server component; forwardRef <section>; week rows, event lanes, links.
+├── month-view.logic.tsx    # server component; forwardRef <section>; week rows, event lanes, links;
+│                           #   also exports the pure `layoutWeek` (not re-exported by index).
 ├── month-view.test.tsx
 ├── month-view.stories.tsx
 └── index.tsx               # export { MonthView }; export type { MonthViewProps, CalendarEvent,
                             #   MonthViewDayInfo, MonthViewLabels }
 ```
 
-`CalendarEvent` is shared with `Agenda` (declared in `utils/date`, re-exported by both). Lane layout
-is a pure function in this component's logic file; `monthMatrix` comes from `utils/date`.
+`CalendarEvent` is shared with `Agenda` (declared in `utils/date/events.ts` with the pure placing,
+sorting and range helpers, re-exported by both; the package root exports it once). Lane layout
+(`layoutWeek`) is a pure function in this component's logic file; `monthMatrix` comes from
+`utils/date`.
 
 ## 3. API
 
 ```ts
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
-import type { CalendarDate } from '../calendar'
+import type { CalendarDate } from '../../utils/date/calendar-date'   // 'YYYY-MM-DD' (string)
 import type { EmptyStateProps } from '../empty-state'
 
 export interface CalendarEvent {
@@ -39,7 +42,8 @@ export interface CalendarEvent {
   title: string
   /** 'YYYY-MM-DD' for an all-day event, or an ISO instant for a timed one. */
   start: string
-  /** Same forms. All-day `end` is inclusive. Omit for a one-day / zero-length event. */
+  /** Same forms. All-day `end` is inclusive; a timed `end` at exactly midnight closes the day
+   *  before (18:00–00:00 is one day). Omit for a one-day / zero-length event. */
   end?: string
   color?: string            // CSS color for the dot / bar, e.g. a game color. Default var(--sk-chart-1)
   href?: string             // the event becomes a link
@@ -60,6 +64,7 @@ export interface MonthViewLabels {
   more: (count: number) => string   // n => `+${n} more`
   untracked: string         // 'Not tracked'
   allDay: string            // 'All day'
+  ongoing: string           // 'Continues' (narrow list: a multi-day event that began last month)
 }
 
 interface MonthViewOwnProps {
@@ -82,13 +87,17 @@ interface MonthViewOwnProps {
   maxLanes?: number                         // event rows per day before "+N more"; default 3
   /** 'auto' (default): agenda list below 600px container width. */
   list?: 'auto' | 'always' | 'never'
-  /** Shown over the grid when the month has no events. `false` turns it off. */
+  /** Shown over the kept grid when the month has no events. Omit it (or `false`) for none. */
   empty?: Pick<EmptyStateProps, 'title' | 'children' | 'actions' | 'icon'> | false
   loading?: boolean
   labels?: Partial<MonthViewLabels>
-  /** Prefix for ids ("+N more" popovers, caption). Default derived from the month. */
+  /** The section's id and the prefix for inner ids ("+N more" popovers, caption).
+   *  Default prefix `sk-month-YYYY-MM` (no id on the section). */
   id?: string
 }
+
+// In the source: `interface MonthViewProps extends Omit<ComponentPropsWithoutRef<'section'>,
+// 'children'>` holding the own props above (the same shape).
 
 export type MonthViewProps = MonthViewOwnProps & Omit<ComponentPropsWithoutRef<'section'>, 'children'>
 ```
@@ -124,7 +133,10 @@ concrete events).
 
 `tiles`: no frame lines; each in-month day is a rounded tile (`--sk-radius-sm`, `--sk-surface-2`,
 4px gaps), number top-left `text-xs --sk-text-faint`, `renderDay` content below; tracked days with
-no content are lighter; future days are outlined only; untracked days hatched.
+no content are lighter; future days are outlined only; untracked days hatched. Outside days are
+blank cells. Tiles don't draw events: `renderDay` gets them as `info.events`.
+
+A one-day all-day event draws as a one-column bar (it has no time to show).
 
 Caption: the Calendar caption treatment at `text-lg`. Nav: Calendar nav buttons as links; "Today"
 as a `secondary sm` Button link (`aria-disabled` on the current month).
@@ -135,7 +147,7 @@ as a `secondary sm` Button link (`aria-disabled` on the current month).
 |---|---|
 | data | events laid out in lanes (§6) |
 | busy day | `maxLanes − 1` events + "+N more" in the last lane |
-| empty month | the grid stays, `EmptyState` (`size="sm"`) centred over it (charts rule "empty keeps the frame") |
+| empty month | the grid stays, `EmptyState` (`size="sm"`, `surface="panel"`) centred over it (charts rule "empty keeps the frame"); only when `empty` is given, never while loading |
 | loading | the grid with skeleton bars in some cells, `aria-busy="true"`, pulse stops under reduced motion |
 | narrow (`list="auto"`, < 600px) | the grid hides and the `Agenda` list of the month's events shows (CSS container query, both rendered) |
 | untracked days | hatched + "Not tracked" in the day's name; `renderDay` isn't called for them |
@@ -153,36 +165,48 @@ entrance (`@starting-style` fade, instant under reduced motion).
   lane free across its span; then each day's timed events by start time fill that day's free lanes;
   overflow becomes "+N more" in the last free lane. Pure function, unit-tested on its own.
 - **"+N more"** links to `dayHref(date)` when given. Otherwise it is a `<button popovertarget>`
-  opening a native `popover` that lists the whole day: zero JS, works in every evergreen browser.
-  Attributes are written in lowercase so React 18 passes them through (checked by the React 18
-  matrix, `bun run test:react18`).
+  opening a native `popover="auto"` (`role="dialog"` named by the date, centred by the UA styles,
+  light dismiss and Esc) that lists the whole day: zero JS, works in every evergreen browser. The
+  target attribute is spelled per React major (`version` from `react`): lowercase `popovertarget`
+  on React 18, which passes unknown attributes through only in lowercase, and `popoverTarget` on
+  React 19, which warns "Invalid DOM property `popovertarget`" in development for the lowercase
+  spelling. Checked by the React 18 matrix (`bun run test:react18`).
 - **Today:** the `today` prop, else today in `timeZone` at render. Fine in a server component (it
   doesn't hydrate). Pass `today` if the page is statically cached or MonthView sits inside a client
   component (then it renders on both sides).
 - **Narrow layout:** with `list="auto"` both the grid and an `Agenda` of the month render; a
-  container query (`@container (max-width: 600px)`) shows one. No resize script.
+  container query (`@max-[600px]:`, container width under 600px) shows one. No resize script.
+- **Rows:** as many week rows as the month needs (4–6, `monthMatrix(…, fixedWeeks: false)`); a
+  page isn't a popover, so it doesn't have to keep one height.
 - Formatting through `Intl.DateTimeFormat(locale, { timeZone })`; short times drop `:00` in
   12-hour locales.
 
 ## 7. Styles (`month-view.styles.tsx`)
 
-`tv()` `slots`: `root` (`@container`), `header`, `caption`, `nav`, `frame`, `weekdays`, `weekday`,
-`week`, `background`, `dayBg`, `dayNumber`, `event`, `eventDot`, `eventTime`, `bar`, `more`,
-`morePopover`, `tile`, `skeleton`, `list`. Variants: `variant` (`grid`/`tiles`), `bar.continuesStart`
-/ `continuesEnd`, `dayBg.outside` / `today` / `untracked`. Grid placement uses inline
-`gridColumn`/`gridRow` styles (layout data, not class names); event colors go through `--sk-event`
-custom properties.
+`tv()` `slots`: `root` (`@container`), `header`, `caption`, `nav`, `navLink`, `frame`, `weekdays`,
+`weekday`, `week`, `background`, `dayBg`, `day`, `dayHead`, `heading`, `dayLink`, `dayNumber`,
+`custom`, `lanes`, `event`, `eventDot`, `eventTime`, `eventTitle`, `barItem`, `bar`, `more`,
+`morePopover`, `moreTitle`, `moreList`, `moreRow`, `tile`, `skeleton`, `empty`, `emptyCard`, `list`.
+Variants: `variant` (`grid`/`tiles`), `tone` (`in`/`out`/`today`: day number and today's column),
+`outside`, `untracked`, `fill` (tiles: `content`/`none`/`future`), `continuesStart` /
+`continuesEnd` (bars), `list` (`auto` adds the container-query pair). Each day column is a subgrid
+(the heading row lines up across the week) over an `<ol>` of 22px lanes; lanes are placed with an
+inline `gridRow` and a bar's width with an inline `--sk-span` read by a literal
+`w-[calc(var(--sk-span)*100%-…)]` (layout data, not class names); event colors go through the
+`--sk-event` custom property.
 
 ## 8. Accessibility checklist
 
 - [ ] `<section>` named by the caption (`aria-labelledby`); nav links named "Previous month" /
       "Next month"; current-month "Today" link `aria-disabled`.
 - [ ] Each day is a list (`<ol>` in reading order) with a visually hidden full-date heading, so
-      screen readers hear "Saturday, October 10: Relámpago TFT, 4 PM; …" in order. The visual grid
-      is CSS on top of that order.
+      screen readers hear "Saturday, October 10, 2026: 4 PM, Relámpago TFT; …" in order (time
+      first, the visible order). The visual grid is CSS on top of that order. Days without events
+      have no list.
 - [ ] Multi-day bars are announced once per week row, with their date range.
 - [ ] Events with `href` are links whose name includes time and title; others are text.
-- [ ] "+N more" names the count and the day ("2 more events on October 10").
+- [ ] "+N more" names the count and the day: the visible `labels.more` text plus the full date
+      ("+2 more, Saturday, October 10, 2026"), so no extra label is needed.
 - [ ] Today: `aria-current="date"` on its heading. Untracked days say "Not tracked".
 - [ ] Event colors are never the only signal (title is always text); text ≥ 4.5:1 on bars in both
       themes.
@@ -210,4 +234,8 @@ className wins, axe both themes.
   navigated, and pages stay cacheable per month.
 - Both layouts rendered and switched by a container query instead of measuring in JS.
 - Native `popover` for "+N more" instead of a client island (D40).
-- Budget target ≤ 4 kB gzip (it includes Agenda), measured +10% (P5).
+- Budget target ≤ 4 kB gzip (it includes Agenda), measured +10% (P5). Built, it measures 7.6 kB
+  brotli with Agenda, Button, EmptyState, Skeleton, two icons and the date utilities, so the
+  size-limit entry is the measured size +10%.
+- Event names put the time first ("4 PM, Relámpago TFT"), matching what's on screen.
+- `labels.ongoing` was added so the narrow Agenda can be translated too.

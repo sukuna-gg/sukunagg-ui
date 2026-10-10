@@ -73,7 +73,8 @@ interface DatePickerOwnProps {
 }
 
 // The visible field is a native <input type="text">; own props are consumed, the rest spread onto
-// it (id, required, disabled, readOnly, aria-*, autoComplete, onBlur…).
+// it (id, required, disabled, readOnly, aria-*, autoComplete, onBlur…). `className` styles the
+// outer wrapper (field + error line), not the input.
 export type DatePickerProps = DatePickerOwnProps &
   Omit<ComponentPropsWithoutRef<'input'>, 'value' | 'defaultValue' | 'onChange' | 'type' | 'min' |
     'max' | 'size' | 'name'>
@@ -114,7 +115,7 @@ Error line: `text-sm text-accent` under the field (Field's error style), `role="
 |---|---|
 | empty | placeholder in the locale's order (`MM/DD/YYYY`, `DD/MM/AAAA` with Spanish `placeholderParts`) |
 | typing | nothing commits while typing |
-| commit | on blur and on `Enter`: parse → validate → set value, reformat the text in the locale's order |
+| commit | on blur and on `Enter` (Enter commits and doesn't submit the form): parse → validate → set value, reformat the text in the locale's order |
 | invalid text | value unchanged, text kept so it can be fixed, `aria-invalid`, error line (`messages.invalid`) |
 | out of range / off day | same, with `messages.min`/`max`/the disabled reason |
 | cleared text | value becomes `null` (or the field reports `required` through native validation) |
@@ -188,4 +189,5 @@ closes.
 - The visible input has no `name`; a hidden input submits ISO, so servers never parse locale text.
 - The error line is built in: the component owns parsing, so it owns the message. Apps still use
   `Field` for the label and description.
-- Budget target: `Popover + deps` (46 kB) plus Calendar and the field, measured +10% (P5).
+- Size: 48.9 kB brotli with Base UI (Popover + deps alone is 42.6 kB; Base UI is shared with every
+  other popup), budget 54 kB (P5).

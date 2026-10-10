@@ -382,31 +382,31 @@ Specs approved with the rest of the backlog in Q43 ("keep going non stop until i
 
 | Item | Status |
 |---|---|
-| `utils/date/calendar-date.ts` — `'YYYY-MM-DD'` math + `monthMatrix` | [ ] |
-| `utils/date/locale.ts` — CLDR week start, names, typed-date parse/format | [ ] |
-| `utils/date/zone.ts` — IANA wall ⇄ instant via Intl (DST gap/overlap) | [ ] |
-| `scripts/motion/calendar.ts` — `sk-cal-next` / `sk-cal-prev` / `sk-cal-zoom` | [ ] |
+| `utils/date/calendar-date.ts` — `'YYYY-MM-DD'` math + `monthMatrix` | [x] 100% cov |
+| `utils/date/locale.ts` — CLDR week start, names, typed-date parse/format | [x] 100% cov |
+| `utils/date/zone.ts` — IANA wall ⇄ instant via Intl (DST gap/overlap) | [x] 100% cov (NY gap/overlap, Lord Howe, Kathmandu) |
+| `scripts/motion/calendar.ts` — `sk-calendar-next` / `-prev` / `-zoom` | [x] |
 
 ### Wave 1 — pickers
 
 | Item | Kind | Doc | Code | Review |
 |---|---|---|---|---|
-| Calendar | client, in-house grid | [x] component-calendar.md | [ ] | [ ] |
-| DatePicker | client, Base UI `popover` | [x] component-date-picker.md | [ ] | [ ] |
-| DateRangePicker | client, Base UI `popover` | [x] component-date-range-picker.md | [ ] | [ ] |
+| Calendar | client, in-house grid | [x] component-calendar.md | [x] 35 tests, 100% cov, 5.55 kB (budget 6.2 kB) | [ ] |
+| DatePicker | client, Base UI `popover` | [x] component-date-picker.md | [x] 18 tests, 100% cov, 48.9 kB with deps (budget 54 kB) | [ ] |
+| DateRangePicker | client, Base UI `popover` | [x] component-date-range-picker.md | [x] 16 tests, 100% cov, 49.9 kB with deps (budget 55 kB) | [ ] |
 
 ### Wave 1b — date and time
 
 | Item | Kind | Doc | Code | Review |
 |---|---|---|---|---|
-| DateTimePicker | client, Base UI `popover` | [x] component-date-time-picker.md | [ ] | [ ] |
+| DateTimePicker | client, Base UI `popover` | [x] component-date-time-picker.md | [x] 13 tests, 100% cov, 50.4 kB with deps (budget 56 kB) | [ ] |
 
 ### Wave 2 — schedules
 
 | Item | Kind | Doc | Code | Review |
 |---|---|---|---|---|
-| MonthView | server component | [x] component-month-view.md | [ ] | [ ] |
-| Agenda | server component | [x] component-agenda.md | [ ] | [ ] |
+| MonthView | server component | [x] component-month-view.md | [x] 29 tests, 100% cov, 7.63 kB incl. Agenda (budget 8.4 kB; spec 4 kB missed) | [ ] |
+| Agenda | server component | [x] component-agenda.md | [x] 18 tests, 100% cov, 3.25 kB (budget 3.6 kB; spec 2 kB missed) | [ ] |
 
 ### Later (not specced)
 
@@ -555,3 +555,5 @@ Agents append one line per meaningful status change: `YYYY-MM-DD · <what flippe
 - 2026-10-10 · Q42 — toolkit wave designed: mockup + recommendations approved; specs written for Kbd, Prose, Timeline, CommandPalette, FileUpload, Poll and BracketBeam double elimination (§D11, D41). Code waits on spec approval · (docs/q41-calendars)
 - 2026-10-10 · Q42 — toolkit wave A built: Kbd (server + platform island), Prose (CSS only), Timeline; exported, stories, 35 tests, 100% cov each; sizes 1.27 / 1.07 / 1.23 kB (budgets 1.5 kB); 678 ui tests green; check, test:coverage, build, check:pkg, size all pass; changeset patch. Owner visual review pending · (docs/q41-calendars)
 - 2026-10-10 · Q43 — Poll built (parallel builder, reviewed): server `<form>` + write-in island, 50 tests, 100% cov, 5 browser specs, 3.56 kB; React 18 matrix green; changeset patch · (feat/poll)
+- 2026-10-10 · Q43 — calendar pickers built: shared date utilities (19 tests), Calendar, DatePicker, DateRangePicker, DateTimePicker (exported, stories, browser specs, 100% cov each); 779 ui tests green; changeset patch · (feat/calendars)
+- 2026-10-10 · Q43 — MonthView + Agenda built (parallel builder, reviewed): `utils/date/events.ts`, lanes, native-popover "+N more", container-query list; 47 tests + 8 util tests, 100% cov; React 18 matrix green · (feat/calendars)
