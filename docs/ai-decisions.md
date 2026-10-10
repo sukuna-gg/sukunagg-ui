@@ -11,6 +11,13 @@ agent's own calls. Newest first.
 
 ## D41 — Toolkit wave: how the seven specs keep the library's rules
 
+> **Poll as built (Q43):** the write-in island checks "Other" on pointer-down and typing, not on
+> focus (tabbing through the field on the way to Vote silently changed a keyboard user's vote);
+> results keep the app's option order instead of sorting (hidden results never leak a ranking);
+> bars animate `scale` (compositor-only) rather than width; 3.56 kB against a 1.5 kB target, since
+> four states, twelve labels and the form + results don't fit lower. Arbitrary values use `--sk-*`:
+> `--color-*` resolves at `:root` and ignores a nested `data-theme` (found by the Poll builder; the
+> same fix went into Timeline in #35).
 > **FileUpload as built (Q43):** the input mirrors the file list even with `onUpload` (so
 > `required` keeps working; leave out `name` if the form shouldn't send the files again); a pick
 > over the file limit is refused whole; an empty-type HEIC counts as `image/heic`; unmounting aborts

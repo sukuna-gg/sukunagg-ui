@@ -413,6 +413,20 @@
     ]
   },
   {
+    "name": "Poll (static, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ Poll }",
+    "limit": "3.9 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "Popover + deps",
     "path": "dist/index.js",
     "import": "{ Popover }",
