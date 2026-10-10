@@ -405,8 +405,8 @@ Specs approved with the rest of the backlog in Q43 ("keep going non stop until i
 
 | Item | Kind | Doc | Code | Review |
 |---|---|---|---|---|
-| MonthView | server component | [x] component-month-view.md | [ ] | [ ] |
-| Agenda | server component | [x] component-agenda.md | [ ] | [ ] |
+| MonthView | server component | [x] component-month-view.md | [x] 29 tests, 100% cov, 7.63 kB incl. Agenda (budget 8.4 kB; spec 4 kB missed) | [ ] |
+| Agenda | server component | [x] component-agenda.md | [x] 18 tests, 100% cov, 3.25 kB (budget 3.6 kB; spec 2 kB missed) | [ ] |
 
 ### Later (not specced)
 
@@ -556,3 +556,4 @@ Agents append one line per meaningful status change: `YYYY-MM-DD · <what flippe
 - 2026-10-10 · Q42 — toolkit wave A built: Kbd (server + platform island), Prose (CSS only), Timeline; exported, stories, 35 tests, 100% cov each; sizes 1.27 / 1.07 / 1.23 kB (budgets 1.5 kB); 678 ui tests green; check, test:coverage, build, check:pkg, size all pass; changeset patch. Owner visual review pending · (docs/q41-calendars)
 - 2026-10-10 · Q43 — Poll built (parallel builder, reviewed): server `<form>` + write-in island, 50 tests, 100% cov, 5 browser specs, 3.56 kB; React 18 matrix green; changeset patch · (feat/poll)
 - 2026-10-10 · Q43 — calendar pickers built: shared date utilities (19 tests), Calendar, DatePicker, DateRangePicker, DateTimePicker (exported, stories, browser specs, 100% cov each); 779 ui tests green; changeset patch · (feat/calendars)
+- 2026-10-10 · Q43 — MonthView + Agenda built (parallel builder, reviewed): `utils/date/events.ts`, lanes, native-popover "+N more", container-query list; 47 tests + 8 util tests, 100% cov; React 18 matrix green · (feat/calendars)

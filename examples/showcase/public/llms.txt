@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt).
 
-@sukunagg/ui is a React 18/19 component library: 78 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 80 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -19,6 +19,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 ## Components
 
 - [Accordion](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/accordion.md): Vertically stacked, expandable sections.
+- [Agenda](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/agenda.md): Lists what's coming up, one heading per day ("Today · Friday, October 9", "Tomorrow · Saturday, October 10"), each event with its time, title, details and status.
 - [Alert](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/alert.md): An inline message that draws attention to information, success, a caution, or an error.
 - [AlertDialog](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/alert-dialog.md): Ask the user to confirm something that is hard to undo ("Delete project?", "Discard changes?").
 - [Avatar](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/avatar.md): A user/entity image with a graceful fallback (initials or icon) while loading or on error.
@@ -54,6 +55,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - [MatchFound](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/match-found.md): The ready-check prompt a game client shows when the queue pops: a draining countdown ring, who on the team has accepted, and the Accept / Decline actions.
 - [Menu](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/menu.md): A dropdown menu of actions triggered by a button.
 - [Meter](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/meter.md): Show a scalar measurement within a known range: storage used, quota, password strength, a score.
+- [MonthView](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/month-view.md): Shows a whole month at once: a tournament schedule, a release calendar, or days played with a result in each cell.
 - [NumberField](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/number-field.md): Enter a number precisely.
 - [Pagination](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/pagination.md): Navigate between pages of results, with first/last always shown and ellipses in between.
 - [Poll](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/poll.md): Asks one question with a few choices, optionally a write-in, and shows the results as bars with percentages.

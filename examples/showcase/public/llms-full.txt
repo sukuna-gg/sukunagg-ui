@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt). This file concatenates every component page plus the design-token reference; the index is at https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt.
 
-@sukunagg/ui is a React 18/19 component library: 78 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 80 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -14,6 +14,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 ## Components
 
 - Accordion: Vertically stacked, expandable sections.
+- Agenda: Lists what's coming up, one heading per day ("Today · Friday, October 9", "Tomorrow · Saturday, October 10"), each event with its time, title, details and status.
 - Alert: An inline message that draws attention to information, success, a caution, or an error.
 - AlertDialog: Ask the user to confirm something that is hard to undo ("Delete project?", "Discard changes?").
 - Avatar: A user/entity image with a graceful fallback (initials or icon) while loading or on error.
@@ -58,6 +59,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - MatchFound: The ready-check prompt a game client shows when the queue pops: a draining countdown ring, who on the team has accepted, and the Accept / Decline actions.
 - Menu: A dropdown menu of actions triggered by a button.
 - Meter: Show a scalar measurement within a known range: storage used, quota, password strength, a score.
+- MonthView: Shows a whole month at once: a tournament schedule, a release calendar, or days played with a result in each cell.
 - NumberField: Enter a number precisely.
 - Pagination: Navigate between pages of results, with first/last always shown and ellipses in between.
 - ParticleField (@sukunagg/fx): An always-dark hero stage where crimson embers rise out of a glowing haze behind your overlay content, for season launches, event banners, landing heroes and "play now" panels.
@@ -137,6 +139,96 @@ collapsed · expanded (chevron rotated) · focus-visible · disabled item.
 - [ ] Trigger is a `<button>` with `aria-expanded`/`aria-controls` (Base UI); panels are regions.
 - [ ] Enter/Space toggle; arrow keys move between headers.
 - [ ] Expanded state shown by more than the chevron (content visibility).
+
+---
+
+# Agenda — @sukunagg/ui
+
+> Lists what's coming up, one heading per day ("Today · Friday, October 9", "Tomorrow · Saturday, October 10"), each event with its time, title, details and status.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { Agenda } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/agenda · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-agenda.md
+
+## Purpose
+
+Lists what's coming up, one heading per day ("Today · Friday, October 9", "Tomorrow · Saturday,
+October 10"), each event with its time, title, details and status. It's the quickest way to read a
+schedule on a phone, and the list MonthView switches to when it gets narrow.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef } from 'react'
+import type { CalendarDate } from '../../utils/date/calendar-date'   // 'YYYY-MM-DD' (string)
+import type { CalendarEvent } from '../../utils/date/events'        // shared with MonthView
+import type { EmptyStateProps } from '../empty-state'
+
+export interface AgendaLabels {
+  allDay: string                 // 'All day'
+  ongoing: string                // 'Continues' (multi-day event that started before `from`)
+}
+
+interface AgendaOwnProps {
+  events: readonly CalendarEvent[]
+  from?: CalendarDate            // first day listed; default `today`
+  days?: number                  // how many days from `from`; default 14
+  timeZone?: string              // default 'UTC'
+  today?: CalendarDate           // default: today in `timeZone` at render
+  locale?: string                // default 'en-US'; also "Today"/"Tomorrow" via Intl.RelativeTimeFormat
+  headingLevel?: 2 | 3 | 4 | 5   // day headings; default 3
+  stickyHeadings?: boolean       // default true: headings pin while the list scrolls
+  /** Shown when no event falls in the window. Omit it (or `false`) to render nothing. */
+  empty?: Pick<EmptyStateProps, 'title' | 'children' | 'actions' | 'icon'> | false
+  loading?: boolean
+  labels?: Partial<AgendaLabels>
+}
+
+// In the source: `interface AgendaProps extends Omit<ComponentPropsWithoutRef<'section'>,
+// 'children'>` holding the own props above (the same shape).
+export type AgendaProps = AgendaOwnProps & Omit<ComponentPropsWithoutRef<'section'>, 'children'>
+```
+
+```tsx
+<Agenda events={upcoming} today={today} days={21} timeZone="America/Hermosillo" locale="es-MX"
+  className="max-h-[420px] overflow-y-auto"
+  empty={{ title: 'No hay torneos en las próximas 3 semanas' }} />
+```
+
+Only days with events get a heading; a gap of empty days is skipped, not listed. Deliberately
+**not** in v1: infinite loading, grouping by week or month, past events (pass `from` earlier to
+show them).
+
+## Variants & tokens
+
+No variants. Day heading: `text-xs` bold uppercase, tracking `.12em`, `--sk-text-faint`; today's
+heading `--sk-accent`; sticky with a `--sk-surface` background (the agenda's container color, set
+by `className` if it differs). Row: 4-column grid (time 64px · 10px dot · text · status),
+`py-2 px-2 rounded-sm`, hover `--sk-surface-2` when it's a link. Time `text-sm` semibold
+tabular-nums `--sk-text-dim`; dot in the event color; title `text-sm` semibold `--sk-text`
+(ellipsis); meta `text-xs --sk-text-faint`. Below 420px container width the status drops under the
+title.
+
+## States
+
+| State | Behavior |
+|---|---|
+| data | days with events, headings "Today ·", "Tomorrow ·" (from `RelativeTimeFormat`, numeric: 'auto'), then weekday + date |
+| multi-day event | listed on its first day in range, time column "—" (hidden from screen readers), meta shows its range ("Oct 12 – 16"; a timed one with wall times, "Oct 16, 8:00 PM – Oct 17, 6:00 AM"); if it started before `from`, it's listed first under `from` and its meta starts with `labels.ongoing` ("Continues · Sep 28 – Oct 25 · …") |
+| one-day all-day event | time column `labels.allDay` |
+| empty | `EmptyState` (`size="sm"`, `role="status"`) when `empty` is given; otherwise the section is empty |
+| loading | five skeleton rows, `aria-busy`; pulse stops under reduced motion |
+
+## Accessibility
+
+- [ ] Each day is a group: a real heading (`headingLevel`) + an `<ol>` of events.
+- [ ] Rows with `href` are links named time, title, meta, status ("6:00 PM, Copa Pitaya,
+      Valorant · In person, Open"; visually hidden commas keep the parts apart).
+- [ ] Today's heading has `aria-current="date"`.
+- [ ] Colors are decoration only; status is text (the app's Badge).
+- [ ] Sticky headings don't cover focused rows (scroll-margin on rows = heading height).
+- [ ] Loading `aria-busy`; empty state is a `status`.
 
 ---
 
@@ -4324,6 +4416,167 @@ Static — no hover/focus (not interactive). Indicator width transition on value
 - [ ] `role="meter"` with `aria-valuenow/min/max`; `aria-valuetext` from `format` or override.
 - [ ] Named by `label` (`aria-labelledby`) or `aria-label`.
 - [ ] Indicator color is not the only signal — pair with `showValue` or text when tone matters.
+
+---
+
+# MonthView — @sukunagg/ui
+
+> Shows a whole month at once: a tournament schedule, a release calendar, or days played with a result in each cell.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { MonthView } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/month-view · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-month-view.md
+
+## Purpose
+
+Shows a whole month at once: a tournament schedule, a release calendar, or days played with a
+result in each cell. Events that last several days draw as bars across the week, and a busy day
+collapses into "+2 more". It renders on the server, so the URL (`?month=2026-11`) is the whole
+navigation and the page works with JavaScript off. Below 600px wide the grid turns into an agenda
+list.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import type { CalendarDate } from '../../utils/date/calendar-date'   // 'YYYY-MM-DD' (string)
+import type { EmptyStateProps } from '../empty-state'
+
+export interface CalendarEvent {
+  id: string
+  title: string
+  /** 'YYYY-MM-DD' for an all-day event, or an ISO instant for a timed one. */
+  start: string
+  /** Same forms. All-day `end` is inclusive; a timed `end` at exactly midnight closes the day
+   *  before (18:00–00:00 is one day). Omit for a one-day / zero-length event. */
+  end?: string
+  color?: string            // CSS color for the dot / bar, e.g. a game color. Default var(--sk-chart-1)
+  href?: string             // the event becomes a link
+  meta?: string             // second line in the list layout: 'Valorant · In person'
+  status?: ReactNode        // trailing badge in the list layout, e.g. <Badge>Full</Badge>
+}
+
+export interface MonthViewDayInfo {
+  inMonth: boolean
+  isToday: boolean
+  events: readonly CalendarEvent[]   // events touching this day
+}
+
+export interface MonthViewLabels {
+  previousMonth: string     // 'Previous month'
+  nextMonth: string         // 'Next month'
+  today: string             // 'Today'
+  more: (count: number) => string   // n => `+${n} more`
+  untracked: string         // 'Not tracked'
+  allDay: string            // 'All day'
+  ongoing: string           // 'Continues' (narrow list: a multi-day event that began last month)
+}
+
+interface MonthViewOwnProps {
+  month: CalendarDate                       // any day in the month to show
+  events?: readonly CalendarEvent[]
+  /** Zone for timed events and for today. Default 'UTC', the same on every server. */
+  timeZone?: string
+  today?: CalendarDate                      // default: today in `timeZone` at render
+  locale?: string                           // default 'en-US'
+  weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6
+  /** Prev / next / today links. Omit to show the caption without navigation. */
+  monthHref?: (month: CalendarDate) => string
+  /** Day numbers become links; "+N more" goes here when set. */
+  dayHref?: (date: CalendarDate) => string | undefined
+  /** Custom content under the day number (e.g. average placement). */
+  renderDay?: (date: CalendarDate, info: MonthViewDayInfo) => ReactNode
+  /** Days with no data source yet: hatched and named "Not tracked", never shown as empty/zero. */
+  isDateUntracked?: (date: CalendarDate) => boolean
+  variant?: 'grid' | 'tiles'                // default 'grid'; 'tiles' = rounded day tiles for renderDay
+  maxLanes?: number                         // event rows per day before "+N more"; default 3
+  /** 'auto' (default): agenda list below 600px container width. */
+  list?: 'auto' | 'always' | 'never'
+  /** Shown over the kept grid when the month has no events. Omit it (or `false`) for none. */
+  empty?: Pick<EmptyStateProps, 'title' | 'children' | 'actions' | 'icon'> | false
+  loading?: boolean
+  labels?: Partial<MonthViewLabels>
+  /** The section's id and the prefix for inner ids ("+N more" popovers, caption).
+   *  Default prefix `sk-month-YYYY-MM` (no id on the section). */
+  id?: string
+}
+
+// In the source: `interface MonthViewProps extends Omit<ComponentPropsWithoutRef<'section'>,
+// 'children'>` holding the own props above (the same shape).
+
+export type MonthViewProps = MonthViewOwnProps & Omit<ComponentPropsWithoutRef<'section'>, 'children'>
+```
+
+Pitaya's `/torneos` page:
+
+```tsx
+<MonthView month={month} today={today} locale="es-MX" labels={esLabels} timeZone="America/Hermosillo"
+  events={tournaments.map((t) => ({ id: t.slug, title: t.name, start: t.startsAt, end: t.endsAt,
+    color: gameColor[t.game.slug], href: `/torneos/${t.slug}`, meta: `${t.game.name} · ${venue(t)}` }))}
+  monthHref={(m) => `?month=${m.slice(0, 7)}`}
+  empty={{ title: 'No hay torneos este mes', children: 'Anunciamos fechas primero en nuestras redes.' }} />
+```
+
+Deliberately **not** in v1: week and day views with hour rows (later `WeekView`), drag to move or
+resize, a click-to-create callback (it's a server component), recurring-event expansion (pass
+concrete events).
+
+## Variants & tokens
+
+`grid` (default):
+
+| Part | Treatment |
+|---|---|
+| frame | `border --sk-line rounded-md overflow-hidden`; weekday row `bg` `--sk-surface-2` mixed toward `--sk-surface`, `text-xs` uppercase `--sk-text-faint` |
+| week row | `min-h` 112px, bottom `--sk-line-soft`; day columns split by `--sk-line-soft` |
+| outside day | bg `--sk-well` at 35%, number `--sk-text-faint` |
+| today | column bg `--sk-accent` at 7%; number in a 22px `bg-gradient-accent` pill, `--sk-on-accent` |
+| timed event | 22px row: 7px dot in the event color, short time (`6 PM` / `18:00`) `--sk-text-dim`, title `--sk-text`, ellipsis; hover `--sk-surface-2` |
+| multi-day bar | event color at 22% over `--sk-surface`, inset 1px ring at 40%, semibold title; square ends where the bar continues into the next/previous week |
+| "+N more" | `--sk-text-dim` semibold, same row height |
+| untracked day | 135° hatch in `--sk-line-soft`, 1px `--sk-line` inset |
+
+`tiles`: no frame lines; each in-month day is a rounded tile (`--sk-radius-sm`, `--sk-surface-2`,
+4px gaps), number top-left `text-xs --sk-text-faint`, `renderDay` content below; tracked days with
+no content are lighter; future days are outlined only; untracked days hatched. Outside days are
+blank cells. Tiles don't draw events: `renderDay` gets them as `info.events`.
+
+A one-day all-day event draws as a one-column bar (it has no time to show).
+
+Caption: the Calendar caption treatment at `text-lg`. Nav: Calendar nav buttons as links; "Today"
+as a `secondary sm` Button link (`aria-disabled` on the current month).
+
+## States
+
+| State | Behavior |
+|---|---|
+| data | events laid out in lanes (§6) |
+| busy day | `maxLanes − 1` events + "+N more" in the last lane |
+| empty month | the grid stays, `EmptyState` (`size="sm"`, `surface="panel"`) centred over it (charts rule "empty keeps the frame"); only when `empty` is given, never while loading |
+| loading | the grid with skeleton bars in some cells, `aria-busy="true"`, pulse stops under reduced motion |
+| narrow (`list="auto"`, < 600px) | the grid hides and the `Agenda` list of the month's events shows (CSS container query, both rendered) |
+| untracked days | hatched + "Not tracked" in the day's name; `renderDay` isn't called for them |
+
+**Motion:** none of its own (server component). The "+N more" popover uses the native `popover`
+entrance (`@starting-style` fade, instant under reduced motion).
+
+## Accessibility
+
+- [ ] `<section>` named by the caption (`aria-labelledby`); nav links named "Previous month" /
+      "Next month"; current-month "Today" link `aria-disabled`.
+- [ ] Each day is a list (`<ol>` in reading order) with a visually hidden full-date heading, so
+      screen readers hear "Saturday, October 10, 2026: 4 PM, Relámpago TFT; …" in order (time
+      first, the visible order). The visual grid is CSS on top of that order. Days without events
+      have no list.
+- [ ] Multi-day bars are announced once per week row, with their date range.
+- [ ] Events with `href` are links whose name includes time and title; others are text.
+- [ ] "+N more" names the count and the day: the visible `labels.more` text plus the full date
+      ("+2 more, Saturday, October 10, 2026"), so no extra label is needed.
+- [ ] Today: `aria-current="date"` on its heading. Untracked days say "Not tracked".
+- [ ] Event colors are never the only signal (title is always text); text ≥ 4.5:1 on bars in both
+      themes.
+- [ ] Loading: `aria-busy`; empty: the EmptyState is a `status`.
 
 ---
 
