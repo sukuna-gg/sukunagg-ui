@@ -203,6 +203,13 @@
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
+    "name": "CommandPalette + deps",
+    "path": "dist/index.js",
+    "import": "{ CommandPalette }",
+    "limit": "53 kB",
+    "ignore": ["react", "react-dom", "react/jsx-runtime"]
+  },
+  {
     "name": "ContextMenu + deps",
     "path": "dist/index.js",
     "import": "{ ContextMenu }",

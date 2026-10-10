@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt).
 
-@sukunagg/ui is a React 18/19 component library: 81 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 82 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -35,6 +35,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - [Chip](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/chip.md): A compact token for filters, selections, or tags — optionally removable.
 - [Collapsible](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/collapsible.md): A single disclosure: "Show advanced options", "Read more", a sidebar group.
 - [Combobox](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/combobox.md): A text input with a filtered list of suggestions (free-text autocomplete).
+- [CommandPalette](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/command-palette.md): One search box, opened from anywhere with ⌘K / Ctrl+K, that finds players, pages and actions.
 - [ContextMenu](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/context-menu.md): Offer contextual actions where the pointer is — right-click on desktop, long-press on touch.
 - [Counter](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/counter.md): Animates a number from a start to a target value — for stat tiles, KPIs, pricing, and dashboards.
 - [DatePicker](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/date-picker.md): Lets people type a date or pick it from a calendar, for forms like a birth date or a deadline.

@@ -93,6 +93,16 @@ export type {
 export { Collapsible } from './components/collapsible'
 export type { ComboboxProps } from './components/combobox'
 export { Combobox } from './components/combobox'
+export type {
+  CommandPaletteEmptyProps,
+  CommandPaletteGroupProps,
+  CommandPaletteItemProps,
+  CommandPaletteLabels,
+  CommandPaletteProps,
+  CommandPaletteResult,
+  CommandPaletteTriggerProps,
+} from './components/command-palette'
+export { CommandPalette } from './components/command-palette'
 export type { ContextMenuProps } from './components/context-menu'
 export { ContextMenu } from './components/context-menu'
 export type { CounterProps } from './components/counter'

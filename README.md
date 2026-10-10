@@ -15,7 +15,7 @@
 
 **SSR-safe, accessible React components for dark-first products — and for the AI agents that build them.**
 
-<!-- count -->81<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
+<!-- count -->82<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
 contrast in both themes, `prefers-reduced-motion` honored, zero runtime styling, React Server
 Components-ready, React 18 and 19. Dark is the identity; light is a mode.
 
@@ -139,6 +139,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `Chip` | A compact token for filters, selections, or tags — optionally removable. | [docs/llms/chip.md](docs/llms/chip.md) |
 | `Collapsible` | A single disclosure: "Show advanced options", "Read more", a sidebar group. | [docs/llms/collapsible.md](docs/llms/collapsible.md) |
 | `Combobox` | A text input with a filtered list of suggestions (free-text autocomplete). | [docs/llms/combobox.md](docs/llms/combobox.md) |
+| `CommandPalette` | One search box, opened from anywhere with ⌘K / Ctrl+K, that finds players, pages and actions. | [docs/llms/command-palette.md](docs/llms/command-palette.md) |
 | `ContextMenu` | Offer contextual actions where the pointer is — right-click on desktop, long-press on touch. | [docs/llms/context-menu.md](docs/llms/context-menu.md) |
 | `Counter` | Animates a number from a start to a target value — for stat tiles, KPIs, pricing, and dashboards. | [docs/llms/counter.md](docs/llms/counter.md) |
 | `DataBar` · @sukunagg/charts | A number with a small bar under it, for comparing rows of a table at a glance: damage to champions in a scoreboard, pick rate in a meta table. | [docs/llms/data-bar.md](docs/llms/data-bar.md) |
