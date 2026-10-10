@@ -425,7 +425,7 @@ Wave A approved and built ("lgtm", 2026-10-10); Review = the owner's visual pass
 
 | Item | Status |
 |---|---|
-| Icons `CameraIcon`, `UploadIcon`, `ImageIcon` (component-icon.md) | [ ] |
+| Icons `CameraIcon`, `UploadIcon`, `ImageIcon` (component-icon.md) | [x] 20 icons, one icon 481 B |
 | Motion: `sk-poll-bar` (`scripts/motion/poll.ts`). Timeline needed none: its halo uses Tailwind's built-in `animate-pulse` | [x] |
 
 ### Wave A — read and scan (`@sukunagg/ui`, server)
@@ -440,8 +440,8 @@ Wave A approved and built ("lgtm", 2026-10-10); Review = the owner's visual pass
 
 | Item | Kind | Doc | Code | Review |
 |---|---|---|---|---|
-| CommandPalette | client, Base UI `dialog` + `autocomplete` (inline) | [x] component-command-palette.md | [ ] | [ ] |
-| FileUpload + `resizeImage` | client over a native file input | [x] component-file-upload.md | [ ] | [ ] |
+| CommandPalette | client, Base UI `dialog` + `autocomplete` (inline) | [x] component-command-palette.md | [x] 62 tests, 100% cov, 4 browser specs, 47.8 kB with deps (budget 53 kB) | [ ] |
+| FileUpload + `resizeImage` | client over a native file input | [x] component-file-upload.md | [x] 46 tests, 100% cov, 4 browser specs; 5.24 kB incl. Button/Spinner/icons (budget 5.8 kB; spec 3.5 kB missed), `resizeImage` 362 B | [ ] |
 | Poll | server form + write-in island | [x] component-poll.md | [x] 50 tests, 100% cov, 3.56 kB (budget 3.9 kB; spec target 1.5 kB missed: four states + form + results) | [ ] |
 
 ### Wave C — double elimination (`@sukunagg/fx`)
@@ -557,4 +557,6 @@ Agents append one line per meaningful status change: `YYYY-MM-DD · <what flippe
 - 2026-10-10 · Q43 — Poll built (parallel builder, reviewed): server `<form>` + write-in island, 50 tests, 100% cov, 5 browser specs, 3.56 kB; React 18 matrix green; changeset patch · (feat/poll)
 - 2026-10-10 · Q43 — calendar pickers built: shared date utilities (19 tests), Calendar, DatePicker, DateRangePicker, DateTimePicker (exported, stories, browser specs, 100% cov each); 779 ui tests green; changeset patch · (feat/calendars)
 - 2026-10-10 · Q43 — MonthView + Agenda built (parallel builder, reviewed): `utils/date/events.ts`, lanes, native-popover "+N more", container-query list; 47 tests + 8 util tests, 100% cov; React 18 matrix green · (feat/calendars)
+- 2026-10-10 · Q43 — FileUpload + resizeImage + Camera/Upload/Image icons built (parallel builder, reviewed): 46 tests, 100% cov, 4 browser specs (a real 4000×3000 JPEG reaches FormData at 2000×1500); changeset patch · (feat/file-upload)
+- 2026-10-10 · Q43 — CommandPalette built (parallel builder, reviewed): pure fuzzy filter + chord parser modules, items registered via context with in-place `<template>` markers, React 18 matrix green · (feat/command-palette)
 - 2026-10-10 · Q43 — BracketBeam double elimination built (parallel builder, reviewed): `format="double"` with explicit `id`/`next` links, upper + lower bands, grand final, drop chips; single-elimination markup unchanged; 88 tests, 100% cov, 9.94 kB; changeset patch · (feat/bracket-double)

@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt). This file concatenates every component page plus the design-token reference; the index is at https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt.
 
-@sukunagg/ui is a React 18/19 component library: 80 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 82 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -32,6 +32,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - Chip: A compact token for filters, selections, or tags — optionally removable.
 - Collapsible: A single disclosure: "Show advanced options", "Read more", a sidebar group.
 - Combobox: A text input with a filtered list of suggestions (free-text autocomplete).
+- CommandPalette: One search box, opened from anywhere with ⌘K / Ctrl+K, that finds players, pages and actions.
 - ContextMenu: Offer contextual actions where the pointer is — right-click on desktop, long-press on touch.
 - Counter: Animates a number from a start to a target value — for stat tiles, KPIs, pricing, and dashboards.
 - DataBar (@sukunagg/charts): A number with a small bar under it, for comparing rows of a table at a glance: damage to champions in a scoreboard, pick rate in a meta table.
@@ -44,6 +45,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - Drawer: A panel that slides in from an edge (nav, filters, details).
 - EmptyState: Takes the place of content that isn't there: no results, nothing yet this season, a player not found, a service not answering.
 - Field: Wraps one form control (an Input, Checkbox, Switch, …) with a label, an optional description and an optional error, and wires the id / aria-labelledby / aria-describedby / aria-invalid relationships for you.
+- FileUpload: Lets people add a file by tapping, picking or dropping it, and shows what they added.
 - FlowField (@sukunagg/fx): A matchmaking-screen backdrop where crimson particles stream along a drifting noise field and swirl around the content you centre on it.
 - GlitchText: Hits real text with short RGB-split glitch bursts, for elimination banners, match results and error or offline headings.
 - GradientText: Fills text with a gradient (via background-clip: text) for wordmarks, hero headings, and accent phrases.
@@ -1841,6 +1843,159 @@ closed · typing (filtered list) · item highlighted (keyboard) · empty (no mat
 
 ---
 
+# CommandPalette — @sukunagg/ui
+
+> One search box, opened from anywhere with ⌘K / Ctrl+K, that finds players, pages and actions.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { CommandPalette } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/command-palette · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-command-palette.md
+
+## Purpose
+
+One search box, opened from anywhere with ⌘K / Ctrl+K, that finds players, pages and actions. It
+filters the items you give it as you type, can ask your server for more (a player lookup), and can
+show a hint when the text is almost valid ("Add the tag after a #"). Enter opens the highlighted
+result; Escape closes and puts focus back where it was.
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactElement, ReactNode } from 'react'
+
+export interface CommandPaletteResult {
+  id: string
+  label: string
+  description?: string
+  icon?: ReactNode
+  href?: string
+  onSelect?: () => void
+}
+
+export interface CommandPaletteLabels {
+  placeholder: string        // 'Search…' (input placeholder + name, Trigger text)
+  dialog: string             // 'Command palette' (dialog name)
+  results: string            // 'Results' (remote group heading)
+  searching: string          // 'Searching…'
+  searchFailed: string       // "Couldn't search. Try again."
+  empty: (query: string) => string   // q => `No results for “${q}”`
+  move: string; open: string; close: string   // footer: 'to move', 'to open', 'to close'
+}
+
+export interface CommandPaletteProps {
+  children: ReactNode                       // Trigger, Group, Item, Empty
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  /** Global shortcut that toggles it. Default 'mod+K'; `null` turns it off. */
+  shortcut?: string | null
+  /** Remote results for the trimmed query, shown first under `labels.results`. Debounced 150ms,
+   *  never called for an empty query; the signal aborts stale requests and on close. */
+  onSearch?: (query: string, signal: AbortSignal) => Promise<readonly CommandPaletteResult[]>
+  /** A line above the results for an almost-valid query, e.g. sukuna-gg-web's Riot ID rules.
+   *  Receives the raw input. */
+  hint?: (query: string) => ReactNode | null
+  /** Max items shown per local group while searching. Default 5; `Infinity` turns it off. */
+  maxPerGroup?: number
+  labels?: Partial<CommandPaletteLabels>
+}
+
+export interface CommandPaletteGroupProps { heading: string; children: ReactNode }
+
+export interface CommandPaletteItemProps {
+  /** Text that is searched and shown (matched letters highlighted). */
+  value: string
+  /** Extra words that match but aren't shown ('settings' for "Preferences"). */
+  keywords?: readonly string[]
+  description?: string
+  icon?: ReactNode
+  /** Kbd keys shown at the end, e.g. 'mod+shift+L'. The palette doesn't bind them. */
+  shortcut?: string
+  href?: string                 // renders a link; Enter follows it
+  onSelect?: () => void         // for actions; the palette closes after
+  disabled?: boolean            // shown, never picked (a disabled link drops its href)
+}
+
+export interface CommandPaletteTriggerProps extends ComponentPropsWithoutRef<'button'> {
+  render?: ReactElement         // your own element; trigger props are merged onto it
+}
+
+export interface CommandPaletteEmptyProps {
+  children: ReactNode | ((query: string) => ReactNode)
+}
+```
+
+```tsx
+<CommandPalette onSearch={searchPlayers} hint={(q) => (q.includes('#') ? riotIdProblem(q) : null)}>
+  <CommandPalette.Trigger />
+  <CommandPalette.Group heading="Recent players">
+    {recent.map((p) => (
+      <CommandPalette.Item key={p.id} value={p.riotId} description={p.meta} href={p.href} />
+    ))}
+  </CommandPalette.Group>
+  <CommandPalette.Group heading="Actions">
+    <CommandPalette.Item value="Switch theme" shortcut="mod+shift+L" onSelect={toggleTheme} />
+  </CommandPalette.Group>
+</CommandPalette>
+```
+
+`CommandPalette.Trigger` renders a search-field-looking button ("Search…" + the shortcut as
+`Kbd`, hidden when `shortcut={null}`); pass `render` to use your own element, or children to
+replace its content. `CommandPalette.Empty` overrides the empty message; a function child gets the
+trimmed query. Groups and Items may sit inside your own components: they register with the
+palette through context, in document order.
+
+Deliberately **not** in v1: nested pages ("> theme > dark"), recent-history storage (the app owns
+it), binding item `shortcut`s globally, multi-select.
+
+## Variants & tokens
+
+No variants. Backdrop and popup as `Dialog` (`--sk-z-dialog`), popup `min(580px, 100vw - 2rem)`
+(never taller than the viewport below it), `rounded-lg`, `--sk-surface`, `shadow-card`, placed at
+12vh from the top (not centered, so the list grows downward without moving the input).
+
+| Part | Treatment |
+|---|---|
+| trigger | 40px, max 340px, `--sk-surface-2`, border `--sk-line` (hover `--sk-text-faint`), `rounded-md`, `--sk-text-faint` |
+| input row | 54px, 15.5px text, `SearchIcon` `--sk-text-faint`, `Esc` key cap at the end, bottom `--sk-line-soft` |
+| list | max 324px, scrolls; 6px padding |
+| group heading | `text-xs` bold uppercase, tracking .1em, `--sk-text-faint` |
+| item | 2 lines (label semibold `--sk-text`, description `text-sm --sk-text-faint`), 30px icon tile `--sk-surface-2`; highlighted `bg --sk-surface-2`, icon `--sk-accent` on `--sk-surface`; at the end the item's `shortcut` as `Kbd`, else a `↵` shown only on the highlighted row |
+| match highlight | matched letters `--sk-accent`, extra-bold (no background); on the highlighted row mixed 20% toward `--sk-text` (plain accent on `surface-2` is 4.30:1 in light) |
+| hint | `--sk-accent` at 9% panel, `InfoIcon` in `--sk-accent`, text `--sk-text` |
+| footer | `text-sm --sk-text-faint` with Kbd hints, top `--sk-line-soft`, `surface-2` 40% tint |
+
+## States
+
+| State | Behavior |
+|---|---|
+| closed | server renders the Trigger only (plus one empty, inert `<template>` per Item) |
+| open, empty query | all groups, in the order given; first item highlighted |
+| typing | items filtered and sorted by score within each group; empty groups hide; `maxPerGroup` |
+| remote search | "Searching…" row under `labels.results` (after 150ms debounce), then results first; stale requests aborted; errors (rejection or throw) show `labels.searchFailed`; "No results" waits until the search is done |
+| hint | shown above the results while `hint(query)` returns something |
+| no results | `labels.empty(query)` or `CommandPalette.Empty` |
+| select | `href` items navigate (real `<a>`; ⌘/Ctrl/Shift-click opens elsewhere and keeps the palette open), `onSelect` runs; the dialog closes; focus returns to the element that opened it |
+| shortcut while open | closes it (the shortcut toggles) |
+
+**Motion:** Dialog's fade + 98→100% scale; reduced motion instant.
+
+## Accessibility
+
+- [ ] Dialog named (`labels.dialog`); focus goes to the input on open and back to the opener on close.
+- [ ] Input is `role="combobox"` with `aria-controls` and `aria-activedescendant` (Base UI), named by
+      `labels.placeholder`.
+- [ ] Groups are `role="group"` labelled by their heading; items are options with their full label
+      (highlight marks are presentational: a visually-hidden copy carries the whole label, the
+      highlighted copy is `aria-hidden`).
+- [ ] Hint, "Searching…" and empty states are polite live regions.
+- [ ] `href` items are real links (middle-click, open in new tab work).
+- [ ] Shortcut shown on the Trigger with `Kbd`; it's never the only way to open the palette.
+- [ ] Text ≥ 4.5:1; focus/highlight visible in both themes.
+
+---
+
 # ContextMenu — @sukunagg/ui
 
 > Offer contextual actions where the pointer is — right-click on desktop, long-press on touch.
@@ -2807,6 +2962,137 @@ the control.
 
 ---
 
+# FileUpload — @sukunagg/ui
+
+> Lets people add a file by tapping, picking or dropping it, and shows what they added.
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { FileUpload, resizeImage } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/file-upload · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-file-upload.md
+
+## Purpose
+
+Lets people add a file by tapping, picking or dropping it, and shows what they added. On a phone it
+can open the back camera straight away (an ID photo); on a computer it opens the file picker or
+takes a dropped file. Photos can be shrunk on the device before they upload, so a 12 MB phone photo
+becomes a ~400 KB JPEG (Pitaya does this by hand today).
+
+## API
+
+```ts
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+
+export interface FileUploadItem {
+  id: string
+  file: File                    // after `prepare`
+  original: File                // as picked
+  status: 'preparing' | 'ready' | 'uploading' | 'uploaded' | 'error'
+  progress?: number             // 0–100 while uploading
+  error?: string
+  previewUrl?: string           // object URL for images (revoked on remove/unmount)
+}
+
+export interface FileUploadLabels {
+  title: string                 // 'Choose a file or drop it here'
+  titleTouch: string            // 'Tap to take a photo' (coarse pointer + capture)
+  gallery: string               // 'Or choose from your gallery' (coarse pointer + capture)
+  preparing: string             // 'Preparing…'
+  ready: string                 // 'Ready'
+  uploaded: string              // 'Uploaded'
+  change: string                // 'Change'
+  remove: (name: string) => string        // n => `Remove ${n}`
+  retry: string                 // 'Retry'
+  wrongType: (accept: string) => string   // "That file type isn't accepted. Use …"
+  tooBig: (size: string, max: string) => string
+  tooMany: (max: number) => string
+  unreadable: string            // "Couldn't read that file. Try a JPG or PNG."
+  uploadFailed: string          // "Couldn't upload. Check your connection."
+}
+
+// The real <input type="file"> receives `name`, `id`, `required`, `disabled`, `form`, aria-*…;
+// `className` and `style` go to the wrapper <div>.
+export interface FileUploadProps
+  extends Omit<ComponentPropsWithoutRef<'input'>, 'type' | 'accept' | 'capture' | 'multiple' | 'onChange' | 'size'> {
+  accept?: string               // native syntax: 'image/*', '.pdf'
+  capture?: 'user' | 'environment'
+  multiple?: boolean
+  maxFiles?: number             // with `multiple`; default 10
+  maxSize?: number              // bytes, checked on the original file
+  /** Runs on each accepted file before it's kept or uploaded, e.g. resizeImage(…). */
+  prepare?: (file: File) => Promise<File>
+  /** Upload each file yourself. Without it, files stay in the input for the form to submit. */
+  onUpload?: (file: File, ctx: { onProgress: (percent: number) => void; signal: AbortSignal }) => Promise<void>
+  onFilesChange?: (items: readonly FileUploadItem[]) => void
+  /** 'zone' (default): a tall drop zone, one-file preview. 'compact': a short zone + list (multiple). */
+  layout?: 'zone' | 'compact'
+  hint?: ReactNode              // under the title, e.g. 'JPG, PNG or HEIC · up to 10 MB'
+  labels?: Partial<FileUploadLabels>
+  invalid?: boolean
+}
+
+export interface ResizeImageOptions { maxSide?: number; type?: 'image/jpeg' | 'image/webp'; quality?: number }
+/** Fixes camera rotation, caps the long side (default 2000px), re-encodes (default JPEG 0.85). */
+export function resizeImage(options?: ResizeImageOptions): (file: File) => Promise<File>
+```
+
+Pitaya's identity form:
+
+```tsx
+<Field>
+  <Field.Label htmlFor="front">Frente</Field.Label>
+  <FileUpload id="front" name="front" accept="image/*" capture="environment" maxSize={10_000_000}
+    prepare={resizeImage()} hint="JPG, PNG o HEIC · hasta 10 MB" labels={esLabels} required />
+</Field>
+```
+
+Deliberately **not** in v1: chunked/resumable uploads, image cropping, paste-from-clipboard, folder
+upload, a camera viewfinder (the OS camera via `capture` is enough).
+
+## Variants & tokens
+
+| Part | Treatment |
+|---|---|
+| zone | min 172px (`zone`) / 92px (`compact`), 1.5px dashed `--sk-line`, `--sk-radius-md`, bg `--sk-surface-2` mixed toward `--sk-surface`; hover border `--sk-text-faint` |
+| dragging | solid `--sk-accent` border, bg `--sk-accent` at 9%, icon `--sk-accent` |
+| icon tile | 44px, `--sk-surface`, 1px `--sk-line-soft`, 12px radius |
+| invalid / error | border `--sk-accent`; message `text-sm` semibold `--sk-accent` (Field's error style) |
+| preview (`zone`, ready) | image 112×76 `object-fit: cover`, "Ready" with `CheckIcon` in `--sk-success`, size line `text-xs --sk-text-faint` (e.g. "3.4 MB → 412 KB · 2000×1262 JPEG"; the pixel size appears once the preview image loads), `secondary sm` Change + `ghost sm` icon-only Remove (`CloseIcon`, named `labels.remove(name)`) |
+| thumb fallback | no preview: the `Spinner` while preparing, `ImageIcon` for images the browser can't draw (HEIC, TIFF), else the file extension ("PDF") |
+| list row (`compact`) | 40px thumb, name semibold ellipsis, status line, 4px progress track `--sk-surface` with `bg-gradient-accent` fill; failed rows: border `--sk-accent` at 45%, message in `--sk-accent`, `secondary sm` Retry |
+| gallery link | coarse pointers only, `--sk-accent` underlined text: a `<label>` around a second hidden input |
+
+## States
+
+| State | Behavior |
+|---|---|
+| empty | zone: title + hint; on coarse pointers with `capture`, `titleTouch` + the gallery link |
+| dragging | zone highlights while a file is over it |
+| preparing | spinner + `labels.preparing` (`aria-busy`) while `prepare` runs; Remove cancels it |
+| ready | preview / row; the prepared file is in the input |
+| uploading | progress bar with `onProgress`; Remove aborts the request |
+| uploaded | row says `labels.uploaded` |
+| error | type, size, count or unreadable (prepare threw): one `role="alert"` message under the zone, the file isn't kept; upload failed: the file's row/preview turns crimson with Retry |
+| no JS | the label + native input work as a plain file field |
+
+**Motion:** border/background transitions `--sk-duration-fast`; spinner rotation stops under
+reduced motion (it becomes a still ring + the text).
+
+## Accessibility
+
+- [ ] The input is a real `type="file"` with a label (the zone, or `Field.Label`); keyboard users
+      tab to it and press Enter/Space.
+- [ ] Focus ring on the zone while the hidden input is focused (`:focus-within`).
+- [ ] Drag and drop is an extra; everything works without it.
+- [ ] Errors are `role="alert"` and linked through `aria-describedby`; `aria-invalid` on the input.
+- [ ] Progress bars are `role="progressbar"` with the file name; Remove/Retry buttons name the file.
+- [ ] Preview images have alt text: the file name in the one-file preview (the name isn't shown
+      as text there); list thumbnails are decorative (`alt=""`, the name is the row's text).
+- [ ] Text ≥ 4.5:1 in both themes. The zone is identified by its text and icon; the dashed
+      border is decoration, and keyboard focus shows as the 2px `--sk-focus-ring` (≥ 3:1).
+
+---
+
 # FlowField — @sukunagg/fx
 
 > A matchmaking-screen backdrop where crimson particles stream along a drifting noise field and swirl around the content you centre on it.
@@ -3551,7 +3837,7 @@ motion: enter/exit transforms collapse to instant (`motion-reduce:*`).
 > A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
-- **Import:** `import { AlertIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, InfoIcon, LockIcon, MoonIcon, RefreshIcon, SearchIcon, SunIcon, UserIcon } from '@sukunagg/ui'`
+- **Import:** `import { AlertIcon, CameraIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, ImageIcon, InfoIcon, LockIcon, MoonIcon, RefreshIcon, SearchIcon, SunIcon, UploadIcon, UserIcon } from '@sukunagg/ui'`
 - **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
 - **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/icon · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-icon.md
 
@@ -3578,9 +3864,10 @@ export interface IconProps extends Omit<ComponentPropsWithoutRef<'svg'>, 'childr
 }
 
 // One component per glyph, each a forwardRef<SVGSVGElement, IconProps>:
-AlertIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon,
-ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, InfoIcon, LockIcon, MoonIcon,
-RefreshIcon, SearchIcon, SunIcon, UserIcon
+AlertIcon, CameraIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon,
+ChevronRightIcon, ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, ImageIcon, InfoIcon,
+LockIcon, MoonIcon, RefreshIcon, SearchIcon, SunIcon, UploadIcon, UserIcon
+// CameraIcon, ImageIcon, UploadIcon: added with FileUpload (Q42).
 ```
 
 Exported from the main entry: the build is per-file and the package is side-effect free (except

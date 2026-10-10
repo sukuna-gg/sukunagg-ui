@@ -11,6 +11,15 @@ agent's own calls. Newest first.
 
 ## D41 — Toolkit wave: how the seven specs keep the library's rules
 
+> **CommandPalette as built (Q43):** items register through context and render an inert
+> `<template>` where they're written, so the list keeps document order even inside wrapper
+> components (server HTML = the Trigger plus one empty `<template>` per item); the shortcut closes
+> an open palette, ignores repeats and cancelled events, skips bare-key shortcuts while typing, and
+> matches letters by physical key too (other layouts, ⌥ on Mac); matched letters on the
+> highlighted row mix 20% toward the text color (plain accent there was 4.30:1 in light); Escape
+> closes directly (the mockup cleared first). 47.8 kB with deps, under Combobox (inline mode skips
+> the positioning code).
+
 > **Poll as built (Q43):** the write-in island checks "Other" on pointer-down and typing, not on
 > focus (tabbing through the field on the way to Vote silently changed a keyboard user's vote);
 > results keep the app's option order instead of sorting (hidden results never leak a ranking);
@@ -18,6 +27,11 @@ agent's own calls. Newest first.
 > four states, twelve labels and the form + results don't fit lower. Arbitrary values use `--sk-*`:
 > `--color-*` resolves at `:root` and ignores a nested `data-theme` (found by the Poll builder; the
 > same fix went into Timeline in #35).
+> **FileUpload as built (Q43):** the input mirrors the file list even with `onUpload` (so
+> `required` keeps working; leave out `name` if the form shouldn't send the files again); a pick
+> over the file limit is refused whole; an empty-type HEIC counts as `image/heic`; unmounting aborts
+> in-flight uploads; `resizeImage` passes non-images through. 5.24 kB against a 3.5 kB target:
+> about 2 kB is the reused Button, Spinner and icons.
 
 - **Decision:** (1) **Kbd takes a `platform` prop** (`'mac' | 'other' | 'auto'`). `auto` renders the
   non-Mac keys on the server and swaps ⌘/⌥ in a tiny island after mount (`useSyncExternalStore`
