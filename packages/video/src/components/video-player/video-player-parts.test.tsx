@@ -235,7 +235,8 @@ describe('VideoPlayerPanel', () => {
     fireEvent.click(within(panel).getByRole('tab', { name: 'Transcript' }))
     await waitFor(() => expect(within(panel).getByText('First line')).toBeInTheDocument())
     expect(button(/First line/)).toHaveAttribute('aria-current', 'true')
-    expect(scroll).toHaveBeenCalled()
+    // The active cue scrolls into view in an effect, after it renders: wait for it.
+    await waitFor(() => expect(scroll).toHaveBeenCalled())
     fireEvent.click(button(/Second line/))
     expect(video.currentTime).toBe(5)
   })
