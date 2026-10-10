@@ -262,7 +262,8 @@ describe('FileUpload', () => {
         'blob:test-1',
       )
       expect(created).toHaveBeenCalledWith(small)
-      expect(input.files?.[0]?.name).toBe('IMG_0001.jpg')
+      // The write-back runs in an effect after the preview renders.
+      await waitFor(() => expect(input.files?.[0]?.name).toBe('IMG_0001.jpg'))
       const last = onFilesChange.mock.calls.at(-1)?.[0] as readonly FileUploadItem[]
       expect(last[0]).toMatchObject({ file: small, original, status: 'ready' })
     })
