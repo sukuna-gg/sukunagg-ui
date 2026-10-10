@@ -294,6 +294,34 @@
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
+    "name": "FileUpload (client, + Button/Spinner/5 icons, our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ FileUpload }",
+    "limit": "5.8 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
+    "name": "resizeImage (opt-in helper, tree-shaken from FileUpload)",
+    "path": "dist/index.js",
+    "import": "{ resizeImage }",
+    "limit": "0.4 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "GlitchText (static, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ GlitchText }",
@@ -329,7 +357,7 @@
     "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
-    "name": "One icon (tree-shaken from the main entry: the other 16 must drop out)",
+    "name": "One icon (tree-shaken from the main entry: the other 19 must drop out)",
     "path": "dist/index.js",
     "import": "{ ChevronDownIcon }",
     "limit": "0.6 kB",

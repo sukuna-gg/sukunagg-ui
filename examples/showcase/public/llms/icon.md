@@ -4,7 +4,7 @@
 > A small set of line icons for the interface: disclosure chevrons, status glyphs for empty and error states, the theme toggle, search, external links.
 
 - **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
-- **Import:** `import { AlertIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, InfoIcon, LockIcon, MoonIcon, RefreshIcon, SearchIcon, SunIcon, UserIcon } from '@sukunagg/ui'`
+- **Import:** `import { AlertIcon, CameraIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, ImageIcon, InfoIcon, LockIcon, MoonIcon, RefreshIcon, SearchIcon, SunIcon, UploadIcon, UserIcon } from '@sukunagg/ui'`
 - **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
 - **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/icon · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-icon.md
 
@@ -31,9 +31,10 @@ export interface IconProps extends Omit<ComponentPropsWithoutRef<'svg'>, 'childr
 }
 
 // One component per glyph, each a forwardRef<SVGSVGElement, IconProps>:
-AlertIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon,
-ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, InfoIcon, LockIcon, MoonIcon,
-RefreshIcon, SearchIcon, SunIcon, UserIcon
+AlertIcon, CameraIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon,
+ChevronRightIcon, ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, ImageIcon, InfoIcon,
+LockIcon, MoonIcon, RefreshIcon, SearchIcon, SunIcon, UploadIcon, UserIcon
+// CameraIcon, ImageIcon, UploadIcon: added with FileUpload (Q42).
 ```
 
 Exported from the main entry: the build is per-file and the package is side-effect free (except

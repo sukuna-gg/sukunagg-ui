@@ -18,6 +18,11 @@ agent's own calls. Newest first.
 > four states, twelve labels and the form + results don't fit lower. Arbitrary values use `--sk-*`:
 > `--color-*` resolves at `:root` and ignores a nested `data-theme` (found by the Poll builder; the
 > same fix went into Timeline in #35).
+> **FileUpload as built (Q43):** the input mirrors the file list even with `onUpload` (so
+> `required` keeps working; leave out `name` if the form shouldn't send the files again); a pick
+> over the file limit is refused whole; an empty-type HEIC counts as `image/heic`; unmounting aborts
+> in-flight uploads; `resizeImage` passes non-images through. 5.24 kB against a 3.5 kB target:
+> about 2 kB is the reused Button, Spinner and icons.
 
 - **Decision:** (1) **Kbd takes a `platform` prop** (`'mac' | 'other' | 'auto'`). `auto` renders the
   non-Mac keys on the server and swaps ⌘/⌥ in a tiny island after mount (`useSyncExternalStore`

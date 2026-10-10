@@ -8,8 +8,8 @@ import * as icons from './index'
 const all = Object.entries(icons) as [string, typeof icons.CheckIcon][]
 
 describe('Icon', () => {
-  it('exports 17 icons, each named after itself', () => {
-    expect(all).toHaveLength(17)
+  it('exports 20 icons, each named after itself', () => {
+    expect(all).toHaveLength(20)
     for (const [name, Icon] of all) expect(Icon.displayName).toBe(name)
   })
 

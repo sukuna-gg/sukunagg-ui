@@ -83,6 +83,15 @@ export const AlertIcon = /* @__PURE__ */ createIcon(
   </>,
 )
 
+/** Camera (take a photo). See {@link AlertIcon} for props and accessibility. */
+export const CameraIcon = /* @__PURE__ */ createIcon(
+  'CameraIcon',
+  <>
+    <path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.5-2h6l1.5 2h2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5z" />
+    <circle cx="12" cy="13" r="3.5" />
+  </>,
+)
+
 /** Bar-chart glyph. See {@link AlertIcon} for props and accessibility. */
 export const ChartIcon = /* @__PURE__ */ createIcon(
   'ChartIcon',
@@ -137,6 +146,16 @@ export const ExternalIcon = /* @__PURE__ */ createIcon(
   </>,
 )
 
+/** Picture (image file, photo). See {@link AlertIcon} for props and accessibility. */
+export const ImageIcon = /* @__PURE__ */ createIcon(
+  'ImageIcon',
+  <>
+    <rect x="4" y="5" width="16" height="14" rx="2" />
+    <circle cx="9" cy="10" r="1.6" />
+    <path d="M20 15.5l-4.5-4.5L7 19.5" />
+  </>,
+)
+
 /** Information (i). See {@link AlertIcon} for props and accessibility. */
 export const InfoIcon = /* @__PURE__ */ createIcon(
   'InfoIcon',
@@ -185,6 +204,15 @@ export const SunIcon = /* @__PURE__ */ createIcon(
   <>
     <circle cx="12" cy="12" r="4" />
     <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" />
+  </>,
+)
+
+/** Arrow out of a tray (upload). See {@link AlertIcon} for props and accessibility. */
+export const UploadIcon = /* @__PURE__ */ createIcon(
+  'UploadIcon',
+  <>
+    <path d="M12 15V4M7.5 8.5L12 4l4.5 4.5" />
+    <path d="M4.5 15v3.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V15" />
   </>,
 )
 

@@ -132,6 +132,13 @@ export type {
   FieldProps,
 } from './components/field'
 export { Field } from './components/field'
+export type {
+  FileUploadItem,
+  FileUploadLabels,
+  FileUploadProps,
+  ResizeImageOptions,
+} from './components/file-upload'
+export { FileUpload, resizeImage } from './components/file-upload'
 export type { GlitchTextElement, GlitchTextProps } from './components/glitch-text'
 export { GlitchText } from './components/glitch-text'
 export type { GradientTextElement, GradientTextProps } from './components/gradient-text'
@@ -145,6 +152,7 @@ export { HoverCard } from './components/hover-card'
 export type { IconProps } from './components/icon'
 export {
   AlertIcon,
+  CameraIcon,
   ChartIcon,
   CheckIcon,
   ChevronDownIcon,
@@ -154,12 +162,14 @@ export {
   ClockIcon,
   CloseIcon,
   ExternalIcon,
+  ImageIcon,
   InfoIcon,
   LockIcon,
   MoonIcon,
   RefreshIcon,
   SearchIcon,
   SunIcon,
+  UploadIcon,
   UserIcon,
 } from './components/icon'
 export type { InputProps } from './components/input'
