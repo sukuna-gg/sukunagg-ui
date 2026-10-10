@@ -1,6 +1,6 @@
 {
   "name": "@sukunagg/fx",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Canvas, WebGL and SVG effects for sukuna-ui: client islands over a server-rendered CSS poster, on one shared frame loop that pauses off-screen and holds a still frame under reduced motion.",
   "type": "module",
   "license": "MIT",
@@ -63,7 +63,7 @@
     "size": "size-limit"
   },
   "peerDependencies": {
-    "@sukunagg/ui": ">=0.11.1",
+    "@sukunagg/ui": ">=0.11.2",
     "react": ">=18",
     "react-dom": ">=18",
     "tailwindcss": ">=4"

@@ -62,7 +62,7 @@
     "size": "size-limit"
   },
   "peerDependencies": {
-    "@sukunagg/ui": ">=0.11.1",
+    "@sukunagg/ui": ">=0.11.2",
     "react": ">=18",
     "react-dom": ">=18",
     "tailwindcss": ">=4"
