@@ -1,5 +1,22 @@
 # @sukunagg/fx
 
+## 0.1.1
+
+### Patch Changes
+
+- e59ee0f: `BracketBeam` gains double elimination (Q42): `format="double"` takes an upper bracket, a lower
+  bracket and a grand final, linked explicitly by match `id` and `next.winner` / `next.loser`. The
+  champion's path lights across both bands, and drop chips ("▼ SF1") mark where a loser falls to the
+  lower bracket. Single elimination stays the default, and its server markup is unchanged. New CSS in
+  `theme.css`: the `bracket-beam-double`, `-band` and `-drop` utilities. Adding a prop value is a
+  patch on `0.x` (`docs/releasing.md`).
+- Updated dependencies [1fd4097]
+- Updated dependencies [a31c143]
+- Updated dependencies [9f316af]
+- Updated dependencies [339ca4d]
+- Updated dependencies [25d149b]
+  - @sukunagg/ui@0.11.2
+
 ## 0.1.0
 
 ### Minor Changes

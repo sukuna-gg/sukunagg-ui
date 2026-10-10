@@ -1,5 +1,54 @@
 # @sukunagg/ui (formerly `sukuna-ui`)
 
+## 0.11.2
+
+### Patch Changes
+
+- 1fd4097: Calendars (Q41): six new components and the date utilities under them. `Calendar` is a WAI-ARIA
+  date grid for one day or a range, in one or two months, with year and month pickers, marks, reasons
+  on disabled days, CLDR week starts and Intl names; values are `'YYYY-MM-DD'` strings, so a day
+  never shifts with the time zone, and the server renders without guessing today. `DatePicker` is a
+  typed date field (the locale's order, ISO, or 8 digits) with the calendar in a popover and a hidden
+  ISO input for forms. `DateRangePicker` adds presets ("Last 7 days"…), two months and Apply/Cancel.
+  `DateTimePicker` picks a day and a time in a fixed IANA time zone and returns the ISO instant,
+  handling daylight-saving gaps and overlaps with `Intl` (no Temporal polyfill). `MonthView` (server
+  component) shows a month of events with multi-day bars, "+N more" (native popover), custom day
+  cells (`renderDay`), "not tracked" days, and links for navigation; below 600px it becomes an
+  `Agenda`, the list of upcoming events grouped by day, also exported on its own. New CSS in
+  `theme.css`: the `sk-calendar-next/-prev/-zoom` keyframes and `animate-calendar-*` utilities. No new
+  tokens and no new dependencies. Adding components is a patch on `0.x` (`docs/releasing.md`).
+- a31c143: New `CommandPalette` (Q42): one search box, opened from anywhere with ⌘K / Ctrl+K, for players,
+  pages and actions. Built on Base UI Dialog + Autocomplete (inline list). It filters the items you
+  give it (fuzzy, accent-insensitive, matched letters highlighted, `maxPerGroup`), can ask your
+  server for more (`onSearch`, debounced, stale requests aborted, loading and error rows), and can
+  show a hint for almost-valid input. `href` items are real links; `onSelect` items run and close;
+  focus returns to the opener. Shortcuts render with `Kbd`. Adding a component is a patch on `0.x`
+  (`docs/releasing.md`).
+- 9f316af: New `FileUpload` and `resizeImage` (Q42), plus `CameraIcon`, `UploadIcon` and `ImageIcon`.
+  FileUpload is a drop zone over a real `<input type="file">` (it works before JavaScript loads):
+  pick, drop, or open the back camera on phones (`capture`), with a "choose from gallery" link on
+  touch screens. Files are validated (count, type, size), optionally prepared on the device
+  (`prepare`), and written back into the input, so a plain form submit sends the prepared file. With
+  `onUpload`, each file shows progress, Remove aborts it and failures offer Retry. `resizeImage()`
+  fixes camera rotation, caps the long side (2000px) and re-encodes as JPEG/WebP; it's opt-in and
+  tree-shaken. Adding components is a patch on `0.x` (`docs/releasing.md`).
+- 339ca4d: New `Poll` (Q42): one question with a few choices and an optional write-in, rendered on the server
+  as a real `<form>` (a URL or a React 19 server action), so it works with JavaScript off. Results
+  show as bars with percentages that add up to 100 (largest remainder), after the viewer votes by
+  default; open, voted, signed-out and closed states; the winner or a tie is named in text. A tiny
+  client island checks "Other" when someone clicks or types in the write-in. New CSS in `theme.css`:
+  the `sk-poll-bar` keyframe and `animate-poll-bar` (the bars grow from 0; still under reduced
+  motion). Adding a component is a patch on `0.x` (`docs/releasing.md`).
+- 25d149b: Toolkit wave A (Q42): three new server components. `Kbd` draws keys and shortcuts as key caps
+  (`keys="mod+K"` shows ⌘ on Apple platforms and Ctrl elsewhere; screen readers hear "Command + K";
+  `platform="auto"` swaps the Apple keys in through a tiny client island after hydration, with no
+  hydration mismatch). `Prose` styles long text you don't write by hand (Markdown, MDX, CMS output):
+  headings with a rule above, crimson list markers, notices, code, scrolling tables, 70ch lines, in
+  three sizes; element rules carry no class specificity, so components inside keep their own styles.
+  `Timeline` lists entries along a rail with done, current (pulsing halo) and upcoming (dashed)
+  states, caller colors and icons. No new tokens and no `theme.css` changes. Adding components is a
+  patch on `0.x` (`docs/releasing.md`).
+
 ## 0.11.1
 
 ### Patch Changes
