@@ -5,6 +5,7 @@
  */
 import { css as avatarFrame } from './avatar-frame'
 import { css as borderBeam } from './border-beam'
+import { css as calendar } from './calendar'
 import { css as glitchText } from './glitch-text'
 import { css as lootReveal } from './loot-reveal'
 import { css as matchFound } from './match-found'
@@ -17,6 +18,7 @@ import { css as xpLevelUp } from './xp-level-up'
 export const showpieceCss = [
   avatarFrame,
   borderBeam,
+  calendar,
   glitchText,
   lootReveal,
   matchFound,

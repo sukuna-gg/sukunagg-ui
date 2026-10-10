@@ -37,9 +37,10 @@ export interface IconProps extends Omit<ComponentPropsWithoutRef<'svg'>, 'childr
 }
 
 // One component per glyph, each a forwardRef<SVGSVGElement, IconProps>:
-AlertIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon,
-ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, InfoIcon, LockIcon, MoonIcon,
-RefreshIcon, SearchIcon, SunIcon, UserIcon
+AlertIcon, CameraIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon,
+ChevronRightIcon, ChevronUpIcon, ClockIcon, CloseIcon, ExternalIcon, ImageIcon, InfoIcon,
+LockIcon, MoonIcon, RefreshIcon, SearchIcon, SunIcon, UploadIcon, UserIcon
+// CameraIcon, ImageIcon, UploadIcon: added with FileUpload (Q42).
 ```
 
 Exported from the main entry: the build is per-file and the package is side-effect free (except
@@ -61,9 +62,9 @@ Static.
 - Decorative by default: `aria-hidden="true"` and `focusable="false"`. With `title`: `role="img"`,
   a `<title>` child, and no `aria-hidden`. An explicit `aria-label` also counts as a name.
 - `size` sets `width`/`height`; native SVG props pass through (`className` merges).
-- Every `createIcon(...)` call is marked `/* @__PURE__ */`: without it bundlers must keep all 17
-  module-level calls (one import measured 967 B); with it, one icon is 481 B. The size budget
-  (`One icon`, 0.6 kB) guards this.
+- Every `createIcon(...)` call is marked `/* @__PURE__ */`: without it bundlers must keep every
+  module-level call (with 17 icons, one import measured 967 B); with it, one icon is 481 B. The
+  size budget (`One icon`, 0.6 kB) guards this.
 
 ## 7. Styles (`icon.styles.tsx`)
 

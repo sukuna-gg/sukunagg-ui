@@ -37,23 +37,23 @@ export const timelineStyles = tv({
       true: {
         rail: 'after:top-6',
         halo: '-top-1 size-[30px]',
-        dot: 'size-[22px] border border-line bg-surface-2 text-[color:var(--sk-timeline-dot,var(--color-text-dim))]',
+        dot: 'size-[22px] border border-line bg-surface-2 text-[color:var(--sk-timeline-dot,var(--sk-text-dim))]',
       },
       false: {
         rail: 'after:top-5',
         halo: 'top-0 size-5',
-        dot: 'mt-1 size-3 bg-[var(--sk-timeline-dot,var(--color-text-faint))] shadow-[0_0_0_3px_var(--color-surface)]',
+        dot: 'mt-1 size-3 bg-[var(--sk-timeline-dot,var(--sk-text-faint))] shadow-[0_0_0_3px_var(--sk-surface)]',
       },
     },
     status: {
       done: {},
       current: {
         // From here on the line is dashed: what follows hasn't happened yet.
-        rail: 'after:bg-transparent after:bg-[image:repeating-linear-gradient(to_bottom,var(--color-line)_0_4px,transparent_4px_8px)]',
+        rail: 'after:bg-transparent after:bg-[image:repeating-linear-gradient(to_bottom,var(--sk-line)_0_4px,transparent_4px_8px)]',
         dot: 'border-transparent bg-gradient-accent text-on-accent',
       },
       upcoming: {
-        rail: 'after:bg-transparent after:bg-[image:repeating-linear-gradient(to_bottom,var(--color-line)_0_4px,transparent_4px_8px)]',
+        rail: 'after:bg-transparent after:bg-[image:repeating-linear-gradient(to_bottom,var(--sk-line)_0_4px,transparent_4px_8px)]',
         dot: 'border-[1.5px] border-dashed border-text-faint bg-surface text-text-faint shadow-none',
         title: 'text-text-dim',
       },

@@ -44,6 +44,8 @@ export interface DateRangePickerLabels extends CalendarLabels {
   cancel: string                                        // 'Cancel'
   custom: string                                        // 'Custom'
   pickEnd: string                                       // 'Pick the last day'
+  presetsGroup: string                                  // 'Presets'
+  dialog: string                                        // 'Choose dates' (popup name)
   days: (count: number) => string                       // n => `${n} days`
   presets: Record<DateRangePresetKey, string>           // 'Last 7 days', …
 }
@@ -59,7 +61,7 @@ interface DateRangePickerOwnProps {
   minDays?: number
   maxDays?: number
   presets?: readonly DateRangePreset[]                  // default none
-  months?: 1 | 2                                        // default 2; one below a 600px-wide popup
+  months?: 1 | 2                                        // default 2; one on screens < 640px wide
   /** 'apply' (default): Apply/Cancel buttons. 'select': the second click commits and closes. */
   commit?: 'apply' | 'select'
   /** Footer text for the draft range, e.g. "30 days · 87 games". Default: the day count. */
@@ -105,7 +107,8 @@ that turns 180° while open.
 
 Popup: Popover content styling, `p-0`, two columns: presets rail (≈172px, bg `--sk-surface-2` mixed
 toward `--sk-surface`, right border `--sk-line-soft`) and main (calendar + footer). Below 560px the
-rail becomes a horizontal, scrollable row above the calendar (container query on the popup).
+rail becomes a horizontal, scrollable row above the calendar (`max-sm:`, the same 640px breakpoint
+that drops to one month; a container query on the shrink-to-fit popup would collapse it).
 
 Preset: `text-sm --sk-text-dim`, hover `--sk-text` on `--sk-surface-2`; active (`aria-pressed`)
 `--sk-text` semibold on `--sk-surface-2` with a 6px `--sk-accent` dot. "Custom" shows as active when
@@ -138,8 +141,9 @@ Footer: `border-t --sk-line-soft`; summary `text-sm --sk-text-dim` with the rang
 - Presets resolve against `today` (prop, else the browser's local date at click time), through
   `utils/date`. Week presets respect `weekStartsOn`/locale. Presets that fall outside `min`/`max`
   are clamped; one that can't fit at all is disabled.
-- `months={2}` drops to one when the popup is narrower than 600px (ResizeObserver on the popup,
-  client-only), so keyboard focus never lands in a hidden month.
+- `months={2}` drops to one on screens narrower than 640px (`matchMedia('(min-width: 640px)')`,
+  client-only; measuring the popup itself would be circular, its width comes from the months), so
+  keyboard focus never lands in a hidden month.
 - Hidden inputs (`startName`/`endName`) hold the committed range.
 - Server render: the trigger only. Both sides format the same strings with `timeZone: 'UTC'`, but
   ICU versions differ in `formatRange` spacing (newer ICU puts thin spaces around the dash), so
@@ -152,7 +156,8 @@ Footer: `border-t --sk-line-soft`; summary `text-sm --sk-text-dim` with the rang
 
 ## 8. Accessibility checklist
 
-- [ ] Trigger has a name (`aria-label` or `Field.Label`) and its text states the range.
+- [ ] Trigger named by `aria-label` or `Field.Label`; the range text is also its description, since a
+      `<label>` replaces the button's own text as its name.
 - [ ] Popup `role="dialog"`, named; focus to the first preset when presets exist, else the calendar.
 - [ ] Presets are buttons with `aria-pressed`; the group has a name ("Presets").
 - [ ] Summary is a polite live region, so the chosen range is announced.
@@ -178,4 +183,4 @@ disables Apply; `commit="select"`; `summary` renders; hidden inputs; `months` co
 - Apply/Cancel by default (Q41 mockup): range filters usually trigger a navigation, and half a
   range must never reach the URL.
 - `formatRange` for the trigger text: locale-correct ("10 – 16 oct 2026") with no code of ours.
-- Budget target: `Popover + deps` plus Calendar and presets, measured +10% (P5).
+- Size: 49.9 kB brotli with Base UI (Popover + deps alone is 42.6 kB), budget 55 kB (P5).

@@ -93,7 +93,7 @@ unchanged); under reduced motion the halo stays still.
 - `<ol>` of `<li>`; `time` wraps in `<time dateTime>` when `dateTime` is given.
 - The current item gets `aria-current="step"` and a visually hidden `currentLabel`; upcoming items a
   hidden "upcoming".
-- Item colors through the `--sk-timeline-dot` custom property (caller colors, like the charts).
+- Item colors through the `--sk-timeline-dot` custom property; arbitrary values use `--sk-*` (not `--color-*`, which resolves at `:root` and ignores a nested `data-theme`) (caller colors, like the charts).
 
 ## 7. Styles (`timeline.styles.tsx`)
 
