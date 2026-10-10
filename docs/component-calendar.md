@@ -27,7 +27,7 @@ packages/ui/src/utils/date/          # shared by every calendar component; pure,
 ├── locale.ts             # weekStartFor(locale) (CLDR table), month/weekday names, typed-date order,
 │                         #   parseTypedDate, formatTypedDate
 └── zone.ts               # IANA zone math via Intl: wallToInstant, instantToWall, todayIn(timeZone)
-packages/ui/scripts/motion/calendar.ts   # sk-cal-next / sk-cal-prev / sk-cal-zoom keyframes → theme.css
+packages/ui/scripts/motion/calendar.ts   # sk-calendar-next / -prev / -zoom keyframes → theme.css
 test/browser/calendar.test.ts            # Playwright: keyboard across months, range hover preview
 ```
 
@@ -82,6 +82,7 @@ interface CalendarOwnProps {
   /** Today in the viewer's zone. Pass it from the server for an exact first paint (see §6). */
   today?: CalendarDate
   labels?: Partial<CalendarLabels>         // English defaults
+  autoFocus?: boolean                      // focus the focused day on mount (the pickers' popovers)
 }
 
 type CalendarSingleProps = {
@@ -132,7 +133,7 @@ No visual variants. Every state maps to an existing token (no new tokens, Q41):
 | outside month | `--sk-text-faint` |
 | focus-visible | 2px `--sk-focus-ring`, offset 1px (on selected days the ring is `--sk-text`) |
 | nav button | 32px square, `--sk-surface-2`, `--sk-line` border, `--sk-text-dim` → `--sk-text` on hover |
-| month / year pick grid | same day states, cells fill the six-row height (3×4 months, 4×5 years) |
+| month / year pickers | a labelled group of buttons with `aria-pressed`, same day states, filling the six-row height (3×4 months, 4×5 years) |
 
 Sizing: cells are square and fluid, `max-width` 40px each, so the grid is 280px wide at most and
 shrinks inside a 320px phone popover instead of overflowing. Two months sit side by side with a
@@ -143,7 +144,7 @@ shrinks inside a 320px phone popover instead of overflowing. Two months sit side
 | State | Behavior |
 |---|---|
 | day view | default. Caption button opens the year view. |
-| year view | 20 years per page (4×5), pages end at `max`'s year; years outside `min`/`max` off. Picking a year opens the month view. |
+| year view | 20 years per page (4×5); pages end at `max`'s year, or align to multiples of 20 without `max`; the focused year never leaves `min`/`max`, and years outside them are off. Picking a year opens the month view. |
 | month view | the 12 months of that year (3×4). Picking a month returns to the day view on that month. |
 | range, half picked | first click sets the anchor; hover or keyboard focus previews the band; second click completes it (ends swap if needed) and fires `onValueChange` |
 | `minDays`/`maxDays` | while half picked, days that would make the range too short or long turn off with a reason |
@@ -152,7 +153,8 @@ shrinks inside a 320px phone popover instead of overflowing. Two months sit side
 
 **Motion (`docs/motion.md`):** a month change slides the grid 12px in the direction of travel with a
 fade, `--sk-duration-base`, `--sk-ease`; switching between day, month and year views scales from
-97%. Keyframes `sk-cal-next`, `sk-cal-prev`, `sk-cal-zoom` (new, `scripts/motion/calendar.ts`).
+97%. Keyframes `sk-calendar-next`, `sk-calendar-prev`, `sk-calendar-zoom` and their
+`animate-calendar-*` utilities (new, `scripts/motion/calendar.ts`).
 Reduced motion: instant.
 
 ## 6. Logic (`calendar.logic.tsx`)
@@ -174,8 +176,9 @@ Reduced motion: instant.
 - **Keyboard** (on the focused day; WAI-ARIA APG date grid):
   `←/→` ±1 day · `↑/↓` ±7 days · `Home/End` start/end of the week (respects `weekStartsOn`) ·
   `PageUp/PageDown` ±1 month (day clamped) · `Shift+PageUp/PageDown` ±1 year · `Enter/Space` pick.
-  Moving past the visible months changes the month first, then focuses. Year/month grids: arrows
-  move by cell/row, `Enter/Space` pick, `Escape` back to the day view.
+  Moving past the visible months changes the month first, then focuses. Year/month pickers: arrows
+  move by cell/row (PageUp/PageDown by 20 years), `Enter/Space` pick, `Escape` back to the day view
+  (it stops there, so a picker's popover stays open).
 - **Focus after a change** moves only when the change came from the keyboard or a view switch,
   never on hover re-renders.
 - **Live region:** one visually hidden `aria-live="polite"` node, outside the re-rendered grid,
@@ -202,6 +205,8 @@ interpolation); mark colors go through an inline custom property (`style={{ '--s
 ## 8. Accessibility checklist
 
 - [ ] Each month is a `<table role="grid">` labelled by its caption; `<th scope="col" abbr>` headers.
+- [ ] The year and month pickers are labelled groups of buttons with `aria-pressed` (one tab stop,
+      arrow keys inside).
 - [ ] Days are `<button>`s inside `role="gridcell"` cells; `aria-selected` on the cell; the button's
       name is the full date plus marks, state and reason ("Saturday, November 14, 2026, Copa
       Pitaya, selected").
@@ -251,7 +256,7 @@ side by side), `NoAnchor` (empty first frame). Both `data-theme` values.
 ## 11. Decisions
 
 - In-house grid, approved with the mockup (Q41): Base UI 1.8 has none, and the grid is small
-  (target ≤ 5 kB gzip, then measured +10% like every entry, P5).
+  (target was ≤ 5 kB; measured 5.55 kB brotli with the year/month pickers, budget 6.2 kB, P5).
 - Strings, not `Date`: `new Date('2026-11-14')` is midnight UTC, which is November 13 in
   Hermosillo. Strings also cross the RSC boundary unchanged.
 - **Selected day uses `bg-gradient-accent`, not flat `--sk-accent`** (agent call, D40): white on dark

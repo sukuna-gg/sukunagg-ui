@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt). This file concatenates every component page plus the design-token reference; the index is at https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt.
 
-@sukunagg/ui is a React 18/19 component library: 73 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 77 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -24,6 +24,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - BracketBeam (@sukunagg/fx): Shows a single-elimination tournament bracket and sends a beam of light along the champion's path, round by round, until the trophy card ignites.
 - Breadcrumbs: Show the path to the current page and let users jump back up it.
 - Button: Triggers an action.
+- Calendar: 
 - Card: A surface container that groups related content on an elevation.
 - Carousel: A horizontal, one-slide-at-a-time content carousel for images, cards, or arbitrary nodes — the gap Slider (a range input) doesn't fill.
 - Checkbox: A boolean checkbox.
@@ -33,6 +34,9 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - ContextMenu: Offer contextual actions where the pointer is — right-click on desktop, long-press on touch.
 - Counter: Animates a number from a start to a target value — for stat tiles, KPIs, pricing, and dashboards.
 - DataBar (@sukunagg/charts): A number with a small bar under it, for comparing rows of a table at a glance: damage to champions in a scoreboard, pick rate in a meta table.
+- DatePicker: 
+- DateRangePicker: 
+- DateTimePicker: 
 - Dialog: A modal dialog.
 - Divider: A thin rule that separates content, horizontally or vertically.
 - DonutChart (@sukunagg/charts): Shows a part-to-whole split with few parts: time played by role, games by queue, plans by share.
@@ -1078,6 +1082,17 @@ Font: `--sk-font-display`, weight `--sk-weight-bold`, `--sk-tracking-tight`.
 
 ---
 
+# Calendar — @sukunagg/ui
+
+> 
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { Calendar } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/calendar · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-calendar.md
+
+---
+
 # Card — @sukunagg/ui
 
 > A surface container that groups related content on an elevation.
@@ -1694,6 +1709,39 @@ Not here: negative values, a target marker, labels inside the bar.
 - [ ] `null` announces `missingLabel`, never "dash" or "0".
 - [ ] Bar-only usage requires an `aria-label` (dev error).
 - [ ] Fill ≥ 3:1 against `surface-2` with default tokens.
+
+---
+
+# DatePicker — @sukunagg/ui
+
+> 
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { DatePicker } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/date-picker · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-date-picker.md
+
+---
+
+# DateRangePicker — @sukunagg/ui
+
+> 
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { DateRangePicker } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/date-range-picker · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-date-range-picker.md
+
+---
+
+# DateTimePicker — @sukunagg/ui
+
+> 
+
+- **Package:** `@sukunagg/ui` — `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`)
+- **Import:** `import { DateTimePicker } from '@sukunagg/ui'`
+- **Styles:** `@import "@sukunagg/ui/theme.css"` (Tailwind v4) or `import "@sukunagg/ui/styles.css"` (no Tailwind) — see [Getting started](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/llms.txt)
+- **Source:** https://github.com/sukuna-gg/sukunagg-ui/tree/main/packages/ui/src/components/date-time-picker · **Spec:** https://github.com/sukuna-gg/sukunagg-ui/blob/main/docs/component-date-time-picker.md
 
 ---
 

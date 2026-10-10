@@ -37,6 +37,7 @@ export interface DateTimePickerLabels extends CalendarLabels {
   done: string                             // 'Done'
   yourTime: (zone: string) => string       // z => `Your time (${z})`
   skipped: string                          // 'Skipped by daylight saving'
+  dialog: string                           // 'Choose date and time' (popup name)
 }
 
 interface DateTimePickerOwnProps {
@@ -46,7 +47,7 @@ interface DateTimePickerOwnProps {
   value?: string | null
   defaultValue?: string | null
   /** The instant plus the wall date/time it was picked as. */
-  onValueChange?: (value: string | null, wall: { date: CalendarDate; time: string } | null) => void
+  onValueChange?: (value: string | null, wall: DateTimeWall | null) => void   // DateTimeWall = { date, time }
   name?: string                            // hidden input: the ISO instant
   min?: CalendarDate                       // wall dates in `timeZone`
   max?: CalendarDate
@@ -174,4 +175,6 @@ after mount and only when different; ref is the trigger; className wins; axe bot
 - `timeZone` is required: a picker that silently used the browser's zone would recreate the bug it
   replaces.
 - Intl zone math in-house, swap to Temporal later as a patch (Q41, recommendation 3).
-- `suppressHydrationWarning` on the trigger's one formatted-time `<span>` only (D40).
+- `suppressHydrationWarning` on the trigger's formatted-time `<span>` and the zone line only (D40):
+  both are Intl output the server and the browser may print differently.
+- Size: 50.4 kB brotli with Base UI (Popover + deps alone is 42.6 kB), budget 56 kB (P5).

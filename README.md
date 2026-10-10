@@ -15,7 +15,7 @@
 
 **SSR-safe, accessible React components for dark-first products — and for the AI agents that build them.**
 
-<!-- count -->73<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
+<!-- count -->77<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
 contrast in both themes, `prefers-reduced-motion` honored, zero runtime styling, React Server
 Components-ready, React 18 and 19. Dark is the identity; light is a mode.
 
@@ -131,6 +131,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `BracketBeam` · @sukunagg/fx | Shows a single-elimination tournament bracket and sends a beam of light along the champion's path, round by round, until the trophy card ignites. | [docs/llms/bracket-beam.md](docs/llms/bracket-beam.md) |
 | `Breadcrumbs` | Show the path to the current page and let users jump back up it. | [docs/llms/breadcrumbs.md](docs/llms/breadcrumbs.md) |
 | `Button` | Triggers an action. | [docs/llms/button.md](docs/llms/button.md) |
+| `Calendar` |  | [docs/llms/calendar.md](docs/llms/calendar.md) |
 | `Card` | A surface container that groups related content on an elevation. | [docs/llms/card.md](docs/llms/card.md) |
 | `Carousel` | A horizontal, one-slide-at-a-time content carousel for images, cards, or arbitrary nodes — the gap Slider (a range input) doesn't fill. | [docs/llms/carousel.md](docs/llms/carousel.md) |
 | `Checkbox` | A boolean checkbox. | [docs/llms/checkbox.md](docs/llms/checkbox.md) |
@@ -140,6 +141,9 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `ContextMenu` | Offer contextual actions where the pointer is — right-click on desktop, long-press on touch. | [docs/llms/context-menu.md](docs/llms/context-menu.md) |
 | `Counter` | Animates a number from a start to a target value — for stat tiles, KPIs, pricing, and dashboards. | [docs/llms/counter.md](docs/llms/counter.md) |
 | `DataBar` · @sukunagg/charts | A number with a small bar under it, for comparing rows of a table at a glance: damage to champions in a scoreboard, pick rate in a meta table. | [docs/llms/data-bar.md](docs/llms/data-bar.md) |
+| `DatePicker` |  | [docs/llms/date-picker.md](docs/llms/date-picker.md) |
+| `DateRangePicker` |  | [docs/llms/date-range-picker.md](docs/llms/date-range-picker.md) |
+| `DateTimePicker` |  | [docs/llms/date-time-picker.md](docs/llms/date-time-picker.md) |
 | `Dialog` | A modal dialog. | [docs/llms/dialog.md](docs/llms/dialog.md) |
 | `Divider` | A thin rule that separates content, horizontally or vertically. | [docs/llms/divider.md](docs/llms/divider.md) |
 | `DonutChart` · @sukunagg/charts | Shows a part-to-whole split with few parts: time played by role, games by queue, plans by share. | [docs/llms/donut-chart.md](docs/llms/donut-chart.md) |

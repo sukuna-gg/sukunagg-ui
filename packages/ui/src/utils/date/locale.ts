@@ -128,7 +128,7 @@ export const typedDatePlaceholder = (
  */
 export const parseTypedDate = (text: string, locale: string): CalendarDate | null => {
   const trimmed = text.trim()
-  let groups = trimmed.match(/\d+/g) ?? []
+  let groups: string[] = trimmed.match(/\d+/g) ?? []
   const { order } = typedDateFormat(locale)
   if (groups.length === 1 && groups[0]?.length === 8) {
     // Compact: split by the locale's order, the year taking four digits.

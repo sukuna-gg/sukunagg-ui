@@ -105,6 +105,20 @@
     ]
   },
   {
+    "name": "Calendar (our code only — must NOT pull Base UI)",
+    "path": "dist/index.js",
+    "import": "{ Calendar }",
+    "limit": "6.2 kB",
+    "ignore": [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "tailwind-merge",
+      "tailwind-variants",
+      "clsx"
+    ]
+  },
+  {
     "name": "Card (static, our code only — must NOT pull Base UI)",
     "path": "dist/index.js",
     "import": "{ Card }",
@@ -194,6 +208,27 @@
       "tailwind-variants",
       "clsx"
     ]
+  },
+  {
+    "name": "DatePicker + deps",
+    "path": "dist/index.js",
+    "import": "{ DatePicker }",
+    "limit": "54 kB",
+    "ignore": ["react", "react-dom", "react/jsx-runtime"]
+  },
+  {
+    "name": "DateRangePicker + deps",
+    "path": "dist/index.js",
+    "import": "{ DateRangePicker }",
+    "limit": "55 kB",
+    "ignore": ["react", "react-dom", "react/jsx-runtime"]
+  },
+  {
+    "name": "DateTimePicker + deps",
+    "path": "dist/index.js",
+    "import": "{ DateTimePicker }",
+    "limit": "56 kB",
+    "ignore": ["react", "react-dom", "react/jsx-runtime"]
   },
   {
     "name": "Dialog + deps",

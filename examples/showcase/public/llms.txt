@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt).
 
-@sukunagg/ui is a React 18/19 component library: 73 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 77 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -27,6 +27,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - [BorderBeam](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/border-beam.md): Sends a short light around the border of a card, a featured match, a season pass or a plan tile, to mark the one thing on a screen that deserves attention.
 - [Breadcrumbs](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/breadcrumbs.md): Show the path to the current page and let users jump back up it.
 - [Button](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/button.md): Triggers an action.
+- [Calendar](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/calendar.md): 
 - [Card](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/card.md): A surface container that groups related content on an elevation.
 - [Carousel](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/carousel.md): A horizontal, one-slide-at-a-time content carousel for images, cards, or arbitrary nodes — the gap Slider (a range input) doesn't fill.
 - [Checkbox](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/checkbox.md): A boolean checkbox.
@@ -35,6 +36,9 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - [Combobox](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/combobox.md): A text input with a filtered list of suggestions (free-text autocomplete).
 - [ContextMenu](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/context-menu.md): Offer contextual actions where the pointer is — right-click on desktop, long-press on touch.
 - [Counter](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/counter.md): Animates a number from a start to a target value — for stat tiles, KPIs, pricing, and dashboards.
+- [DatePicker](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/date-picker.md): 
+- [DateRangePicker](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/date-range-picker.md): 
+- [DateTimePicker](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/date-time-picker.md): 
 - [Dialog](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/dialog.md): A modal dialog.
 - [Divider](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/divider.md): A thin rule that separates content, horizontally or vertically.
 - [Drawer](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/drawer.md): A panel that slides in from an edge (nav, filters, details).

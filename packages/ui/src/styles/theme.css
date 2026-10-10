@@ -656,6 +656,40 @@
   mask: radial-gradient(farthest-side, transparent 45%, black);
 }
 
+/* Calendar (docs/component-calendar.md): month slides and view zooms. */
+@keyframes sk-calendar-next {
+  from {
+    opacity: 0.25;
+    transform: translateX(12px);
+  }
+}
+
+@keyframes sk-calendar-prev {
+  from {
+    opacity: 0.25;
+    transform: translateX(-12px);
+  }
+}
+
+@keyframes sk-calendar-zoom {
+  from {
+    opacity: 0.25;
+    transform: scale(0.97);
+  }
+}
+
+@utility animate-calendar-next {
+  animation: sk-calendar-next var(--sk-duration-base) var(--sk-ease);
+}
+
+@utility animate-calendar-prev {
+  animation: sk-calendar-prev var(--sk-duration-base) var(--sk-ease);
+}
+
+@utility animate-calendar-zoom {
+  animation: sk-calendar-zoom var(--sk-duration-base) var(--sk-ease);
+}
+
 /* GlitchText (docs/component-glitch-text.md): RGB-split bursts on real text, one per 3.5s. */
 @property --sk-glitch-text-y0 {
   syntax: '<percentage>';
