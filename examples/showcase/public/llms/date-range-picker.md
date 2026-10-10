@@ -126,7 +126,8 @@ Footer: `border-t --sk-line-soft`; summary `text-sm --sk-text-dim` with the rang
 
 ## Accessibility
 
-- [ ] Trigger has a name (`aria-label` or `Field.Label`) and its text states the range.
+- [ ] Trigger named by `aria-label` or `Field.Label`; the range text is also its description, since a
+      `<label>` replaces the button's own text as its name.
 - [ ] Popup `role="dialog"`, named; focus to the first preset when presets exist, else the calendar.
 - [ ] Presets are buttons with `aria-pressed`; the group has a name ("Presets").
 - [ ] Summary is a polite live region, so the chosen range is announced.

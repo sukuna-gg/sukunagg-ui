@@ -108,8 +108,9 @@ the middle (instant under reduced motion).
 
 ## Accessibility
 
-- [ ] Trigger name includes the value and the zone ("Saturday, November 14, 2026, 6:00 PM,
-      Hermosillo time"), via the visible text plus `aria-describedby` on the zone line.
+- [ ] Trigger: named by its label (`Field.Label` or `aria-label`); the value and the zone are its
+      description ("Inicio, button, sáb, 14 nov · 6:00 p.m., Hora de Hermosillo"), because a
+      `<label>` replaces the button's own text as its name.
 - [ ] Popup `role="dialog"`; Calendar grid + a named `listbox`; Tab moves grid → list → Done.
 - [ ] Listbox: `↑/↓` move and select, `Home/End`, type-ahead on the hour digits.
 - [ ] Disabled times use `aria-disabled` with the reason in the option's name.
