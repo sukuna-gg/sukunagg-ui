@@ -1455,6 +1455,17 @@
   animation: sk-shine 4.8s linear 1.4s infinite;
 }
 
+/* Poll (Q42): result bars grow from 0 on first render. docs/component-poll.md */
+@keyframes sk-poll-bar {
+  from {
+    scale: 0 1;
+  }
+}
+
+@utility animate-poll-bar {
+  animation: sk-poll-bar 700ms var(--sk-ease) both;
+}
+
 /* RankReveal (Q39): plays once on mount, replay = remount (key). docs/component-rank-reveal.md */
 @keyframes sk-rank-reveal-enter {
   from {

@@ -15,7 +15,7 @@
 
 **SSR-safe, accessible React components for dark-first products — and for the AI agents that build them.**
 
-<!-- count -->77<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
+<!-- count -->78<!-- /count --> components on [Base UI](https://base-ui.com) + Tailwind v4 design tokens. WCAG AA
 contrast in both themes, `prefers-reduced-motion` honored, zero runtime styling, React Server
 Components-ready, React 18 and 19. Dark is the identity; light is a mode.
 
@@ -168,6 +168,7 @@ Every row links to that component's generated Markdown page (full API, variants,
 | `NumberField` | Enter a number precisely. | [docs/llms/number-field.md](docs/llms/number-field.md) |
 | `Pagination`, `paginationRange` | Navigate between pages of results, with first/last always shown and ellipses in between. | [docs/llms/pagination.md](docs/llms/pagination.md) |
 | `ParticleField` · @sukunagg/fx | An always-dark hero stage where crimson embers rise out of a glowing haze behind your overlay content, for season launches, event banners, landing heroes and "play now" panels. | [docs/llms/particle-field.md](docs/llms/particle-field.md) |
+| `Poll` | Asks one question with a few choices, optionally a write-in, and shows the results as bars with percentages. | [docs/llms/poll.md](docs/llms/poll.md) |
 | `Popover` | Show a small, interactive panel next to the element that opened it — filters, quick settings, a share box, a date picker later. | [docs/llms/popover.md](docs/llms/popover.md) |
 | `Progress` | A horizontal progress bar, determinate or indeterminate. | [docs/llms/progress.md](docs/llms/progress.md) |
 | `Prose` | Styles long-form text you don't control element by element: rules, legal drafts, patch notes, help articles rendered from Markdown, MDX or a CMS. | [docs/llms/prose.md](docs/llms/prose.md) |

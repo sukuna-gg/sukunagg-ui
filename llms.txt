@@ -2,7 +2,7 @@
 
 > SSR-safe, accessible React component library — 46 dark-first components built on Base UI and Tailwind v4 design tokens, WCAG AA, zero-runtime styling, RSC-ready, and documented for AI coding agents (llms.txt).
 
-@sukunagg/ui is a React 18/19 component library: 77 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
+@sukunagg/ui is a React 18/19 component library: 78 components, SSR- and React Server Components-safe, WCAG AA contrast in both themes, dark-first with a light mode, styled with Tailwind v4 design tokens (`--sk-*`) on top of Base UI. Zero runtime styling.
 
 Install: `bun add @sukunagg/ui` (or `npm i @sukunagg/ui`). Then pick one CSS path:
 
@@ -56,6 +56,7 @@ Set the theme with `data-theme="dark"` (default/brand) or `"light"` on `<html>`.
 - [Meter](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/meter.md): Show a scalar measurement within a known range: storage used, quota, password strength, a score.
 - [NumberField](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/number-field.md): Enter a number precisely.
 - [Pagination](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/pagination.md): Navigate between pages of results, with first/last always shown and ellipses in between.
+- [Poll](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/poll.md): Asks one question with a few choices, optionally a write-in, and shows the results as bars with percentages.
 - [Popover](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/popover.md): Show a small, interactive panel next to the element that opened it — filters, quick settings, a share box, a date picker later.
 - [Progress](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/progress.md): A horizontal progress bar, determinate or indeterminate.
 - [Prose](https://raw.githubusercontent.com/sukuna-gg/sukunagg-ui/main/docs/llms/prose.md): Styles long-form text you don't control element by element: rules, legal drafts, patch notes, help articles rendered from Markdown, MDX or a CMS.
