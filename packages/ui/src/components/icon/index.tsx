@@ -1,6 +1,7 @@
 export type { IconProps } from './icon.logic'
 export {
   AlertIcon,
+  CameraIcon,
   ChartIcon,
   CheckIcon,
   ChevronDownIcon,
@@ -10,11 +11,13 @@ export {
   ClockIcon,
   CloseIcon,
   ExternalIcon,
+  ImageIcon,
   InfoIcon,
   LockIcon,
   MoonIcon,
   RefreshIcon,
   SearchIcon,
   SunIcon,
+  UploadIcon,
   UserIcon,
 } from './icon.logic'

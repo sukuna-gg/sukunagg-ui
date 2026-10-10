@@ -14,11 +14,13 @@ becomes a ~400 KB JPEG (Pitaya does this by hand today).
 
 ```
 packages/ui/src/components/file-upload/
-├── file-upload.styles.tsx   # tv() slots: root, zone, icon, title, hint, gallery, preview, list, row,
-│                            #   thumb, progress, error, actions. Variant `layout`.
+├── file-upload.styles.tsx   # tv() slots: root, zone, icon, title, hint, gallery, preview, thumb,
+│                            #   info, status, meta, progress, bar, error, actions, list, row, body,
+│                            #   name. Variants `layout`, `dragging`, `invalid`, `disabled`, `status`.
 ├── file-upload.logic.tsx    # 'use client'; forwardRef <input>; drop, validate, prepare, upload, list.
 ├── file-upload.resize.ts    # resizeImage(): pure-ish browser helper (canvas), exported
 ├── file-upload.test.tsx
+├── file-upload.resize.test.ts  # resizeImage with a mocked createImageBitmap + canvas
 ├── file-upload.stories.tsx
 └── index.tsx                # export { FileUpload, resizeImage }; export type { FileUploadProps,
                              #   FileUploadLabels, FileUploadItem, ResizeImageOptions }
@@ -59,7 +61,10 @@ export interface FileUploadLabels {
   uploadFailed: string          // "Couldn't upload. Check your connection."
 }
 
-interface FileUploadOwnProps {
+// The real <input type="file"> receives `name`, `id`, `required`, `disabled`, `form`, aria-*…;
+// `className` and `style` go to the wrapper <div>.
+export interface FileUploadProps
+  extends Omit<ComponentPropsWithoutRef<'input'>, 'type' | 'accept' | 'capture' | 'multiple' | 'onChange' | 'size'> {
   accept?: string               // native syntax: 'image/*', '.pdf'
   capture?: 'user' | 'environment'
   multiple?: boolean
@@ -76,10 +81,6 @@ interface FileUploadOwnProps {
   labels?: Partial<FileUploadLabels>
   invalid?: boolean
 }
-
-// The real <input type="file"> receives `name`, `id`, `required`, `disabled`, `form`, aria-*…
-export type FileUploadProps = FileUploadOwnProps &
-  Omit<ComponentPropsWithoutRef<'input'>, 'type' | 'accept' | 'capture' | 'multiple' | 'onChange' | 'size'>
 
 export interface ResizeImageOptions { maxSide?: number; type?: 'image/jpeg' | 'image/webp'; quality?: number }
 /** Fixes camera rotation, caps the long side (default 2000px), re-encodes (default JPEG 0.85). */
@@ -107,9 +108,10 @@ upload, a camera viewfinder (the OS camera via `capture` is enough).
 | dragging | solid `--sk-accent` border, bg `--sk-accent` at 9%, icon `--sk-accent` |
 | icon tile | 44px, `--sk-surface`, 1px `--sk-line-soft`, 12px radius |
 | invalid / error | border `--sk-accent`; message `text-sm` semibold `--sk-accent` (Field's error style) |
-| preview (`zone`, ready) | image 112×76 `object-fit: cover`, "Ready" with `CheckIcon` in `--sk-success`, size line `text-xs --sk-text-faint` (e.g. "3.4 MB → 412 KB · 2000×1262 JPEG"), `secondary sm` Change + `ghost sm` Remove |
+| preview (`zone`, ready) | image 112×76 `object-fit: cover`, "Ready" with `CheckIcon` in `--sk-success`, size line `text-xs --sk-text-faint` (e.g. "3.4 MB → 412 KB · 2000×1262 JPEG"; the pixel size appears once the preview image loads), `secondary sm` Change + `ghost sm` icon-only Remove (`CloseIcon`, named `labels.remove(name)`) |
+| thumb fallback | no preview: the `Spinner` while preparing, `ImageIcon` for images the browser can't draw (HEIC, TIFF), else the file extension ("PDF") |
 | list row (`compact`) | 40px thumb, name semibold ellipsis, status line, 4px progress track `--sk-surface` with `bg-gradient-accent` fill; failed rows: border `--sk-accent` at 45%, message in `--sk-accent`, `secondary sm` Retry |
-| gallery link | coarse pointers only, `--sk-accent` underlined text button |
+| gallery link | coarse pointers only, `--sk-accent` underlined text: a `<label>` around a second hidden input |
 
 ## 5. States
 
@@ -117,11 +119,11 @@ upload, a camera viewfinder (the OS camera via `capture` is enough).
 |---|---|
 | empty | zone: title + hint; on coarse pointers with `capture`, `titleTouch` + the gallery link |
 | dragging | zone highlights while a file is over it |
-| preparing | spinner + `labels.preparing` (`aria-busy`) while `prepare` runs |
-| ready | preview / row; the prepared file is in the input (no `onUpload`) |
+| preparing | spinner + `labels.preparing` (`aria-busy`) while `prepare` runs; Remove cancels it |
+| ready | preview / row; the prepared file is in the input |
 | uploading | progress bar with `onProgress`; Remove aborts the request |
 | uploaded | row says `labels.uploaded` |
-| error | type, size, count, unreadable (prepare threw) or upload failed; upload errors offer Retry |
+| error | type, size, count or unreadable (prepare threw): one `role="alert"` message under the zone, the file isn't kept; upload failed: the file's row/preview turns crimson with Retry |
 | no JS | the label + native input work as a plain file field |
 
 **Motion:** border/background transitions `--sk-duration-fast`; spinner rotation stops under
@@ -133,27 +135,39 @@ reduced motion (it becomes a still ring + the text).
   visually hidden inside the `<label>` zone, so the whole zone opens the picker and the input keeps
   its form semantics.
 - Validation order: count → type (matches `accept`, incl. extensions and `image/*`) → size → `prepare`.
-- **Keeping prepared files in the form:** without `onUpload`, the prepared files are written back
-  into the input with a `DataTransfer` (`input.files = dt.files`), so a native submit or `FormData`
-  sends the ~400 KB JPEG, not the original.
+  A pick over the count is refused whole; with `multiple` a type/size message starts with the file
+  name. Files with an empty type and a `.heic`/`.heif` name count as `image/heic`.
+- **Keeping prepared files in the form:** the kept files (after `prepare`) are written back into
+  the input with a `DataTransfer` (`input.files = dt.files`), so a native submit or `FormData`
+  sends the ~400 KB JPEG, not the original. The input always mirrors the list (picks add up with
+  `multiple`; a refused or cancelled pick puts the kept files back). With `onUpload` it mirrors
+  too, so `required` keeps working; leave out `name` if the form shouldn't send them again.
+  Without `DataTransfer` (very old browsers) the input keeps what was picked.
 - With `onUpload`, files upload one at a time per item (parallel across items), each with its own
-  `AbortController`; Retry re-runs it.
+  `AbortController`; Retry re-runs it. Unmounting aborts every upload.
 - Drop handling on the zone (`dragenter/over/leave/drop`); nested `dragleave` ignored via
-  `relatedTarget`.
-- With `capture` on a coarse pointer (`matchMedia('(pointer: coarse)')` in an effect, CSS
-  `pointer-coarse:` for the first paint), a second hidden input **without** `capture` backs the
-  gallery link, because `capture` skips the gallery on phones.
-- Object URLs are revoked on remove and unmount.
+  `relatedTarget`. Disabled zones don't accept drops.
+- With `capture` on a coarse pointer (`useSyncExternalStore` over
+  `matchMedia('(pointer: coarse)')`, subscribed after hydration; CSS `pointer-coarse:` for the
+  first paint), a second hidden input **without** `capture` backs the gallery link, because
+  `capture` skips the gallery on phones.
+- `zone` layout (one file): the zone `<label>` stays mounted (it holds the input's files) but is
+  visually hidden and `aria-hidden` with the input at `tabIndex={-1}` while the preview shows;
+  Change calls `input.click()`. If the input had focus, focus moves to the preview card; Remove
+  puts focus back on the input.
+- Object URLs (only for formats an `<img>` can draw) are revoked on remove, replace and unmount.
 
 `resizeImage` (`file-upload.resize.ts`): `createImageBitmap(file, { imageOrientation:
 'from-image' })` → canvas scaled so the long side ≤ `maxSide` → `canvas.toBlob(type, quality)` →
 `new File([blob], renamed)`. Throws on undecodable input (e.g. HEIC where the browser can't decode
 it), which the component turns into `labels.unreadable`. Smaller images are re-encoded, never
-upscaled.
+upscaled. Files whose type is known and not `image/*` (a PDF next to photos) pass through
+unchanged.
 
 ## 7. Styles (`file-upload.styles.tsx`)
 
-`tv()` `slots` as in §2; variants `layout`, `dragging`, `invalid`, and `status` on rows.
+`tv()` `slots` as in §2; variants `layout`, `dragging`, `invalid`, `disabled`, and `status` on
+rows and the preview.
 
 ## 8. Accessibility checklist
 
@@ -163,7 +177,8 @@ upscaled.
 - [ ] Drag and drop is an extra; everything works without it.
 - [ ] Errors are `role="alert"` and linked through `aria-describedby`; `aria-invalid` on the input.
 - [ ] Progress bars are `role="progressbar"` with the file name; Remove/Retry buttons name the file.
-- [ ] Preview images have alt text (the label + "preview").
+- [ ] Preview images have alt text: the file name in the one-file preview (the name isn't shown
+      as text there); list thumbnails are decorative (`alt=""`, the name is the row's text).
 - [ ] Text ≥ 4.5:1 in both themes. The zone is identified by its text and icon; the dashed
       border is decoration, and keyboard focus shows as the 2px `--sk-focus-ring` (≥ 3:1).
 
@@ -179,12 +194,19 @@ revocation; coarse-pointer gallery input; labels; ref is the input; axe both the
 
 ## 10. Stories
 
-`IdPhoto` (Pitaya style, INE front/back), `Passport`, `Screenshots` (`compact`, `multiple`,
-`onUpload` with fake progress and one failure), `Invalid`, `Disabled`. Both `data-theme` values.
+`Playground`, `IdPhoto` (Pitaya style, INE front/back), `Passport`, `Screenshots` (`compact`,
+`multiple`, `onUpload` with fake progress and one failure), `Invalid`, `Disabled`, `BothThemes`
+(dark and light side by side).
 
 ## 11. Decisions
 
 - Ships `resizeImage` as an opt-in helper (owner, Q42 recommendation 3).
 - Prepared files go back into the input, so forms that never call `onUpload` still upload the small
-  file (D41).
-- Budget target ≤ 3.5 kB gzip (with `resizeImage` tree-shaken when unused), measured +10% (P5).
+  file (D41). The input mirrors the list with `onUpload` too (see §6).
+- Remove in the one-file preview is an icon-only `ghost sm` button named `labels.remove(name)`:
+  `labels` has no short "Remove" text, and the list rows use the same button.
+- Reuses `Button` (Change, Retry, Remove) and `Spinner` (preparing; still ring under reduced
+  motion).
+- Budget target was ≤ 3.5 kB (with `resizeImage` tree-shaken when unused). Measured 5.24 kB brotli
+  for `{ FileUpload }`, of which ~2 kB is the reused Button, Spinner and five icons; the
+  size-limit entry is measured +10% (5.8 kB). `resizeImage` alone: 362 B (limit 0.4 kB).
