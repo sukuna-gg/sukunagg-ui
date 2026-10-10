@@ -21,7 +21,8 @@
       "!packages/fx/src/styles/*.css",
       "!examples/showcase/src/styles.css",
       "!brand",
-      "!examples/showcase/public"
+      "!examples/showcase/public",
+      "!.claude/worktrees"
     ]
   },
   "formatter": {
