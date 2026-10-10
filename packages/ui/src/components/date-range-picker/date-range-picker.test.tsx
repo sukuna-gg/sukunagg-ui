@@ -49,6 +49,7 @@ describe('DateRangePicker', () => {
       />,
     )
     expect(trigger()).toHaveTextContent(/Sep 10\s*–\s*Oct 9, 2026/)
+    expect(trigger()).toHaveAccessibleDescription(/Sep 10\s*–\s*Oct 9, 2026/)
     rerender(
       <DateRangePicker
         aria-label="Games played between"

@@ -253,6 +253,7 @@ export const DateTimePicker = forwardRef<HTMLButtonElement, DateTimePickerProps>
     const labels = { ...DEFAULT_LABELS, ...labelsProp }
     const baseId = useId()
     const zoneId = `${baseId}-zone`
+    const valueId = `${baseId}-value`
     const listId = `${baseId}-times`
 
     const [value, setValue] = useControllableState<string | null>({
@@ -390,9 +391,12 @@ export const DateTimePicker = forwardRef<HTMLButtonElement, DateTimePickerProps>
                 type="button"
                 disabled={disabled}
                 aria-invalid={invalid || undefined}
+                // A <label> names the button and hides its text, so the value is read as the
+                // description: "Inicio, button, Sat, Nov 14 · 6:00 PM, Hermosillo · GMT-7".
                 aria-describedby={
-                  [describedBy, showZone ? zoneId : undefined].filter(Boolean).join(' ') ||
-                  undefined
+                  [describedBy, triggerText ? valueId : undefined, showZone ? zoneId : undefined]
+                    .filter(Boolean)
+                    .join(' ') || undefined
                 }
                 className={s.trigger({ className })}
                 {...buttonProps}
@@ -403,7 +407,7 @@ export const DateTimePicker = forwardRef<HTMLButtonElement, DateTimePickerProps>
               <CalendarGlyph />
             </span>
             {triggerText ? (
-              <span className={s.value()} suppressHydrationWarning>
+              <span id={valueId} className={s.value()} suppressHydrationWarning>
                 {triggerText}
               </span>
             ) : (

@@ -6,6 +6,7 @@ import {
   forwardRef,
   type ReactNode,
   useEffect,
+  useId,
   useRef,
   useState,
 } from 'react'
@@ -303,6 +304,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
       size,
       className,
       disabled,
+      'aria-describedby': describedBy,
       ...buttonProps
     },
     ref,
@@ -313,6 +315,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
       presets: { ...DEFAULT_LABELS.presets, ...labelsProp?.presets },
     }
     const weekStart = weekStartsOn ?? weekStartFor(locale)
+    const valueId = `${useId()}-value`
 
     const [value, setValue] = useControllableState<DateRange | null>({
       value: valueProp,
@@ -407,6 +410,11 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
                 type="button"
                 disabled={disabled}
                 aria-invalid={invalid || undefined}
+                // A <label> names the button and hides its text, so the range is read as the
+                // description too.
+                aria-describedby={
+                  [describedBy, value ? valueId : undefined].filter(Boolean).join(' ') || undefined
+                }
                 className={s.trigger({ className })}
                 {...buttonProps}
               />
@@ -416,7 +424,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
               <CalendarGlyph />
             </span>
             {value ? (
-              <span className={s.value()} suppressHydrationWarning>
+              <span id={valueId} className={s.value()} suppressHydrationWarning>
                 {formatRange(value, locale)}
               </span>
             ) : (

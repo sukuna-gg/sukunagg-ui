@@ -91,6 +91,7 @@ describe('DateTimePicker', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Done' }))
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     expect(trigger()).toHaveTextContent('Sat, Nov 14 · 6:00 PM')
+    expect(trigger()).toHaveAccessibleDescription('Sat, Nov 14 · 6:00 PM Hermosillo · GMT-7')
   })
 
   it('keeps the time when the day changes', async () => {
