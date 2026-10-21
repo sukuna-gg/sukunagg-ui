@@ -82,6 +82,15 @@ describe('Combobox', () => {
     expect(list?.className).toContain('min-w-[var(--anchor-width,12rem)]')
   })
 
+  it('takes no room for the empty "No results" status while suggestions show', async () => {
+    render(<Combobox items={items} aria-label="Fruit" emptyMessage="Nothing here" />)
+    await userEvent.type(screen.getByRole('combobox', { name: 'Fruit' }), 'ap')
+    await screen.findByRole('option', { name: 'Apple' })
+    const status = screen.getByRole('status')
+    expect(status.textContent).toBe('')
+    expect(status.classList.contains('empty:p-0')).toBe(true)
+  })
+
   it('renders the input on the server', () => {
     expect(
       renderServer(<Combobox items={items} placeholder="Find fruit" aria-label="Fruit" />),

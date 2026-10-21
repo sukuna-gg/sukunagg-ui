@@ -792,6 +792,10 @@ popup from the trigger.
 filtering. Both a patch on `0.x`. Pushed and opened as a PR; merging and publishing wait for the
 owner's "merge" / "publish".
 
+**Follow-up.** "Fix the blank strip in the library (empty:p-0 on the empty box), merge and publish it
+once CI is green": the "No results" status kept its padding while suggestions showed, a 16 px blank
+strip above the list. `empty:p-0` on it; the owner's explicit merge and publish.
+
 ---
 
 ## Decisions recorded so far
