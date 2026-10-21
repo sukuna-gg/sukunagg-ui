@@ -49,6 +49,39 @@ describe('Combobox', () => {
     expect(await screen.findAllByRole('option')).toHaveLength(2)
   })
 
+  it('draws itemIcon before each suggestion, and the text stays its name', async () => {
+    render(
+      <Combobox
+        items={items}
+        aria-label="Fruit"
+        itemIcon={(item) => <img src={`/${item}.png`} alt="" data-testid={`icon-${item}`} />}
+      />,
+    )
+    await userEvent.type(screen.getByRole('combobox', { name: 'Fruit' }), 'ap')
+    const apple = await screen.findByRole('option', { name: 'Apple' })
+    const icon = screen.getByTestId('icon-Apple')
+    expect(apple.contains(icon)).toBe(true)
+    // Decorative: hidden from assistive tech, so the option is named by its text alone.
+    expect(icon.parentElement?.getAttribute('aria-hidden')).toBe('true')
+    expect(apple.firstElementChild).toBe(icon.parentElement)
+  })
+
+  it('without itemIcon an option holds only its text', async () => {
+    render(<Combobox items={items} aria-label="Fruit" />)
+    await userEvent.type(screen.getByRole('combobox', { name: 'Fruit' }), 'ap')
+    const apple = await screen.findByRole('option', { name: 'Apple' })
+    expect(apple.querySelector('[aria-hidden]')).toBeNull()
+  })
+
+  it('hangs the popup from the input start edge, at least as wide as the input', async () => {
+    render(<Combobox items={items} aria-label="Fruit" />)
+    await userEvent.type(screen.getByRole('combobox', { name: 'Fruit' }), 'ap')
+    const list = (await screen.findByRole('option', { name: 'Apple' })).closest(
+      '[class*="anchor-width"]',
+    )
+    expect(list?.className).toContain('min-w-[var(--anchor-width,12rem)]')
+  })
+
   it('renders the input on the server', () => {
     expect(
       renderServer(<Combobox items={items} placeholder="Find fruit" aria-label="Fruit" />),

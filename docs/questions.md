@@ -780,6 +780,20 @@ cherry-picked onto it).
 
 ---
 
+## Q44. (from the Sukuna GG app's League Meta search) "the floating autocomplete showing in the middle is our problem or ours?" → "Fix the library + add support to show images so we can get something similar to: <image> + Syndra"
+
+**Answer.** It was the library's: Combobox's popup was centered under the input at its own minimum
+width (`min-w-48`), so under a full-width input it floated in the middle. Select already sizes its
+popup from the trigger.
+
+**Decision.** Popup aligned to the input's start edge and at least as wide as it
+(`min-w-[var(--anchor-width,12rem)]`, `align="start"`). Leading visuals through a new
+`itemIcon(item)` render prop (decorative, `aria-hidden`), keeping `items: string[]` and the built-in
+filtering. Both a patch on `0.x`. Pushed and opened as a PR; merging and publishing wait for the
+owner's "merge" / "publish".
+
+---
+
 ## Decisions recorded so far
 
 | Topic | Decision |

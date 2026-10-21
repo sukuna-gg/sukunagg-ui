@@ -22,6 +22,29 @@ export const Default: Story = {}
 export const WithValue: Story = { args: { defaultValue: 'React' } }
 export const Disabled: Story = { args: { disabled: true, defaultValue: 'React' } }
 
+/** A leading visual per suggestion (`itemIcon`): here a lettered tile; in an app, a portrait. */
+export const WithIcons: Story = {
+  args: {
+    itemIcon: (item: string) => (
+      <span
+        aria-hidden="true"
+        style={{
+          display: 'inline-grid',
+          placeItems: 'center',
+          width: 20,
+          height: 20,
+          borderRadius: 4,
+          background: 'var(--sk-surface-2)',
+          fontSize: 11,
+          fontWeight: 700,
+        }}
+      >
+        {item.charAt(0)}
+      </span>
+    ),
+  },
+}
+
 export const Variants: Story = {
   render: (args) => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: 280 }}>
