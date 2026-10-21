@@ -31,7 +31,9 @@ export const comboboxStyles = tv({
     ],
     // The optional leading visual (itemIcon): kept at its own size, never squeezed by the text.
     itemIcon: 'inline-flex shrink-0 items-center',
-    empty: 'px-2.5 py-2 text-sm text-text-dim',
+    // The "No results" status stays in the DOM (a live region) while suggestions show; with nothing
+    // in it, it takes no room, so no blank strip sits above the list (Q44).
+    empty: 'px-2.5 py-2 empty:p-0 text-sm text-text-dim',
   },
   variants: {
     // Shared form-control surface map (see Input). `filled` + `md` reproduce the original input.

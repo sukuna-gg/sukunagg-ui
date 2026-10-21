@@ -1836,7 +1836,8 @@ overflow-y-auto rounded-md border border-line bg-surface p-1 shadow-card` + fade
 as wide as the input (`min-w-[var(--anchor-width,12rem)]`) and aligned to its start edge, like
 Select. item: `h-9 px-2.5 gap-2 rounded-sm data-[highlighted]:bg-line-soft
 data-[selected]:text-accent`; itemIcon: `inline-flex shrink-0 items-center`. empty:
-`text-sm text-text-dim`.
+`px-2.5 py-2 empty:p-0 text-sm text-text-dim` (the status stays in the DOM while suggestions show;
+with nothing in it, it takes no room).
 
 ## States
 
