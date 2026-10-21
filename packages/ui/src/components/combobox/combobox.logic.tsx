@@ -1,6 +1,7 @@
 'use client'
 
 import { Autocomplete as Base } from '@base-ui/react/autocomplete'
+import type { ReactNode } from 'react'
 import { type ComboboxStyleProps, comboboxStyles } from './combobox.styles'
 
 /**
@@ -43,6 +44,21 @@ export interface ComboboxProps extends ComboboxStyleProps {
    */
   maxRenderedItems?: number
   /**
+   * A leading visual for each suggestion, drawn before its text: an avatar, a champion portrait.
+   * Decorative: the item's text stays the option's accessible name, so give images `alt=""`.
+   * Return `null` for an item without one.
+   *
+   * @example
+   * ```tsx
+   * <Combobox
+   *   aria-label="Champion"
+   *   items={['Ahri', 'Syndra']}
+   *   itemIcon={(name) => <img src={portraits[name]} alt="" width={20} height={20} />}
+   * />
+   * ```
+   */
+  itemIcon?: (item: string) => ReactNode
+  /**
    * Accessible name for the input. Required unless a visible `<label>` wraps or points at it;
    * the placeholder alone is not a name.
    */
@@ -63,7 +79,10 @@ export interface ComboboxProps extends ComboboxStyleProps {
  *   highlight, `Enter` fills the highlighted suggestion into the input, `Escape` closes.
  * - Variants: `variant` ('filled' default | 'outline' | 'ghost') and `size` ('sm' | 'md' default |
  *   'lg') use the same maps as `Input`, so the field matches a plain Input beside it. The popup is
- *   capped at `max-h-72` and scrolls.
+ *   capped at `max-h-72` and scrolls; it starts at the input's start edge and is at least as wide
+ *   as the input, like `Select`.
+ * - Icons: `itemIcon(item)` draws a leading visual (avatar, portrait) before each suggestion's
+ *   text; decorative, so the text stays the option's name.
  * - Behaviour: the value is the raw input text, so a typed string that matches no item is still a
  *   valid value. Uncontrolled via `defaultValue`, controlled via `value` + `onValueChange`.
  *   Filtering is built in; do not pre-filter `items` yourself on each keystroke. For large lists
@@ -112,6 +131,7 @@ export function Combobox({
   maxRenderedItems,
   variant,
   size,
+  itemIcon,
   'aria-label': ariaLabel,
 }: ComboboxProps) {
   const styles = comboboxStyles({ variant, size })
@@ -130,12 +150,17 @@ export function Combobox({
         className={styles.input()}
       />
       <Base.Portal>
-        <Base.Positioner sideOffset={6} className={styles.positioner()}>
+        <Base.Positioner sideOffset={6} align="start" className={styles.positioner()}>
           <Base.Popup className={styles.popup()}>
             <Base.Empty className={styles.empty()}>{emptyMessage}</Base.Empty>
             <Base.List>
               {(item: string) => (
                 <Base.Item key={item} value={item} className={styles.item()}>
+                  {itemIcon ? (
+                    <span className={styles.itemIcon()} aria-hidden="true">
+                      {itemIcon(item)}
+                    </span>
+                  ) : null}
                   {item}
                 </Base.Item>
               )}
